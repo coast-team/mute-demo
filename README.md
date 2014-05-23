@@ -15,6 +15,7 @@ You will also need to download [**Ace**](http://ace.c9.io/#nav=about) and to ext
 
 #See also
 
-* **mute-structs**
-* **mute-server**
 * [**mute-client**](https://github.com/MatthieuNICOLAS/mute-client)
+* [**mute-server**](https://github.com/MatthieuNICOLAS/mute-server)
+* [**mute-structs**](https://github.com/MatthieuNICOLAS/mute-structs)
+* [**mute-utils**](https://github.com/MatthieuNICOLAS/mute-utils)
