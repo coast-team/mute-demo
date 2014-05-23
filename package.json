@@ -6,7 +6,7 @@
   "dependencies": ***REMOVED***
     "ejs": "1.0.0",
     "express": "4.3.0",
-    "mute-server": "0.0.6",
+    "mute-server": "*",
     "socket.io": "0.9.16"
   ***REMOVED***,
   "devDependencies": ***REMOVED******REMOVED***,
