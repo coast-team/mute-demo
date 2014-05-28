@@ -1,38 +1,60 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 	<head>
-		<meta charset="utf8">
-        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-		<title> Essai</title>
+		<% include head %>
+		<% include css %>
 	</head>
 	<body>
-        <div class="container">
+		<% include menu %>
+		<div class="container">
             <div class="row">
-                <div class="col-md-10 col-md-offset-1">
-                    <h3>On veut juste faire quelques tests en JS, ouvre la console!</h3>
-                    <div id="editor"></div>
-                    <br>
-                    <p>
-                        <strong>Nombre d'opérations distantes en attente d'intégration : </strong><span id="compteur" class="text-success">0 opération(s)</span>
-                    </p>
-                </div>
-            </div>
+            	<div class="col-md-12"> <!-- Main content -->
+            		<div class="row"> <!-- Demo -->
+            			<h1><strong>Try MUTE, the Multi-User Text Editor</strong></h1>
+            			<div class="col-md-10 col-md-offset-1">
+	        				<% include editor %>
+	        				<br>
+	        				<% include awareness %>
+        				</div>
+            		</div> <!-- End demo -->
+            		<hr>
+            		<div class="row"> <!-- Additionnal informations -->
+            			<div class="col-md-4">
+            				<h1><strong>What's MUTE ?</strong></h1>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            			</div>
+            			<div class="col-md-4">
+            				<% include form-private-doc %>
+            			</div>
+            			<div class="col-md-4">
+            				<% include code %>
+            			</div>
+            		</div> <!-- End additionnal informations -->
+            	</div> <!-- End main content -->
+          	</div>
+            <hr>
+            <% include footer %>
         </div>
-        <script src="assets/js/jquery-2.1.0.js"></script>
-        <script src="assets/js/bootstrap.min.js"></script>
-        <script src="assets/js/ace/src/ace.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="assets/js/mute-client/build/mute-client.js"></script>
-        <script src="assets/js/awareness-adapter.js"></script>
-        <script>
+		<% include scripts %>
+        <% include scripts-editor %>
+        <% include notifications %>
+		<script>
 			"use strict";
+
+            hljs.initHighlightingOnLoad();
+
             var coordinator = new Mute.Coordinator('<%= docID %>');
             console.log(coordinator);
-            var editor = new Mute.AceEditorAdapter('editor', coordinator);
+            var editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
             coordinator.setEditor(editor);
             var network = new Mute.SocketIOAdapter(coordinator);
             coordinator.setNetwork(network);
-            var awareness = new AwarenessAdapter(coordinator, $('#compteur'));
+            var awareness = new AwarenessAdapter(coordinator, $('#<% awarenessID %>'));
 
             console.log('docID: <%= docID %>');
         </script>
