@@ -1,0 +1,59 @@
+<div class="modal fade" id="modalPrivateDoc" tabindex="-1" role="dialog" aria-labelledby="modalPrivateDocLabel" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalPrivateDocLabel">Private doc</h4>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <p class="lead">
+                    This document is private, please enter the password:
+                </p>
+                <p>
+                    <center><span id="spanError"></span></center>
+                </p>
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="inputPwd" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="inputPwd" placeholder="Password" onkeypress="runAjaxSendPwd(event);">
+                        </div>
+                    </div>
+                </form>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="redirect()">Return to home page</button>
+                <button type="button" class="btn btn-primary" onclick="ajaxSendPwd()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#modalPrivateDoc').modal('show');
+    });
+
+    function redirect() {
+        location.href='/';
+    }
+
+    function runAjaxSendPwd(event) {
+        if(event.keyCode === 13) {
+            ajaxSendPwd();
+        }
+    }
+
+    function ajaxSendPwd() {
+        var posting = $.post('/ajax/verifyPwd', { docID: '<%= docID%>', pwd: $('#inputPwd').val() });
+        posting.done(function (data) {
+            if(data.success === true) {
+                $('#modalPrivateDoc').modal('hide');
+                initMute();
+            }
+            else {
+                $('#spanError').html('Wrong password, try again !');
+                $('#spanError').attr('class', 'bg-danger');
+            }
+        });
+    }
+</script>

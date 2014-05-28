@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<% include head %>
+		<% include css %>
+	</head>
+	<body>
+		<% include menu %>
+		<div class="container">
+            <div class="row">
+            	<div class="col-md-12"> <!-- Main content -->
+            		<div class="row"> <!-- Demo -->
+            			<div class="col-md-10 col-md-offset-1">
+            				<% include editor %>
+	        				<br>
+	        				<% include awareness %>
+            			</div>
+            		</div>
+            		<div class="row">
+            			<div class="col-md-6">
+            				<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="link" class="col-sm-5 control-label">Invite your friends:</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly">
+								</div>
+							</div>
+            			</div>
+            		</div>
+            	</div>
+            </div>
+           	<hr>
+            <% include footer %>
+        </div>
+		<% include scripts %>
+		<% include scripts-editor %>
+		<% include notifications %>
+		<% 
+        	if(privateDoc === true) { 
+        		%> <% include modal-pwd-doc %> <%
+        	}
+        %>
+		<script>
+			"use strict";
+
+            hljs.initHighlightingOnLoad();
+
+            function initMute() {
+            	coordinator.setEditor(editor);
+            	coordinator.setNetwork(network);
+            }
+
+            var coordinator = new Mute.Coordinator('<%= docID %>');
+            var editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+            var network = new Mute.SocketIOAdapter(coordinator);
+            var awareness = new AwarenessAdapter(coordinator, $('#<% awarenessID %>'));
+            <% 
+            	if(privateDoc === false) {
+            		%> initMute(); <%	
+            	}
+            %>
+            console.log('docID: <%= docID %>');
+        </script>
+	</body>
+</html>
