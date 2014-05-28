@@ -21,7 +21,6 @@ var express = require('express'),
 	ejs = require('ejs'),
 	app = express(),
 	session = require('cookie-session'),
-	flash = require('connect-flash'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
 	crypto = require('crypto'),
@@ -41,7 +40,6 @@ app.use(session(***REMOVED***
 app.use(cookieParser('q2392sTfDzTc2CQ6'));
 app.use(bodyParser())
 app.use(bodyParser.urlencoded());
-app.use(flash());
 app.use('/assets', express.static(__dirname + '/assets'));
 
 // set .ejs as the default extension
