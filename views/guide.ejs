@@ -1,92 +1,127 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<% include head %>
-		<% include css %>
-	</head>
-	<body id="top">
-		<% include menu %>
-		<div class="container">
-                  <div class="row">
-                  	<div class="col-md-8"> <!-- Main content -->
-                              <h1 id="getting-started">Getting started</h1>
-                              <hr>
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                              proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                              <h3 id="client">Client</h3>
-                              <hr>
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                              proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                              <h3 id="server">Server</h3>
-                              <hr>
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                              proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                              <h1 id="extend-mute">Extend MUTE</h1>
-                              <hr>
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                              proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                              <h3 id="awareness-module">Awareness module</h3>
-                              <hr>
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                              proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                              <h3 id="text-editor-adapter">Text editor adapter</h3>
-                              <hr>
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                              proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                              <h3 id="network-adapter">Network adapter</h3>
-                              <hr>
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                              proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                  	</div>
-                        <div class="col-md-4">
-                              <ul class="menu">
-                                    <li>
-                                          <ul class="active">
-                                                <strong><a href="#getting-started">Getting started</a></strong>
-                                                <li><a href="#client">Client</a></li>
-                                                <li><a href="#server">Server</a></li>
-                                                <strong><a href="#extend-mute">Extend MUTE</a></strong>
-                                                <li><a href="#awareness-module">Awareness module</a></li>
-                                                <li><a href="#text-editor-adapter">Text editor adapter</a></li>
-                                                <li><a href="#network-adapter">Network adapter</a></li>
-                                                <hr>
-                                                <li><a href="#top">Back to top</a></li>
-                                          </ul>
-                                    </li>
-                              </ul>
-                        </div>
-                  </div>
-                  <hr>
-                  <% include footer %>
+    <head>
+        <% include head %>
+        <% include css %>
+    </head>
+    <body id="top">
+        <% include menu %>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8"> <!-- Main content -->
+                    <h1 id="getting-started">Getting started</h1>
+                    <hr>
+                    <p class="lead"><strong>MUTE</strong> is Javascript library. It's composed of two modules : one client-side, one server-side. In order to set your own application, you will need to install each one.</p>
+                    <h3 id="client">Client</h3>
+                    <hr>
+                    <p class="lead">The client-side module is used in order to change textareas into real-time collaborative text editors, to send modifications made by the user to collaborators and to update the document when changes are done by others.</p>
+                    <p>To install it, you have first to clone the module in the Javascript folder of your website:</p> 
+                    <strong>In your JS directory:</strong>
+                    <pre>git clone https://github.com/MatthieuNICOLAS/mute-client.git</pre>
+                    <p>Then you have to install the dependencies and use the Grunt script provided to generate the production file:</p>
+                    <strong>In your JS directory:</strong>
+                    <pre>cd mute-client/
+npm install
+grunt
+</pre>
+                    <p>In its current version, <strong>MUTE</strong> works using <a href="http://ace.c9.io/#nav=about">Ace</a> as text editor, so you will have to download it.</p>
+                    <strong>In your JS directory:</strong>
+                    <pre>git clone git://github.com/ajaxorg/ace.git</pre>
+                    <p>In the same way, <strong>MUTE</strong> use, by default, Websockets implementation <a href="http://socket.io/">socket.io</a> to broadcast modifications made by users to each other.</p>
+                    <strong>At the root of your website:</strong>
+                    <pre>npm install socket.io@0.9.16</pre>
+                    <p>All you have to do now is to create the object used by <strong>MUTE</strong> to manage the real-time collaborative text edition.</p>
+                    <strong>In your webpage:</strong>
+                    <pre>
+<code>&lt;!-- Dependencies --&gt;
+&lt;script src="path/js/ace/src/ace.js"&gt;&lt;/script&gt;
+&lt;script src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
+&lt;script src="path/js/mute-client/build/mute-client.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+    // Code
+    var coordinator = new Mute.Coordinator(docID);
+    var editor = new Mute.AceEditorAdapter(editorID, coordinator);
+    coordinator.setEditor(editor);
+    var network = new Mute.SocketIOAdapter(coordinator);
+    coordinator.setNetwork(network);
+    var awareness = new AwarenessAdapter(coordinator, $('#awarenessID'));
+&lt;/script&gt;</code></pre>
+                    <h3 id="server">Server</h3>
+                    <hr>
+                    <p class="lead">The server-module is used to create documents, to save their state in order to new clients to join or to resume sessions, and to broadcast changes made by users to others.</p>
+                    <p>It's a NodeJS module published on <a href="https://www.npmjs.org/">npm</a>, so installing it is rather simple.</p>
+                    <strong>At the root of your website:</strong>
+                    <pre>npm install mute-server</pre>
+                    <p>Then, you need to add the following lines:</p>
+                    <strong>In your app.js file:</strong>
+                    <pre>
+<code>var server = require('http').createServer(app);
+var Coordinator = require('mute-server').Coordinator,;
+var SocketIOAdapter = require('mute-server').SocketIOAdapter;
+
+var coordinator = new Coordinator();
+var socketIOAdapter = new SocketIOAdapter(server, coordinator);
+coordinator.setNetwork(socketIOAdapter);
+coordinator.addDoc(docID);</code></pre>
+                    Your application is now able to run, don't hesitate to create a basic application in order to test it.
+                    <h1 id="extend-mute">Extend MUTE</h1>
+                    <hr>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    <h3 id="awareness-module">Awareness module</h3>
+                    <hr>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    <h3 id="text-editor-adapter">Text editor adapter</h3>
+                    <hr>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    <h3 id="network-adapter">Network adapter</h3>
+                    <hr>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </div>
+                <div class="col-md-4">
+                    <ul class="menu">
+                        <li>
+                            <ul class="active">
+                                <strong><a href="#getting-started">Getting started</a></strong>
+                                <li><a href="#client">Client</a></li>
+                                <li><a href="#server">Server</a></li>
+                                <strong><a href="#extend-mute">Extend MUTE</a></strong>
+                                <li><a href="#awareness-module">Awareness module</a></li>
+                                <li><a href="#text-editor-adapter">Text editor adapter</a></li>
+                                <li><a href="#network-adapter">Network adapter</a></li>
+                                <hr>
+                                <li><a href="#top">Back to top</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
-	     <% include scripts %>
-	</body>
+            <hr>
+            <% include footer %>
+        </div>
+        <% include scripts %>
+        <script>
+            "use strict";
+            hljs.initHighlightingOnLoad();
+        </script
+    </body>
 </html>

@@ -21,12 +21,9 @@
             		<div class="row"> <!-- Additionnal informations -->
             			<div class="col-md-4">
             				<h1><strong>What's MUTE ?</strong></h1>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            <p class="lead"><strong>MUTE</strong>, which stands for <strong>M</strong>ulti-<strong>U</strong>ser <strong>T</strong>ext <strong>E</strong>ditor, is a open-source Javascript library able to change any textarea into real-time collaborative text editors.</p>
+                            <p>Unlike others collaborative text editor, <strong>MUTE</strong> doesn't use an <a href="http://en.wikipedia.org/wiki/Operational_transformation">Operational Transform-based algorithm</a> to resolve conflicts and merge modifications, but works using a <a href="">Conflict-free Replicated Data Types-based implementation</a>. This allows <strong>MUTE</strong> to <strong>manage effectively large text operations</strong> and to <strong>adopt a high scalable architecture</strong></p>
+                            <p>This demo works using <a href="http://ace.c9.io/#nav=about">Ace</a> as text editor and implement a centralized network architecture. If you want to implement another text editor or network architecture, you can extend <strong>MUTE</strong> by developping your own modules. See the documentation here.</p>
             			</div>
             			<div class="col-md-4">
             				<% include form-private-doc %>
@@ -54,7 +51,7 @@
             coordinator.setEditor(editor);
             var network = new Mute.SocketIOAdapter(coordinator);
             coordinator.setNetwork(network);
-            var awareness = new AwarenessAdapter(coordinator, $('#<% awarenessID %>'));
+            var awareness = new AwarenessAdapter(coordinator, $('#<%= awarenessID %>'));
 
             console.log('docID: <%= docID %>');
         </script>

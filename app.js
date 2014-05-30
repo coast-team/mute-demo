@@ -150,7 +150,7 @@ app.post('/createDoc', function (req, res) {
 	else {
 		// Already existing
 		req.session.error = true;
-		req.session.msg = 'A document with this name already exist. Please use the form at the top of the screen to access to it if it\'s yours.';
+		req.session.msg = 'A document with this name already exists. Please use the form at the top of the screen to access it if it\'s yours.';
 		res.redirect('/');
 	}
 });

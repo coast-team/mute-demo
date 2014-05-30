@@ -8,7 +8,8 @@ var SocketIOAdapter = require('mute-server').SocketIOAdapter;
 
 var coordinator = new Coordinator();
 var socketIOAdapter = new SocketIOAdapter(server, coordinator);
-coordinator.setNetwork(socketIOAdapter);</code></pre>
+coordinator.setNetwork(socketIOAdapter);
+coordinator.addDoc(docID);</code></pre>
                             <strong>In your HTML:</strong>
                             <pre>
 <code>var coordinator = new Mute.Coordinator(docID);
