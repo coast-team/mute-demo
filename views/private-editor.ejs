@@ -53,7 +53,7 @@
             var coordinator = new Mute.Coordinator('<%= docID %>');
             var editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
             var network = new Mute.SocketIOAdapter(coordinator);
-            var awareness = new AwarenessAdapter(coordinator, $('#<% awarenessID %>'));
+            var awareness = new AwarenessAdapter(coordinator, $('#<%= awarenessID %>'));
             <% 
             	if(privateDoc === false) ***REMOVED***
             		%> initMute(); <%	
