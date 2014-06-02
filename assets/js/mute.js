@@ -19,7 +19,8 @@ $(function(){
         while (i--) {
             h = headings[i];
             console.log(h);
-            if (top >= h.top - 50 - 1) {
+            console.log(i);
+            if (i === 0 || top >= h.top - 70) {
                 return h;
             }
         }

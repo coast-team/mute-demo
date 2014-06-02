@@ -4,15 +4,13 @@ var AwarenessAdapter = function (coordinator, items) {
     console.log(items);
 	this.item = items[0];
 	this.coordinator.on('awareness', function (data) {
-        console.log('On a bien reçu un message');
 		awarenessAdapter.updateItem(data);
 	});
 };
 
 AwarenessAdapter.prototype.updateItem = function (data) {
-    console.log(this.item);
-    console.log(this.item.id);
-	$('#'+this.item.id).html(data.nbLogootSOp + ' opération(s)');
+	$('#'+this.item.id).html(data.nbLogootSOp + ' operation(s)');
+    // Changing the text color according to the number of operations waiting
     if(data.nbLogootSOp >= 0 && data.nbLogootSOp < 10) {
         $('#'+this.item.id).attr('class', 'text-success');
     }
