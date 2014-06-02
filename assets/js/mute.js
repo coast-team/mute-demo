@@ -19,7 +19,8 @@ $(function()***REMOVED***
         while (i--) ***REMOVED***
             h = headings[i];
             console.log(h);
-            if (top >= h.top - 50 - 1) ***REMOVED***
+            console.log(i);
+            if (i === 0 || top >= h.top - 70) ***REMOVED***
                 return h;
         ***REMOVED***
     ***REMOVED***
