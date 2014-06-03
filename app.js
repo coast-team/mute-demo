@@ -28,7 +28,6 @@ var express = require('express'),
 	Coordinator = require('mute-server').Coordinator,
 	SocketIOAdapter = require('mute-server').SocketIOAdapter;
 
-
 var keys = [];
 var i;
 for(i=0; i<10; i++) {
