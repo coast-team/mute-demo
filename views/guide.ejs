@@ -112,24 +112,24 @@ AwarenessAdapter.prototype.updateItem = function (data) ***REMOVED***
                     <hr>
                     <p class="lead">The text editor adapter is used as a bridge between the coordinator and the text editor: it emits events to signal the text operations corresponding to the users' actions while listening to the coordinator's events to update the document according to the collaborators' inputs.</p>
                     <p>By default, <strong>MUTE</strong> uses <a target="_blank" href="http://ace.c9.io/#nav=about">Ace</a> as text editor. But if it doesn't answer, you can replace it by any other text editor, as long as you're able to write the corresponding adapter: <strong>MUTE</strong> communicate with the text editor adapter via events, so you will have to handle events generate by your text editor and to format data to the structure <strong>MUTE</strong> is expecting. Also, your text editor adapter will have to  handle <strong>MUTE</strong>'s event and to translate it for your text editor.</p>
-                    <div id="popover" class="popover top hide">
+                    <div id="popover-textEditor" class="popover top hide">
                         <div class="arrow"></div>
-                        <h4 id="popover-title" class="popover-title">Init</h4>
-                        <div id="popover-content" class="popover-content">
-                            <p>Ici une explication du message + le format des données</p>
+                        <h4 id="popover-title-textEditor" class="popover-title">Init</h4>
+                        <div id="popover-content-textEditor" class="popover-content">
                         </div>
                     </div>
-                    <div id="container"></div>
+                    <div id="container-textEditor"></div>
                     <h3 id="network-adapter">Network adapter</h3>
                     <hr>
-                    <p class="lead"></p>
-                    <p></p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    <p class="lead">The network adapter is the one in charge to query the server in order to receive the current state of document in the initialization process, as well as broadcasting the user's inputs and notifying the coordinator of the collaborators' modifications.</p>
+                    <p>By default, <strong>MUTE</strong> uses WebSocket implementation, <a target="_blank" href="http://socket.io">socket.io</a>, to adopt a centralized network architecture. By creating your own network adapter, you can change this architecture to a P2P-based architecture or add functionalities to your webpage like video-conference. In this case, your adapter will have to respect the following protocol:</p>
+                    <div id="popover-network" class="popover top hide">
+                        <div class="arrow"></div>
+                        <h4 id="popover-title-network" class="popover-title">Init</h4>
+                        <div id="popover-content-network" class="popover-content">
+                        </div>
+                    </div>
+                    <div id="container-network"></div>
                 </div>
                 <div class="col-md-4">
                     <ul class="menu">
@@ -159,155 +159,293 @@ AwarenessAdapter.prototype.updateItem = function (data) ***REMOVED***
         </script>
         <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.0.2.min.js"></script>
         <script defer="defer">
-        var flag = false;
-        function drawArrow(fromx, fromy, tox, toy) ***REMOVED***
-            var headlen = 20;   // how long you want the head of the arrow to be, you could calculate this as a fraction of the distance between the points as well.
-            var angle = Math.atan2(toy-fromy,tox-fromx);
-
-            line = new Kinetic.Line(***REMOVED***
-                points: [fromx, fromy, tox, toy, tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6),tox, toy, tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6)],
-                stroke: 'black'
-        ***REMOVED***);
-            return line;
-    ***REMOVED***
-
-        function drawPopoverArrow(title, content, fromx, fromy, tox, toy) ***REMOVED***
-            var group = new Kinetic.Group();
-
-            group.add(drawArrow(fromx, fromy, tox, toy));
-            group.add(new Kinetic.Text(***REMOVED***
-                x: (fromx + tox) / 2 - 30,
-                y: fromy - 20,
-                text: title,
-                fontSize: 18,
-                fontFamily: 'Helvetica Neue',
-                fill: '#259dff'
-        ***REMOVED***));
-
-            group.on('click', function (event) ***REMOVED***
-                flag = true;
-                console.log(event.evt);
-                console.log('Dans le onclick');
-                $('#popover-title').html(title.bold());
-                $('#popover-content').html(content);
-                $('pre code').each(function(i, e) ***REMOVED***hljs.highlightBlock(e)***REMOVED***);
-                $('#popover').removeClass('hide')
-                    .css('display', 'block')
-                    .css('max-width', '600px')
-                    .css('width', '600px')
-                    .css('top', event.evt.pageY - $('#popover').height() - 70 + 'px')
-                    .css('left', event.evt.pageX - $('#popover').width()/2 - 50 + 'px');
-        ***REMOVED***);
-
-            group.on('mouseover', function (event) ***REMOVED***
-                $('#container').css('cursor', 'pointer');
-        ***REMOVED***);
-            group.on('mouseout', function (event) ***REMOVED***
-                $('#container').css('cursor', 'auto');
-        ***REMOVED***);
-
-            return group;
-    ***REMOVED***
-
-        function loadImages(sources, callback) ***REMOVED***
-            var images = ***REMOVED******REMOVED***;
-            var loadedImages = 0;
-            var numImages = 0;
-            var src;
-
-            for(src in sources) ***REMOVED***
-                numImages++;
+            var flags = ***REMOVED***
+                textEditor: false,
+                network: false
         ***REMOVED***
-            for(src in sources) ***REMOVED***
-                images[src] = new Image();
-                images[src].onload = function() ***REMOVED***
-                    if(++loadedImages >= numImages) ***REMOVED***
-                        callback(images);
+
+            function drawArrow(fromx, fromy, tox, toy) ***REMOVED***
+                var headlen = 10;   // how long you want the head of the arrow to be, you could calculate this as a fraction of the distance between the points as well.
+                var angle = Math.atan2(toy-fromy,tox-fromx);
+
+                line = new Kinetic.Line(***REMOVED***
+                    points: [fromx, fromy, tox, toy, tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6),tox, toy, tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6)],
+                    stroke: 'black'
+            ***REMOVED***);
+                return line;
+        ***REMOVED***
+
+            function drawPopoverArrow(container, title, content, fromx, fromy, tox, toy) ***REMOVED***
+                var group = new Kinetic.Group();
+
+                group.add(drawArrow(fromx, fromy, tox, toy));
+                group.add(new Kinetic.Text(***REMOVED***
+                    x: (fromx + tox) / 2 - 40,
+                    y: fromy - 20,
+                    text: title,
+                    fontSize: 18,
+                    fontFamily: 'Helvetica Neue',
+                    fill: '#259dff'
+            ***REMOVED***));
+
+                group.on('click', function (event) ***REMOVED***
+                    console.log(container);
+                    flags[container] = true;
+                    console.log(event.evt);
+                    console.log('Dans le onclick');
+                    $('#popover-title-'+container).html(title.bold());
+                    $('#popover-content-'+container).html(content);
+                    $('pre code').each(function(i, e) ***REMOVED***hljs.highlightBlock(e)***REMOVED***);
+                    $('#popover-'+container).removeClass('hide')
+                        .css('display', 'block')
+                        .css('max-width', '600px')
+                        .css('width', '600px')
+                        .css('top', event.evt.pageY - $('#popover-'+container).height() - 70 + 'px')
+                        .css('left', event.evt.pageX - $('#popover-'+container).width()/2 - 50 + 'px');
+            ***REMOVED***);
+
+                group.on('mouseover', function (event) ***REMOVED***
+                    $('#container-'+container).css('cursor', 'pointer');
+            ***REMOVED***);
+                group.on('mouseout', function (event) ***REMOVED***
+                    $('#container-'+container).css('cursor', 'auto');
+            ***REMOVED***);
+
+                return group;
+        ***REMOVED***
+
+            function loadImages(sources, callback) ***REMOVED***
+                var images = ***REMOVED******REMOVED***;
+                var loadedImages = 0;
+                var numImages = 0;
+                var src;
+
+                for(src in sources) ***REMOVED***
+                    numImages++;
+            ***REMOVED***
+                for(src in sources) ***REMOVED***
+                    images[src] = new Image();
+                    images[src].onload = function() ***REMOVED***
+                        if(++loadedImages >= numImages) ***REMOVED***
+                            callback(images);
+                    ***REMOVED***
+                ***REMOVED***;
+                    images[src].src = sources[src];
+            ***REMOVED***
+        ***REMOVED***
+
+            function drawImage(source, x, y, width, height) ***REMOVED***
+                return new Kinetic.Image(***REMOVED***
+                    image: source,
+                    position: ***REMOVED*** x: x, y: y ***REMOVED***,
+                    offset: ***REMOVED*** x: width / 2, y: height / 2 ***REMOVED***,
+                    width: width,
+                    height: height
+            ***REMOVED***);
+        ***REMOVED***
+
+            function drawNamedImage(name, source, xText, yText, xImage, yImage, width, height) ***REMOVED***
+                var group = new Kinetic.Group();
+
+                group.add(new Kinetic.Text(***REMOVED***
+                    x: xText,
+                    y: yText,
+                    text: name,
+                    fontSize: 30,
+                    fontFamily: 'Helvetica Neue',
+                    fill: 'black'
+            ***REMOVED***));
+
+                group.add(new Kinetic.Image(***REMOVED***
+                    image: source,
+                    position: ***REMOVED*** x: xImage, y: yImage ***REMOVED***,
+                    offset: ***REMOVED*** x: width / 2, y: height / 2 ***REMOVED***,
+                    width: width,
+                    height: height
+            ***REMOVED***));     
+
+                return group;
+        ***REMOVED***
+
+            function drawCanvasTextEditor(images) ***REMOVED***
+                var stage;
+                var layer;
+                var group;
+                var title;
+                var content;
+                var width;
+                var height;
+                var coordinatorText;
+                var coordinatorImg;
+                var textEditorText;
+                var textEditorImg;
+
+                stage = new Kinetic.Stage(***REMOVED***
+                    container: 'container-textEditor',
+                    width: 1024,
+                    height: 300
+            ***REMOVED***);
+                layer = new Kinetic.Layer();
+
+                layer.add(drawNamedImage('Coordinator', images.coordinator, 80, 15, 150, 150, 150, 150));
+                layer.add(drawNamedImage('Text editor', images.textEditor, 730, 15, 800, 150, 250, 200));
+                //layer.add(drawImage(images.textEditor, 800, 135, 250, 200));
+
+                title = 'initEditor';
+                content = "<p>This event is emitted in order to signal the text editor that the coordinator is ready to work and to set the initial state of the text.</p><pre><code>&lt;script&gt;<br>  data: ***REMOVED***<br>    str // The current state of the text<br>  ***REMOVED***<br>&lt;/script&gt;</code></pre>";
+                group = drawPopoverArrow('textEditor', title, content, 300, 75, 645, 75);
+                layer.add(group);
+                
+
+                title = 'change';
+                content = "<p>This event is emitted in order to signal the coordinator that the user has modified the document.</p><pre><code>&lt;script&gt;<br>  data: ***REMOVED***<br>    action, // The type of the modification ('insertText' or 'deleteText')<br>    index, // The index of the string where the modification occured<br>    text // The text inserted or deleted<br>  ***REMOVED***<br>&lt;/script&gt;</code></pre>";
+                group = drawPopoverArrow('textEditor', title, content, 645, 145, 300, 145);
+                layer.add(group);
+
+                title = 'update';
+                content = "<p>This event is emitted in order to signal the text editor that the document has been modified by another user and provide the new state of the document.</p><pre><code>&lt;script&gt;<br>  data: ***REMOVED***<br>    str, // The new state of the text<br>    operations, // Array which contains all the text operations generated by the other client, used to calculate the modification to apply to the position of the cursor<br>    diffNbLines // Difference between the previous document's number of lines and the new one, used to scroll in order to not disturb the user (can be negative)<br>  ***REMOVED***<br>&lt;/script&gt;</code></pre>";
+                group = drawPopoverArrow('textEditor', title, content, 300, 215, 645, 215);
+                layer.add(group);
+
+                stage.add(layer);
+
+                $('#container-textEditor').on('click', function() ***REMOVED***
+                    if(flags.textEditor === true) ***REMOVED***
+                        flags.textEditor = false;
                 ***REMOVED***
-            ***REMOVED***;
-                images[src].src = sources[src];
+                    else ***REMOVED***
+                        $('#popover-textEditor').addClass('hide');
+                ***REMOVED***
+            ***REMOVED***);
         ***REMOVED***
-    ***REMOVED***
 
-        function drawNamedImage(name, source, x, y, width, height) ***REMOVED***
-            var group = new Kinetic.Group();
+            function drawCanvasNetwork(images) ***REMOVED***
+                var stage;
+                var layer;
+                var group;
+                var title;
+                var content;
+                var width;
+                var height;
+                var coordinatorText;
+                var coordinatorImg;
+                var textEditorText;
+                var textEditorImg;
 
-            group.add(new Kinetic.Text(***REMOVED***
-                x: x - width / 2 + 30,
-                y: y - height / 2 - 50,
-                text: name,
-                fontSize: 30,
-                fontFamily: 'Helvetica Neue',
-                fill: 'black'
-        ***REMOVED***));
+                var xRightCoordinatorClient = 250;
+                var xLeftNetworkClient = 350;
+                var xRightNetworkClient = 450;
+                var xLeftNetworkServer = 600;
+                var xRightNetworkServer = 710;
+                var xLeftCoordinatorServer = 810;
 
-            group.add(new Kinetic.Image(***REMOVED***
-                image: source,
-                position: ***REMOVED*** x: x, y: y ***REMOVED***,
-                offset: ***REMOVED*** x: width / 2, y: height / 2 ***REMOVED***,
-                width: width,
-                height: height
-        ***REMOVED***));     
+                stage = new Kinetic.Stage(***REMOVED***
+                    container: 'container-network',
+                    width: 1024,
+                    height: 420
+            ***REMOVED***);
+                layer = new Kinetic.Layer();
 
-            return group;
-    ***REMOVED***
 
-        function drawCanvas(images) ***REMOVED***
-            var stage;
-            var layer;
-            var group;
-            var title;
-            var content;
-            var width;
-            var height;
-            var coordinatorText;
-            var coordinatorImg;
-            var textEditorText;
-            var textEditorImg;
 
-            stage = new Kinetic.Stage(***REMOVED***
-                container: 'container',
-                width: 1024,
-                height: 300
-        ***REMOVED***);
-            layer = new Kinetic.Layer();
+                layer.add(drawNamedImage('Client\'s coordinator', images.coordinator, 50, 25, 150, 250, 150, 150));
+                layer.add(drawNamedImage('Client\'s network adapter', images.network, 250, 390, 400, 250, 150, 300));
+                layer.add(drawNamedImage('Server\'s network adapter', images.network, 500, 25, 650, 250, 150, 300));
+                layer.add(drawNamedImage('Server\'s coordinator', images.coordinator, 780, 390, 900, 250, 150, 150));
 
-            layer.add(drawNamedImage('Coordinator', images.coordinator, 150, 150, 200, 200));
-            layer.add(drawNamedImage('Text editor', images.textEditor, 800, 150, 200, 200));
+                title = 'initNetwork';
+                content = "<p>initNetwork</p>";
+                group = drawPopoverArrow('network', title, content, xRightCoordinatorClient, 130, xLeftNetworkClient, 130);
+                layer.add(group);
 
-            title = 'initEditor';
-            content = "<p>This event is emitted in order to signal the text editor that the coordinator is ready to work and to set the initial state of the text.</p><pre><code>&lt;script&gt;<br>  data: ***REMOVED***<br>    str // The current state of the text<br>  ***REMOVED***<br>&lt;/script&gt;</code></pre>";
-            group = drawPopoverArrow(title, content, 300, 75, 645, 75);
-            layer.add(group);
-            
+                title = 'joinDoc';
+                content = "<p>joinDoc</p>";
+                group = drawPopoverArrow('network', title, content, xRightNetworkClient, 145, xLeftNetworkServer, 145);
+                layer.add(group);
 
-            title = 'change';
-            content = "<p>This event is emitted in order to signal the coordinator that the user has modified the document.</p><pre><code>&lt;script&gt;<br>  data: ***REMOVED***<br>    action, // The type of the modification ('insertText' or 'deleteText')<br>    index, // The index of the string where the modification occured<br>    text // The text inserted or deleted<br>  ***REMOVED***<br>&lt;/script&gt;</code></pre>";
-            group = drawPopoverArrow(title, content, 645, 145, 300, 145);
-            layer.add(group);
+                title = 'getDoc';
+                content = "<p>getDocState</p>";
+                group = drawPopoverArrow('network', title, content, xRightNetworkServer, 160, xLeftCoordinatorServer, 160);
+                layer.add(group);
 
-            title = 'update';
-            content = "<p>This event is emitted in order to signal the text editor that the document has been modified by another user and provide the new state of the document.</p><pre><code>&lt;script&gt;<br>  data: ***REMOVED***<br>    str, // The new state of the text<br>    operations, // Array which contains all the text operations generated by the other client, used to calculate the modification to apply to the position of the cursor<br>    diffNbLines // Difference between the previous document's number of lines and the new one, used to scroll in order to not disturb the user (can be negative)<br>  ***REMOVED***<br>&lt;/script&gt;</code></pre>";
-            group = drawPopoverArrow(title, content, 300, 215, 645, 215);
-            layer.add(group);
+                title = 'doc';
+                content = "<p>docState</p>";
+                group = drawPopoverArrow('network', title, content, xLeftCoordinatorServer, 190, xRightNetworkServer, 190);
+                layer.add(group);
 
-            stage.add(layer);
-    ***REMOVED***
+                title = 'sendDoc';
+                content = "<p>sendDocState</p>";
+                group = drawPopoverArrow('network', title, content, xLeftNetworkServer, 205, xRightNetworkClient, 205);
+                layer.add(group);
 
-        var sources = ***REMOVED***
-            coordinator: 'assets/img/coordinator.svg',
-            textEditor: 'assets/img/text-editor.png'
-    ***REMOVED***;
-        loadImages(sources, drawCanvas);
+                title = 'receiveDoc';
+                content = "<p>receiveDoc</p>";
+                group = drawPopoverArrow('network', title, content, xLeftNetworkClient, 220, xRightCoordinatorClient, 220);
+                layer.add(group);
 
-        $('#container').on('click', function() ***REMOVED***
-            if(flag === true) ***REMOVED***
-                flag = false;
+                title = 'operations';
+                content = "<p>operations</p>";
+                group = drawPopoverArrow('network', title, content, xRightCoordinatorClient, 250, xLeftNetworkClient, 250);
+                layer.add(group);
+
+                title = 'sendOps';
+                content = "<p>sendOps</p>";
+                group = drawPopoverArrow('network', title, content, xRightNetworkClient, 265, xLeftNetworkServer, 265);
+                layer.add(group);
+
+                title = 'ack';
+                content = "<p>ack</p>";
+                group = drawPopoverArrow('network', title, content, xLeftNetworkServer, 295, xRightNetworkClient, 295);
+                layer.add(group);
+
+
+                title = 'receiveOps';
+                content = "<p>receiveOps</p>";
+                group = drawPopoverArrow('network', title, content, xRightNetworkServer, 295, xLeftCoordinatorServer, 295);
+                layer.add(group);
+
+                title = 'ack';
+                content = "<p>ack</p>";
+                group = drawPopoverArrow('network', title, content, xLeftNetworkClient, 310, xRightCoordinatorClient, 310);
+                layer.add(group);
+
+                title = 'broadcastOps';
+                content = "<p>broadcastOps</p>";
+                group = drawPopoverArrow('network', title, content, xLeftNetworkServer, 325, xRightNetworkClient, 325);
+                layer.add(group);
+
+                title = 'receiveOps';
+                content = "<p>receiveOps</p>";
+                group = drawPopoverArrow('network', title, content, xLeftNetworkClient, 340, xRightCoordinatorClient, 340);
+                layer.add(group);
+
+                title = 'disconnect';
+                content = "<p>disconnect</p>";
+                group = drawPopoverArrow('network', title, content, xRightNetworkServer, 365, xLeftCoordinatorServer, 365);
+                layer.add(group);
+
+                stage.add(layer);
+
+                $('#container-network').on('click', function() ***REMOVED***
+                    if(flags.network === true) ***REMOVED***
+                        flags.network = false;
+                ***REMOVED***
+                    else ***REMOVED***
+                        $('#popover-network').addClass('hide');
+                ***REMOVED***
+            ***REMOVED***);
         ***REMOVED***
-            else ***REMOVED***
-                $('#popover').addClass('hide');
+
+            var sourcesTextEditor = ***REMOVED***
+                coordinator: 'assets/img/coordinator.png',
+                textEditor: 'assets/img/text-editor.png'
+        ***REMOVED***;
+            loadImages(sourcesTextEditor, drawCanvasTextEditor);
+            var sourcesNetwork = ***REMOVED***
+                coordinator: 'assets/img/coordinator.png',
+                network: 'assets/img/network.svg'
         ***REMOVED***
-    ***REMOVED***);
+            loadImages(sourcesNetwork, drawCanvasNetwork);
         </script>
     </body>
 </html>
