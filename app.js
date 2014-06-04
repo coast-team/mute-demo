@@ -16,9 +16,13 @@
  */
 var PREFIX_SALT = 'KKBt64eh8Rz3kM25';
 var SUFFIX_SALT = 'Nhh5z384h39qCJJS';
+var USERNAME_MAIL;
+var PASS_MAIL;
+var smtpTransport;
 
 var express = require('express'),
 	ejs = require('ejs'),
+	fs = require('fs'),
 	app = express(),
 	session = require('cookie-session'),
 	bodyParser = require('body-parser'),
@@ -26,7 +30,26 @@ var express = require('express'),
 	crypto = require('crypto'),
 	server = require('http').createServer(app),
 	Coordinator = require('mute-server').Coordinator,
-	SocketIOAdapter = require('mute-server').SocketIOAdapter;
+	SocketIOAdapter = require('mute-server').SocketIOAdapter,
+	nodemailer = require("nodemailer");
+
+fs.readFile('mute.conf', 'utf8', function (err,data) ***REMOVED***
+	if (err) ***REMOVED***
+		return console.log(err);
+	***REMOVED***
+	var obj = JSON.parse(data);
+	USERNAME_MAIL = obj.mail.username;
+	PASS_MAIL = obj.mail.pass;
+
+	smtpTransport = nodemailer.createTransport("SMTP",***REMOVED***
+	    service: "Gmail",
+	    auth: ***REMOVED***
+	        user: USERNAME_MAIL,
+	        pass: PASS_MAIL
+	***REMOVED***
+	***REMOVED***);
+***REMOVED***);
+
 
 var keys = [];
 var i;
@@ -117,6 +140,32 @@ app.get('/getInfosDemo', function (req, res) ***REMOVED***
 	res.send(infosDemo);
 ***REMOVED***);
 
+app.post('/sendMail', function (req, res) ***REMOVED***
+	// setup e-mail data with unicode symbols
+	var mailOptions = ***REMOVED***
+	    from: USERNAME_MAIL, // sender address
+	    to: USERNAME_MAIL, // list of receivers
+	    subject: "MUTE - " + req.body.subject, // Subject line
+	    text: 'Send by ' + req.body.email + '\n\n' + req.body.text, // plaintext body
+	    html: 'Send by ' + req.body.email + '<br><br>' + req.body.text // html body
+	***REMOVED***
+
+	// send mail with defined transport object
+	smtpTransport.sendMail(mailOptions, function(error, response)***REMOVED***
+	    if(error)***REMOVED***
+	        console.log(error);
+	***REMOVED***
+	    else***REMOVED***
+	        console.log("Message sent: " + response.message);
+	***REMOVED***
+	***REMOVED***);
+
+	req.session.info = true;
+	req.session.msg = 'Your message has correctly been sent to the ***REMOVED***istrators.';
+	
+	res.redirect('/');
+***REMOVED***);
+
 app.post('/createDoc', function (req, res) ***REMOVED***
 	var docID = req.body.docID;
 	var pwd = req.body.pwd;
@@ -161,12 +210,12 @@ app.get('/guide', function (req, res) ***REMOVED***
 
 app.get('/contact', function (req, res) ***REMOVED***
 	res.setHeader('Content-Type', 'text/html');
-	res.send('Work in progress, please return to the previous page :)');
+	res.render('contact', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: 'contact' ***REMOVED***);
 ***REMOVED***);
 
 app.get('/about', function (req, res) ***REMOVED***
 	res.setHeader('Content-Type', 'text/html');
-	res.send('Work in progress, please return to the previous page :)');
+	res.render('about', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: 'about' ***REMOVED***);
 ***REMOVED***);
 
 app.get('/accessDoc', function (req, res) ***REMOVED***
