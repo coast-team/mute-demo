@@ -9,10 +9,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8"> <!-- Main content -->
-                    <h1 id="getting-started">Getting started</h1>
+                    <h1 data-item-menu="getting-started">Getting started</h1>
                     <hr>
                     <p class="lead"><strong>MUTE</strong> is Javascript library. It's composed of two modules : one client-side, one server-side. In order to set your own application, you will need to install each one.</p>
-                    <h3 id="client">Client</h3>
+                    <h3 id="client" data-item-menu="client">Client</h3>
                     <hr>
                     <p class="lead">The client-side module is used in order to change textareas into real-time collaborative text editors, to send modifications made by the user to collaborators and to update the document when changes are done by others.</p>
                     <p>To install it, you have first to clone the module in the Javascript folder of your website:</p> 
@@ -43,7 +43,7 @@ grunt
     var network = new Mute.SocketIOAdapter(coordinator);
     coordinator.setNetwork(network);
 &lt;/script&gt;</code></pre>
-                    <h3 id="server">Server</h3>
+                    <h3 id="server" data-item-menu="server">Server</h3>
                     <hr>
                     <p class="lead">The server-module is used to create documents, to save their state in order to new clients to join or to resume sessions, and to broadcast changes made by users to others.</p>
                     <p>It's a NodeJS module published on <a target="_blank" href="https://www.npmjs.org/">npm</a>, so installing it is rather simple.</p>
@@ -61,17 +61,17 @@ var socketIOAdapter = new SocketIOAdapter(server, coordinator);
 coordinator.setNetwork(socketIOAdapter);
 coordinator.addDoc(docID);</code></pre>
                     Your application is now <strong>able to run</strong>, so don't hesitate to create a basic webpage in order to test it.
-                    <h1 id="going-further">Going Further</h1>
+                    <h1 id="going-further" data-item-menu="going-further">Going Further</h1>
                     <hr>
                     <p class="lead">We're now going to see how to implement some <em>awareness features</em> to <strong>MUTE</strong> and how to develop new modules</p>
-                    <h3 id="awareness-module">Awareness module</h3>
+                    <h3 id="awareness-module" data-item-menu="awareness-module">Awareness module</h3>
                     <hr>
                     <p class="lead">Awareness is a necessary feature in a real-time collaborative editor, since it allows users to know basics informations like with how many people they're currently working and on which sections of the document the collaborators are working. Theses features help clients to work more efficiently together.</p>
                     <p>In order to implement such features, your module will have to listen to the <em>awareness event</em> and to update the user interface: this event is emitted by the coordinator and provides some useful data which like the current number of distant operations waiting to be applied to the local model or the current number of collaborators working on the document.</p>
                     <strong>Data provided by the <em>awareness event</em>:</strong><br><br>
                     <pre>
-<code>data: {
-    nbLogootSOp // Number of distant operations waiting to be applied to the local model
+<code><strong>data</strong>: {
+    'nbLogootSOp' // Number of distant operations waiting to be applied to the local model
 }</code></pre>
                     <p>Let's take a look at the <strong>awareness module</strong> we developed for this demo. Its role is to display <em>nbLogootSOp</em> and to alert the user if there's too many operations waiting:</p>
                     <strong>awareness-adapter.js:</strong>
@@ -108,7 +108,7 @@ AwarenessAdapter.prototype.updateItem = function (data) {
     var awareness = new AwarenessAdapter(coordinator, $('#awarenessID'));
 &lt;/script&gt;</code></pre>
                     <p>You can now easily write your own awareness module, choosing which data're interesting to display to your users and how you want to display them.</p>
-                    <h3 id="text-editor-adapter">Text editor adapter</h3>
+                    <h3 id="text-editor-adapter" data-item-menu="text-editor-adapter">Text editor adapter</h3>
                     <hr>
                     <p class="lead">The text editor adapter is used as a bridge between the coordinator and the text editor: it emits events to signal the text operations corresponding to the users' actions while listening to the coordinator's events to update the document according to the collaborators' inputs.</p>
                     <p>By default, <strong>MUTE</strong> uses <a target="_blank" href="http://ace.c9.io/#nav=about">Ace</a> as text editor. But if it doesn't answer, you can replace it by any other text editor, as long as you're able to write the corresponding adapter: <strong>MUTE</strong> communicate with the text editor adapter via events, so you will have to handle events generate by your text editor and to format data to the structure <strong>MUTE</strong> is expecting. Also, your text editor adapter will have to  handle <strong>MUTE</strong>'s event and to translate it for your text editor.</p>
@@ -119,7 +119,7 @@ AwarenessAdapter.prototype.updateItem = function (data) {
                         </div>
                     </div>
                     <div id="container-textEditor"></div>
-                    <h3 id="network-adapter">Network adapter</h3>
+                    <h3 id="network-adapter" data-item-menu="network-adapter">Network adapter</h3>
                     <hr>
                     <p class="lead">The network adapter is the one in charge to query the server in order to receive the current state of document in the initialization process, as well as broadcasting the user's inputs and notifying the coordinator of the collaborators' modifications.</p>
                     <p>By default, <strong>MUTE</strong> uses WebSocket implementation, <a target="_blank" href="http://socket.io">socket.io</a>, to adopt a centralized network architecture. By creating your own network adapter, you can change this architecture to a P2P-based architecture or add functionalities to your webpage like video-conference. In this case, your adapter will have to respect the following protocol:</p>
@@ -195,7 +195,6 @@ AwarenessAdapter.prototype.updateItem = function (data) {
                     console.log('Dans le onclick');
                     $('#popover-title-'+container).html(title.bold());
                     $('#popover-content-'+container).html(content);
-                    $('pre code').each(function(i, e) {hljs.highlightBlock(e)});
                     $('#popover-'+container).removeClass('hide')
                         .css('display', 'block')
                         .css('max-width', '600px')
@@ -267,11 +266,28 @@ AwarenessAdapter.prototype.updateItem = function (data) {
                 return group;
             }
 
+            function generateContent(description, data) {
+                /*
+                 * data : {
+                 *   key1: comment1
+                 * }
+                 */
+                var key;
+                var content = "<p>"+description+"</p><pre><code class='hljs javascript'><span class='hljs-keyword'>data</span>: {<br>";
+                for(key in data) {
+                    content +=  "  <span class='hljs-string'>'"+key+"'</span>, <span class='hljs-comment'>// "+data[key]+"</span><br>";
+                }
+                content += "}</code></pre>";
+                return content;
+            }
+
             function drawCanvasTextEditor(images) {
                 var stage;
                 var layer;
                 var group;
                 var title;
+                var description;
+                var data;
                 var content;
                 var width;
                 var height;
@@ -292,18 +308,33 @@ AwarenessAdapter.prototype.updateItem = function (data) {
                 //layer.add(drawImage(images.textEditor, 800, 135, 250, 200));
 
                 title = 'initEditor';
-                content = "<p>This event is emitted in order to signal the text editor that the coordinator is ready to work and to set the initial state of the text.</p><pre><code>&lt;script&gt;<br>  data: {<br>    str // The current state of the text<br>  }<br>&lt;/script&gt;</code></pre>";
+                description = 'This event is emitted in order to signal the text editor that the coordinator is ready to work and to set the initial state of the text.';
+                data = {
+                    string: 'The current state of the text'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('textEditor', title, content, 300, 75, 645, 75);
                 layer.add(group);
                 
 
                 title = 'change';
-                content = "<p>This event is emitted in order to signal the coordinator that the user has modified the document.</p><pre><code>&lt;script&gt;<br>  data: {<br>    action, // The type of the modification ('insertText' or 'deleteText')<br>    index, // The index of the string where the modification occured<br>    text // The text inserted or deleted<br>  }<br>&lt;/script&gt;</code></pre>";
+                description = 'This event is emitted in order to signal the coordinator that the user has modified the document.';
+                data = {
+                    action: "The type of the modification ('insertText' or 'deleteText')",
+                    index: 'The index of the string where the modification occured',
+                    text: 'The text inserted or deleted'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('textEditor', title, content, 645, 145, 300, 145);
                 layer.add(group);
 
                 title = 'update';
-                content = "<p>This event is emitted in order to signal the text editor that the document has been modified by another user and provide the new state of the document.</p><pre><code>&lt;script&gt;<br>  data: {<br>    str, // The new state of the text<br>    operations, // Array which contains all the text operations generated by the other client, used to calculate the modification to apply to the position of the cursor<br>    diffNbLines // Difference between the previous document's number of lines and the new one, used to scroll in order to not disturb the user (can be negative)<br>  }<br>&lt;/script&gt;</code></pre>";
+                description = 'This event is emitted in order to signal the text editor that the document has been modified by another user and provide the new state of the document.';
+                data = {
+                    operations: 'Array which contains all the text operations generated by the other client, used to calculate the modification to apply to the position of the cursor',
+                    diffNbLines: "Difference between the previous document's number of lines and the new one, used to scroll in order to not disturb the user (can be negative)"
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('textEditor', title, content, 300, 215, 645, 215);
                 layer.add(group);
 
@@ -324,6 +355,8 @@ AwarenessAdapter.prototype.updateItem = function (data) {
                 var layer;
                 var group;
                 var title;
+                var description;
+                var data;
                 var content;
                 var width;
                 var height;
@@ -354,73 +387,143 @@ AwarenessAdapter.prototype.updateItem = function (data) {
                 layer.add(drawNamedImage('Server\'s coordinator', images.coordinator, 780, 390, 900, 250, 150, 150));
 
                 title = 'initNetwork';
-                content = "<p>initNetwork</p>";
+                description = 'This event is triggered by the client\'s coordinator to query the network adapter to establish a connection with the server to work collaboratively on a document.';
+                data = {
+                    docID: 'The name of the document the user will work on'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xRightCoordinatorClient, 130, xLeftNetworkClient, 130);
                 layer.add(group);
 
                 title = 'joinDoc';
-                content = "<p>joinDoc</p>";
+                description = 'This message is send by the client to the server to join the work session on a document.';
+                data = {
+                    docID: 'The name of the document the user will work on'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xRightNetworkClient, 145, xLeftNetworkServer, 145);
                 layer.add(group);
 
                 title = 'getDoc';
-                content = "<p>getDocState</p>";
+                description = 'This event\'s goal is to notify the coordinator that a user wants to work on a document and get its the current state.';
+                data = {
+                    docID: 'The name of the document the user will work on',
+                    socket: 'The connection with the client, will be used when the coordinator will respond in order to send to the correct user the informations requested'
+                }
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xRightNetworkServer, 160, xLeftCoordinatorServer, 160);
                 layer.add(group);
 
                 title = 'doc';
-                content = "<p>docState</p>";
+                description = 'This event is used in order to send the current state of the document to the network adapter, as well as others informations necessary to work collaboratively';
+                data = {
+                    socket: 'The connection with client, will be used by the network adapter to send the informations to the correct user',
+                    docID: 'The document\'s name that the client requested',
+                    replicaNumber: 'The unique number identifying each collaborator',
+                    ropes: 'The data structure modeling the current state of the document',
+                    logootSOperations: 'The logootSOperations generated by users waiting for being applied to the server\'s version of the document',
+                    creationDate : 'The document\'s date of creation'
+                }
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xLeftCoordinatorServer, 190, xRightNetworkServer, 190);
                 layer.add(group);
 
                 title = 'sendDoc';
-                content = "<p>sendDocState</p>";
+                description = 'Work in progress';
+                data = {
+                    replicaNumber: 'The unique number identifying each collaborator',
+                    ropes: 'The data structure modeling the current state of the document',
+                    logootSOperations: 'The logootSOperations generated by users waiting for being applied to the server\'s version of the document',
+                    creationDate: 'The document\'s date of creation'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xLeftNetworkServer, 205, xRightNetworkClient, 205);
                 layer.add(group);
 
                 title = 'receiveDoc';
-                content = "<p>receiveDoc</p>";
+                description = 'Work in progress';
+                data = {
+                    replicaNumber: 'The unique number identifying each collaborator',
+                    ropes: 'The data structure modeling the current state of the document',
+                    logootSOperations: 'The logootSOperations generated by users waiting for being applied to the server\'s version of the document',
+                    creationDate: 'The document\'s date of creation'                    
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xLeftNetworkClient, 220, xRightCoordinatorClient, 220);
                 layer.add(group);
 
                 title = 'operations';
-                content = "<p>operations</p>";
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xRightCoordinatorClient, 250, xLeftNetworkClient, 250);
                 layer.add(group);
 
                 title = 'sendOps';
-                content = "<p>sendOps</p>";
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xRightNetworkClient, 265, xLeftNetworkServer, 265);
                 layer.add(group);
 
                 title = 'ack';
-                content = "<p>ack</p>";
+                description = 'Work in progress';
+                data = {
+                    error: 'Work in progress',
+                    length: 'Work in progress'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xLeftNetworkServer, 295, xRightNetworkClient, 295);
                 layer.add(group);
 
 
                 title = 'receiveOps';
-                content = "<p>receiveOps</p>";
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xRightNetworkServer, 295, xLeftCoordinatorServer, 295);
                 layer.add(group);
 
                 title = 'ack';
-                content = "<p>ack</p>";
+                description = 'Work in progress';
+                data = {
+                    error: 'Work in progress',
+                    length: 'Work in progress'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xLeftNetworkClient, 310, xRightCoordinatorClient, 310);
                 layer.add(group);
 
                 title = 'broadcastOps';
-                content = "<p>broadcastOps</p>";
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xLeftNetworkServer, 325, xRightNetworkClient, 325);
                 layer.add(group);
 
                 title = 'receiveOps';
-                content = "<p>receiveOps</p>";
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xLeftNetworkClient, 340, xRightCoordinatorClient, 340);
                 layer.add(group);
 
                 title = 'disconnect';
-                content = "<p>disconnect</p>";
+                description = 'Work in progress';
+                data = {
+                    docID: 'Work in progress'
+                };
+                content = generateContent(description, data);
                 group = drawPopoverArrow('network', title, content, xRightNetworkServer, 365, xLeftCoordinatorServer, 365);
                 layer.add(group);
 
