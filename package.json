@@ -11,6 +11,7 @@
     "express": "4.0.0",
     "mute-server": "*",
     "nodemailer": "0.6.5",
+    "serve-favicon": "^2.0.1",
     "socket.io": "0.9.16"
   ***REMOVED***,
   "repository": ***REMOVED***
