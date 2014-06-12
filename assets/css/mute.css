@@ -43,6 +43,11 @@ body {
     margin: 10 auto 10px;
 }
 
+.test {
+  background-color: black;
+  width: 300px;
+}
+
 ul.menu {
   margin: 0;
   padding: 0;

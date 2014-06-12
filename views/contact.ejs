@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <% include head %>
+        <% include css %>
+    </head>
+    <body>
+        <% include menu %>
+        <div class="container">
+            <div class="row">
+            	<div class="col-md-10 col-md-offset-1">
+	        		<div class="col-md-3"> 	
+	            		<h3>Contact us!</h3>
+	            		<hr>
+	            		<address>
+							<strong>GitHub:</strong><a href="https://github.com/MatthieuNICOLAS/mute-demo"> <strong>MUTE</strong></a><br><br>
+						</address>
+	            	</div>
+	            	<div class="col-md-8" style="padding-top:80px;">
+	            		<form id="contact" method="post" class="form" role="form" action="/sendMail">
+							<div class="row">
+								<div class="col-xs-6 col-md-6 form-group">
+									<input class="form-control" id="email" name="email" placeholder="Email" type="email" required autofocus />
+								</div>
+								<div class="col-xs-6 col-md-6 form-group">
+									<input class="form-control" id="subject" name="subject" placeholder="Subject" type="text" required />
+								</div>
+							</div>
+							<textarea class="form-control" id="text" name="text" placeholder="Text" rows="5"></textarea>
+							<br />
+							<div class="row">
+								<div class="col-xs-12 col-md-12 form-group">
+									<button class="btn btn-primary pull-right" type="submit">Submit</button>
+								</div>
+							</div>
+						</form>
+	            	</div>
+	            </div>
+            </div>
+            <hr>
+            <% include footer %>
+        </div>
+        <% include scripts %>
+    </body>
+</html>

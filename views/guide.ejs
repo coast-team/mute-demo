@@ -63,7 +63,7 @@ coordinator.addDoc(docID);</code></pre>
                     Your application is now <strong>able to run</strong>, so don't hesitate to create a basic webpage in order to test it.
                     <h1 id="going-further" data-item-menu="going-further">Going Further</h1>
                     <hr>
-                    <p class="lead">We're now going to see how to implement some <em>awareness features</em> to <strong>MUTE</strong> and how to develop new modules</p>
+                    <p class="lead" contentEditable="true">We're now going to see how to implement some <em>awareness features</em> to <strong>MUTE</strong> and how to develop new modules</p>
                     <h3 id="awareness-module" data-item-menu="awareness-module">Awareness module</h3>
                     <hr>
                     <p class="lead">Awareness is a necessary feature in a real-time collaborative editor, since it allows users to know basics informations like with how many people they're currently working and on which sections of the document the collaborators are working. Theses features help clients to work more efficiently together.</p>
@@ -151,11 +151,35 @@ AwarenessAdapter.prototype.updateItem = function (data) {
             </div>
             <hr>
             <% include footer %>
+            <span id='color0' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color1' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color2' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color3' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color4' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color5' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color6' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color7' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color8' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color9' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
         </div>
         <% include scripts %>
         <script>
             "use strict";
             hljs.initHighlightingOnLoad();
+
+            function generateColor() {
+                var hex = '#';
+                var i;
+                for(i=0; i<3; i++) {
+                    hex += Math.floor(Math.random()*256).toString(16);
+                }
+                return hex;
+            }
+
+            for(var i=0; i<10; i++) {
+                $('#color'+i).css('background', generateColor());
+            }
+
         </script>
         <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.0.2.min.js"></script>
         <script defer="defer">
@@ -201,6 +225,9 @@ AwarenessAdapter.prototype.updateItem = function (data) {
                         .css('width', '600px')
                         .css('top', event.evt.pageY - $('#popover-'+container).height() - 70 + 'px')
                         .css('left', event.evt.pageX - $('#popover-'+container).width()/2 - 50 + 'px');
+                    $('html, body').animate({
+                        scrollTop: event.evt.pageY - $('#popover-'+container).height() - 100
+                    }, 500);
                 });
 
                 group.on('mouseover', function (event) {

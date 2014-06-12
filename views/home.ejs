@@ -51,7 +51,7 @@
             coordinator.setEditor(editor);
             var network = new Mute.SocketIOAdapter(coordinator);
             coordinator.setNetwork(network);
-            var awareness = new AwarenessAdapter(coordinator, $('#<%= awarenessID %>'));
+            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= awarenessID %>'));
 
             console.log('docID: <%= docID %>');
         </script>

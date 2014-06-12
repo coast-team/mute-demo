@@ -24,6 +24,7 @@ var express = require('express'),
 	ejs = require('ejs'),
 	fs = require('fs'),
 	app = express(),
+	favicon = require('serve-favicon'),
 	session = require('cookie-session'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
@@ -62,6 +63,7 @@ app.use(session({
 app.use(cookieParser('q2392sTfDzTc2CQ6'));
 app.use(bodyParser())
 app.use(bodyParser.urlencoded());
+app.use(favicon(__dirname + '/assets/img/favicon.ico'));
 app.use('/assets', express.static(__dirname + '/assets'));
 
 // set .ejs as the default extension
@@ -73,8 +75,10 @@ var server_session_id = createID();
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
+
+var delay = 0;
 var coordinator = new Coordinator();
-var socketIOAdapter = new SocketIOAdapter(server, coordinator);
+var socketIOAdapter = new SocketIOAdapter(server, coordinator, delay);
 coordinator.setNetwork(socketIOAdapter);
 
 var docs = {
@@ -122,6 +126,13 @@ app.post('/ajax/verifyPwd', function (req, res) {
 	res.send({ success: success });
 });
 
+app.get('/delay', function (req, res) {
+	delay += 5000;
+	socketIOAdapter.setDelay(delay);
+	res.setHeader('Content-Type', 'text/html');
+	res.redirect('/');	
+});
+
 app.get('/listDocs', function (req, res) {
 	var listDocs = coordinator.listDocs();
 	res.setHeader('Content-Type', 'text/html');
@@ -161,6 +172,7 @@ app.post('/sendMail', function (req, res) {
 	});
 
 	req.session.info = true;
+	req.session.notificationTitle = 'Message sent';
 	req.session.msg = 'Your message has correctly been sent to the administrators.';
 	
 	res.redirect('/');
@@ -191,6 +203,7 @@ app.post('/createDoc', function (req, res) {
 		coordinator.addDoc(docID);
 
 		req.session.info = true;
+		req.session.notificationTitle = 'Document created';
 		req.session.msg = 'The document "' + docID + '" has correctly been created.';
 		
 		res.redirect('/' + docID);
@@ -198,6 +211,7 @@ app.post('/createDoc', function (req, res) {
 	else {
 		// Already existing
 		req.session.error = true;
+		req.session.notificationTitle = 'Document already existing';
 		req.session.msg = 'A document with this name already exists. Please use the form at the top of the screen to access it if it\'s yours.';
 		res.redirect('/');
 	}
@@ -231,10 +245,12 @@ app.get('/:docID', function (req, res) {
 	var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 	var error = false;
 	var info = false;
+	var notificationTitle = '';
 	var msg = '';
 
 	if(req.session.info === true) {
 		info = req.session.info;
+		notificationTitle = req.session.notificationTitle;
 		msg = req.session.msg;
 
 		delete req.session.info;
@@ -249,6 +265,7 @@ app.get('/:docID', function (req, res) {
 		};
 		coordinator.addDoc(req.params.docID);
 		info = true;
+		notificationTitle = 'Document created';
 		msg = 'The document "' + docID + '" has correctly been created.';
 	}
 	if(newDoc === false && docs[docID].pwd !== false) {
@@ -258,15 +275,17 @@ app.get('/:docID', function (req, res) {
 		} 
 	}
 	res.setHeader('Content-Type', 'text/html');
-	res.render('private-editor', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', awarenessID: 'compteur', docID: req.params.docID, link: fullUrl, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, msg: msg });
+	res.render('private-editor', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', awarenessID: 'compteur', docID: req.params.docID, link: fullUrl, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
 });
 
 app.get('/', function (req, res) {
 	var error = false;
 	var info = false;
+	var notificationTitle = '';
 	var msg = '';
 	if(req.session.error === true) {
 		error = req.session.error;
+		notificationTitle = req.session.notificationTitle;
 		msg = req.session.msg;
 
 		delete req.session.error;
@@ -274,7 +293,7 @@ app.get('/', function (req, res) {
 	}
 
 	res.setHeader('Content-Type', 'text/html');
-	res.render('home', { title: 'MUTE - Multi-User Text Editor', page: 'home', editorID: 'editor', awarenessID: 'compteur', docID: 'demo', error: error, info: info, msg: msg });
+	res.render('home', { title: 'MUTE - Multi-User Text Editor', page: 'home', editorID: 'editor', awarenessID: 'compteur', docID: 'demo', error: error, info: info, notificationTitle: notificationTitle, msg: msg });
 });
 
 app.use(function(req, res, next){
