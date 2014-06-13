@@ -13,20 +13,28 @@
             			<div class="col-md-10 col-md-offset-1">
             				<% include editor %>
 	        				<br>
-	        				<% include awareness %>
-            			</div>
-            		</div>
-            		<div class="row">
-            			<div class="col-md-6">
-            				<form class="form-horizontal" role="form">
-							<div class="form-group">
-								<label for="link" class="col-sm-5 control-label">Invite your friends:</label>
-								<div class="col-sm-7">
-									<input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly">
-								</div>
-							</div>
-            			</div>
-            		</div>
+                    		<div class="row">
+                                <div class="col-md-6">
+                                   <% include awareness %>
+                                </div>
+                                <div class="col-md-6">
+                                    <form class="form-horizontal" role="form">
+                                        <div class="form-group">
+                                            <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
+                                            <div class="col-sm-7">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
+                                                    <span class="input-group-btn">
+                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;"><img src="assets/img/icon-clipboard.png"></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             	</div>
             </div>
            	<hr>
@@ -44,6 +52,19 @@
 			"use strict";
 
             hljs.initHighlightingOnLoad();
+            $('#copy-button').tooltip({ container: 'body', delay: { show: 0, hide: 100 } });
+            var client = new ZeroClipboard(document.getElementById("copy-button"));
+
+            $('#copy-button').on('mouseout', function () {
+                 $('#copy-button').attr('data-original-title', 'copy to clipboard');
+            });
+
+            client.on( "ready", function( readyEvent ) {
+                client.on( "aftercopy", function( event ) {
+                    $('#copy-button').attr('data-original-title', 'copied!');
+                    $('#copy-button').tooltip('show');
+                } );
+            });
 
             function initMute() {
             	coordinator.setEditor(editor);
@@ -53,7 +74,7 @@
             var coordinator = new Mute.Coordinator('<%= docID %>');
             var editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
             var network = new Mute.SocketIOAdapter(coordinator);
-            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= awarenessID %>'));
+            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
             <% 
             	if(privateDoc === false) {
             		%> initMute(); <%	

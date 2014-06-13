@@ -1,31 +1,40 @@
-var AwarenessAdapter = function (coordinator, textEditorAdapter, items) {
+var AwarenessAdapter = function (coordinator, textEditorAdapter, itemNbOperations, itemLastModificationDate) {
 	var awarenessAdapter = this;
 	this.coordinator = coordinator;
     this.textEditorAdapter = textEditorAdapter;
 
     this.nbColors = 3;
 
-	this.item = items[0];
+	this.itemNbOperations = itemNbOperations;
+    this.itemLastModificationDate = itemLastModificationDate;
+
     this.coordinator.on('awareness', function (data) {
-		awarenessAdapter.updateItem(data);
+		awarenessAdapter.updateItems(data);
 	});
+    this.coordinator.on('updateLastModificationDate', function (data) {
+        awarenessAdapter.updateLastModificationDate(data);
+    });
     this.coordinator.on('updateRemoteIndicators', function (data) {
         awarenessAdapter.updateRemoteIndicators(data);
     });
 };
 
-AwarenessAdapter.prototype.updateItem = function (data) {
-	$('#'+this.item.id).html(data.nbLogootSOp + ' operation(s)');
+AwarenessAdapter.prototype.updateItems = function (data) {
+	$('#'+this.itemNbOperations.id).html(data.nbLogootSOp + ' operation(s)');
     // Changing the text color according to the number of operations waiting
     if(data.nbLogootSOp >= 0 && data.nbLogootSOp < 10) {
-        $('#'+this.item.id).attr('class', 'text-success');
+        $('#'+this.itemNbOperations.id).attr('class', 'text-success');
     }
     else if(data.nbLogootSOp >= 10 && data.nbLogootSOp < 20) {
-        $('#'+this.item.id).attr('class', 'text-warning');
+        $('#'+this.itemNbOperations.id).attr('class', 'text-warning');
     }
     else {
-        $('#'+this.item.id).attr('class', 'text-danger');
+        $('#'+this.itemNbOperations.id).attr('class', 'text-danger');
     }
+};
+
+AwarenessAdapter.prototype.updateLastModificationDate = function (data) {
+    $('#'+this.itemLastModificationDate.id).html(data.lastModificationDate);
 };
 
 AwarenessAdapter.prototype.updateRemoteIndicators = function (data) {
