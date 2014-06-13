@@ -275,7 +275,7 @@ app.get('/:docID', function (req, res) ***REMOVED***
 		***REMOVED*** 
 	***REMOVED***
 	res.setHeader('Content-Type', 'text/html');
-	res.render('private-editor', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', awarenessID: 'compteur', docID: req.params.docID, link: fullUrl, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg ***REMOVED***);
+	res.render('private-editor', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', nbOperationsItemID: 'cnt', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, link: fullUrl, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg ***REMOVED***);
 ***REMOVED***);
 
 app.get('/', function (req, res) ***REMOVED***
@@ -283,6 +283,8 @@ app.get('/', function (req, res) ***REMOVED***
 	var info = false;
 	var notificationTitle = '';
 	var msg = '';
+	var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+
 	if(req.session.error === true) ***REMOVED***
 		error = req.session.error;
 		notificationTitle = req.session.notificationTitle;
@@ -293,7 +295,7 @@ app.get('/', function (req, res) ***REMOVED***
 	***REMOVED***
 
 	res.setHeader('Content-Type', 'text/html');
-	res.render('home', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: 'home', editorID: 'editor', awarenessID: 'compteur', docID: 'demo', error: error, info: info, notificationTitle: notificationTitle, msg: msg ***REMOVED***);
+	res.render('home', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: 'home', editorID: 'editor', nbOperationsItemID: 'cnt', lastModificationDateItemID: 'lastModificationDate', docID: 'demo', error: error, info: info, notificationTitle: notificationTitle, msg: msg, link: fullUrl ***REMOVED***);
 ***REMOVED***);
 
 app.use(function(req, res, next)***REMOVED***

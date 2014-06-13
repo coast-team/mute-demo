@@ -14,8 +14,27 @@
             			<div class="col-md-10 col-md-offset-1">
 	        				<% include editor %>
 	        				<br>
-	        				<% include awareness %>
-        				</div>
+                            <div class="row">
+                                <div class="col-md-6">
+	        				       <% include awareness %>
+                                </div>
+                                <div class="col-md-6">
+                                    <form class="form-horizontal" role="form">
+                                        <div class="form-group">
+                                            <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
+                                            <div class="col-sm-7">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
+                                                    <span class="input-group-btn">
+                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;"><img src="assets/img/icon-clipboard.png"></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
             		</div> <!-- End demo -->
             		<hr>
             		<div class="row"> <!-- Additionnal informations -->
@@ -44,6 +63,19 @@
 			"use strict";
 
             hljs.initHighlightingOnLoad();
+            $('#copy-button').tooltip(***REMOVED*** container: 'body', delay: ***REMOVED*** show: 0, hide: 100 ***REMOVED*** ***REMOVED***);
+            var client = new ZeroClipboard(document.getElementById("copy-button"));
+
+            $('#copy-button').on('mouseout', function () ***REMOVED***
+                 $('#copy-button').attr('data-original-title', 'copy to clipboard');
+        ***REMOVED***);
+
+            client.on( "ready", function( readyEvent ) ***REMOVED***
+                client.on( "aftercopy", function( event ) ***REMOVED***
+                    $('#copy-button').attr('data-original-title', 'copied!');
+                    $('#copy-button').tooltip('show');
+            ***REMOVED*** );
+        ***REMOVED***);
 
             var coordinator = new Mute.Coordinator('<%= docID %>');
             console.log(coordinator);
@@ -51,7 +83,7 @@
             coordinator.setEditor(editor);
             var network = new Mute.SocketIOAdapter(coordinator);
             coordinator.setNetwork(network);
-            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= awarenessID %>'));
+            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
 
             console.log('docID: <%= docID %>');
         </script>

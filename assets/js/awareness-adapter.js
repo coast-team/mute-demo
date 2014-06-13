@@ -1,31 +1,40 @@
-var AwarenessAdapter = function (coordinator, textEditorAdapter, items) ***REMOVED***
+var AwarenessAdapter = function (coordinator, textEditorAdapter, itemNbOperations, itemLastModificationDate) ***REMOVED***
 	var awarenessAdapter = this;
 	this.coordinator = coordinator;
     this.textEditorAdapter = textEditorAdapter;
 
     this.nbColors = 3;
 
-	this.item = items[0];
+	this.itemNbOperations = itemNbOperations;
+    this.itemLastModificationDate = itemLastModificationDate;
+
     this.coordinator.on('awareness', function (data) ***REMOVED***
-		awarenessAdapter.updateItem(data);
+		awarenessAdapter.updateItems(data);
 	***REMOVED***);
+    this.coordinator.on('updateLastModificationDate', function (data) ***REMOVED***
+        awarenessAdapter.updateLastModificationDate(data);
+***REMOVED***);
     this.coordinator.on('updateRemoteIndicators', function (data) ***REMOVED***
         awarenessAdapter.updateRemoteIndicators(data);
 ***REMOVED***);
 ***REMOVED***;
 
-AwarenessAdapter.prototype.updateItem = function (data) ***REMOVED***
-	$('#'+this.item.id).html(data.nbLogootSOp + ' operation(s)');
+AwarenessAdapter.prototype.updateItems = function (data) ***REMOVED***
+	$('#'+this.itemNbOperations.id).html(data.nbLogootSOp + ' operation(s)');
     // Changing the text color according to the number of operations waiting
     if(data.nbLogootSOp >= 0 && data.nbLogootSOp < 10) ***REMOVED***
-        $('#'+this.item.id).attr('class', 'text-success');
+        $('#'+this.itemNbOperations.id).attr('class', 'text-success');
 ***REMOVED***
     else if(data.nbLogootSOp >= 10 && data.nbLogootSOp < 20) ***REMOVED***
-        $('#'+this.item.id).attr('class', 'text-warning');
+        $('#'+this.itemNbOperations.id).attr('class', 'text-warning');
 ***REMOVED***
     else ***REMOVED***
-        $('#'+this.item.id).attr('class', 'text-danger');
+        $('#'+this.itemNbOperations.id).attr('class', 'text-danger');
 ***REMOVED***
+***REMOVED***;
+
+AwarenessAdapter.prototype.updateLastModificationDate = function (data) ***REMOVED***
+    $('#'+this.itemLastModificationDate.id).html(data.lastModificationDate);
 ***REMOVED***;
 
 AwarenessAdapter.prototype.updateRemoteIndicators = function (data) ***REMOVED***
