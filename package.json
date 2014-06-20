@@ -1,0 +1,35 @@
+***REMOVED***
+  "name": "OpenShift-Sample-App",
+  "version": "1.0.0",
+  "description": "OpenShift Sample Application",
+  "keywords": [
+    "OpenShift",
+    "Node.js",
+    "application",
+    "openshift"
+  ],
+  "author": ***REMOVED***
+    "name": "OpenShift",
+    "email": "ramr@example.org",
+    "url": "http://www.openshift.com/"
+  ***REMOVED***,
+  "homepage": "http://www.openshift.com/",
+  "repository": ***REMOVED***
+    "type": "git",
+    "url": "https://github.com/openshift/origin-server"
+  ***REMOVED***,
+
+  "engines": ***REMOVED***
+    "node": ">= 0.6.0",
+    "npm": ">= 1.0.0"
+  ***REMOVED***,
+
+  "dependencies": ***REMOVED***
+    "express": "~3.4.4"
+  ***REMOVED***,
+  "devDependencies": ***REMOVED******REMOVED***,
+  "bundleDependencies": [],
+
+  "private": true,
+  "main": "server.js"
+***REMOVED***
