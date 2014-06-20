@@ -159,7 +159,7 @@ function validPassword(docID, pwd) ***REMOVED***
 		// Access to an unknow document
 		success = false;
 	***REMOVED***
-	else if(docs[docID] === false || docs[docID] !== bcrypt.compareSync(pwd, salt)) ***REMOVED***
+	else if(docs[docID] === false || docs[docID] !== bcrypt.compareSync(pwd, SALT)) ***REMOVED***
 		// Public document or wrong password
 		success = false;
 	***REMOVED***
@@ -247,7 +247,7 @@ app.post('/createDoc', function (req, res) ***REMOVED***
 		// New doc
 		if(pwd.length > 0) ***REMOVED***
 			// Private
-			docs[docID] = bcrypt.hashSync(pwd, salt);
+			docs[docID] = bcrypt.hashSync(pwd, SALT);
 			res.cookie(docID, docs[docID], ***REMOVED*** signed: true ***REMOVED***);
 		***REMOVED***
 		else ***REMOVED***
