@@ -133,9 +133,9 @@ function initListDocs() ***REMOVED***
 ***REMOVED***
 
 function addDefaultDoc() ***REMOVED***
-	doc = new Docs(***REMOVED*** docID: 'demo', pwd: false ***REMOVED***);
-	doc.markModified('pwd');
-	doc.save();
+	docs.demo = new Docs(***REMOVED*** docID: 'demo', pwd: false ***REMOVED***);
+	docs.demo.markModified('pwd');
+	docs.demo.save();
 	coordinator.addDoc('demo');
 ***REMOVED***
 
