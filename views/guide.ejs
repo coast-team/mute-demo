@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <% include head %>
+        <% include css %>
+    </head>
+    <body id="top">
+        <% include menu %>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8"> <!-- Main content -->
+                    <h1 data-item-menu="getting-started">Getting started</h1>
+                    <hr>
+                    <p class="lead"><strong>MUTE</strong> is Javascript library. It's composed of two modules : one client-side, one server-side. In order to set your own application, you will need to install each one.</p>
+                    <h3 id="client" data-item-menu="client">Client</h3>
+                    <hr>
+                    <p class="lead">The client-side module is used in order to change textareas into real-time collaborative text editors, to send modifications made by the user to collaborators and to update the document when changes are done by others.</p>
+                    <p>To install it, you have first to clone the module in the Javascript folder of your website:</p> 
+                    <strong>In your JS directory:</strong>
+                    <pre>git clone https://github.com/MatthieuNICOLAS/mute-client.git</pre>
+                    <p>Then you have to install the dependencies and use the Grunt script provided to generate the production file:</p>
+                    <strong>In your JS directory:</strong>
+                    <pre>cd mute-client/
+npm install
+grunt
+</pre>
+                    <p>In its current version, <strong>MUTE</strong> works using <a target="_blank" href="http://ace.c9.io/#nav=about">Ace</a> as text editor, so you will have to download it.</p>
+                    <strong>In your JS directory:</strong>
+                    <pre>git clone git://github.com/ajaxorg/ace.git</pre>
+                    <p>In the same way, <strong>MUTE</strong> use, by default, Websockets implementation <a target="_blank" href="http://socket.io/">socket.io</a> to broadcast modifications made by users to each other.</p>
+                    <strong>At the root of your website:</strong>
+                    <pre>npm install socket.io@0.9.16</pre>
+                    <p>All you have to do now is to create the object used by <strong>MUTE</strong> to manage the real-time collaborative text edition.</p>
+                    <strong>In your webpage:</strong>
+                    <pre>
+<code>&lt;script src="path/js/ace/src/ace.js"&gt;&lt;/script&gt;
+&lt;script src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
+&lt;script src="path/js/mute-client/build/mute-client.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+    var coordinator = new Mute.Coordinator(docID);
+    var editor = new Mute.AceEditorAdapter(editorID, coordinator);
+    coordinator.setEditor(editor);
+    var network = new Mute.SocketIOAdapter(coordinator);
+    coordinator.setNetwork(network);
+&lt;/script&gt;</code></pre>
+                    <h3 id="server" data-item-menu="server">Server</h3>
+                    <hr>
+                    <p class="lead">The server-module is used to create documents, to save their state in order to new clients to join or to resume sessions, and to broadcast changes made by users to others.</p>
+                    <p>It's a NodeJS module published on <a target="_blank" href="https://www.npmjs.org/">npm</a>, so installing it is rather simple.</p>
+                    <strong>At the root of your website:</strong>
+                    <pre>npm install mute-server</pre>
+                    <p>Then, you need to add the following lines:</p>
+                    <strong>In your app.js file:</strong>
+                    <pre>
+<code>var server = require('http').createServer(app);
+var Coordinator = require('mute-server').Coordinator,;
+var SocketIOAdapter = require('mute-server').SocketIOAdapter;
+
+var coordinator = new Coordinator();
+var socketIOAdapter = new SocketIOAdapter(server, coordinator);
+coordinator.setNetwork(socketIOAdapter);
+coordinator.addDoc(docID);</code></pre>
+                    Your application is now <strong>able to run</strong>, so don't hesitate to create a basic webpage in order to test it.
+                    <h1 id="going-further" data-item-menu="going-further">Going Further</h1>
+                    <hr>
+                    <p class="lead" contentEditable="true">We're now going to see how to implement some <em>awareness features</em> to <strong>MUTE</strong> and how to develop new modules</p>
+                    <h3 id="awareness-module" data-item-menu="awareness-module">Awareness module</h3>
+                    <hr>
+                    <p class="lead">Awareness is a necessary feature in a real-time collaborative editor, since it allows users to know basics informations like with how many people they're currently working and on which sections of the document the collaborators are working. Theses features help clients to work more efficiently together.</p>
+                    <p>In order to implement such features, your module will have to listen to the <em>awareness event</em> and to update the user interface: this event is emitted by the coordinator and provides some useful data which like the current number of distant operations waiting to be applied to the local model or the current number of collaborators working on the document.</p>
+                    <strong>Data provided by the <em>awareness event</em>:</strong><br><br>
+                    <pre>
+<code><strong>data</strong>: {
+    'nbLogootSOp' // Number of distant operations waiting to be applied to the local model
+}</code></pre>
+                    <p>Let's take a look at the <strong>awareness module</strong> we developed for this demo. Its role is to display <em>nbLogootSOp</em> and to alert the user if there's too many operations waiting:</p>
+                    <strong>awareness-adapter.js:</strong>
+                    <pre>
+<code>var AwarenessAdapter = function (coordinator, items) {
+    var awarenessAdapter = this;
+    this.coordinator = coordinator;
+    console.log(items);
+    this.item = items[0];
+    this.coordinator.on('awareness', function (data) {
+        awarenessAdapter.updateItem(data);
+    });
+};
+
+AwarenessAdapter.prototype.updateItem = function (data) {
+    $('#'+this.item.id).html(data.nbLogootSOp + ' operation(s)');
+    // Changing the text color according to the number of operations waiting
+    if(data.nbLogootSOp >= 0 && data.nbLogootSOp < 10) {
+        $('#'+this.item.id).attr('class', 'text-success');
+    }
+    else if(data.nbLogootSOp >= 10 && data.nbLogootSOp < 20) {
+        $('#'+this.item.id).attr('class', 'text-warning');
+    }
+    else {
+        $('#'+this.item.id).attr('class', 'text-danger');
+    }
+};</code></pre>
+                    <p>All we have to do now is to add it at our previous code.</p>
+                    <strong>In your webpage:</strong>
+                    <pre><code>&lt;p&gt;
+    &lt;strong&gt;Number of distant operations waiting for integration: &lt;/strong&gt;&lt;span id="awarenessID" class="text-success"&gt;0 operation(s)&lt;/span&gt;
+&lt;/p&gt;
+&lt;script&gt;
+    var awareness = new AwarenessAdapter(coordinator, $('#awarenessID'));
+&lt;/script&gt;</code></pre>
+                    <p>You can now easily write your own awareness module, choosing which data're interesting to display to your users and how you want to display them.</p>
+                    <h3 id="text-editor-adapter" data-item-menu="text-editor-adapter">Text editor adapter</h3>
+                    <hr>
+                    <p class="lead">The text editor adapter is used as a bridge between the coordinator and the text editor: it emits events to signal the text operations corresponding to the users' actions while listening to the coordinator's events to update the document according to the collaborators' inputs.</p>
+                    <p>By default, <strong>MUTE</strong> uses <a target="_blank" href="http://ace.c9.io/#nav=about">Ace</a> as text editor. But if it doesn't answer, you can replace it by any other text editor, as long as you're able to write the corresponding adapter: <strong>MUTE</strong> communicate with the text editor adapter via events, so you will have to handle events generate by your text editor and to format data to the structure <strong>MUTE</strong> is expecting. Also, your text editor adapter will have to  handle <strong>MUTE</strong>'s event and to translate it for your text editor.</p>
+                    <div id="popover-textEditor" class="popover top hide">
+                        <div class="arrow"></div>
+                        <h4 id="popover-title-textEditor" class="popover-title">Init</h4>
+                        <div id="popover-content-textEditor" class="popover-content">
+                        </div>
+                    </div>
+                    <div id="container-textEditor"></div>
+                    <h3 id="network-adapter" data-item-menu="network-adapter">Network adapter</h3>
+                    <hr>
+                    <p class="lead">The network adapter is the one in charge to query the server in order to receive the current state of document in the initialization process, as well as broadcasting the user's inputs and notifying the coordinator of the collaborators' modifications.</p>
+                    <p>By default, <strong>MUTE</strong> uses WebSocket implementation, <a target="_blank" href="http://socket.io">socket.io</a>, to adopt a centralized network architecture. By creating your own network adapter, you can change this architecture to a P2P-based architecture or add functionalities to your webpage like video-conference. In this case, your adapter will have to respect the following protocol:</p>
+                    <div id="popover-network" class="popover top hide">
+                        <div class="arrow"></div>
+                        <h4 id="popover-title-network" class="popover-title">Init</h4>
+                        <div id="popover-content-network" class="popover-content">
+                        </div>
+                    </div>
+                    <div id="container-network"></div>
+                </div>
+                <div class="col-md-4">
+                    <ul class="menu">
+                        <li>
+                            <ul class="active">
+                                <strong><a href="#getting-started">Getting started</a></strong>
+                                <li><a href="#client">Client</a></li>
+                                <li><a href="#server">Server</a></li>
+                                <strong><a href="#going-further">Going Further</a></strong>
+                                <li><a href="#awareness-module">Awareness module</a></li>
+                                <li><a href="#text-editor-adapter">Text editor adapter</a></li>
+                                <li><a href="#network-adapter">Network adapter</a></li>
+                                <hr>
+                                <li><a href="#top">Back to top</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <% include footer %>
+            <span id='color0' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color1' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color2' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color3' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color4' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color5' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color6' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color7' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color8' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span id='color9' style="background:#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+        <% include scripts %>
+        <script>
+            "use strict";
+            hljs.initHighlightingOnLoad();
+
+            function generateColor() {
+                var hex = '#';
+                var i;
+                for(i=0; i<3; i++) {
+                    hex += Math.floor(Math.random()*256).toString(16);
+                }
+                return hex;
+            }
+
+            for(var i=0; i<10; i++) {
+                $('#color'+i).css('background', generateColor());
+            }
+
+        </script>
+        <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.0.2.min.js"></script>
+        <script defer="defer">
+            var flags = {
+                textEditor: false,
+                network: false
+            }
+
+            function drawArrow(fromx, fromy, tox, toy) {
+                var headlen = 10;   // how long you want the head of the arrow to be, you could calculate this as a fraction of the distance between the points as well.
+                var angle = Math.atan2(toy-fromy,tox-fromx);
+
+                line = new Kinetic.Line({
+                    points: [fromx, fromy, tox, toy, tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6),tox, toy, tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6)],
+                    stroke: 'black'
+                });
+                return line;
+            }
+
+            function drawPopoverArrow(container, title, content, fromx, fromy, tox, toy) {
+                var group = new Kinetic.Group();
+
+                group.add(drawArrow(fromx, fromy, tox, toy));
+                group.add(new Kinetic.Text({
+                    x: (fromx + tox) / 2 - 40,
+                    y: fromy - 20,
+                    text: title,
+                    fontSize: 18,
+                    fontFamily: 'Helvetica Neue',
+                    fill: '#259dff'
+                }));
+
+                group.on('click', function (event) {
+                    console.log(container);
+                    flags[container] = true;
+                    console.log(event.evt);
+                    console.log('Dans le onclick');
+                    $('#popover-title-'+container).html(title.bold());
+                    $('#popover-content-'+container).html(content);
+                    $('#popover-'+container).removeClass('hide')
+                        .css('display', 'block')
+                        .css('max-width', '600px')
+                        .css('width', '600px')
+                        .css('top', event.evt.pageY - $('#popover-'+container).height() - 70 + 'px')
+                        .css('left', event.evt.pageX - $('#popover-'+container).width()/2 - 50 + 'px');
+                    $('html, body').animate({
+                        scrollTop: event.evt.pageY - $('#popover-'+container).height() - 100
+                    }, 500);
+                });
+
+                group.on('mouseover', function (event) {
+                    $('#container-'+container).css('cursor', 'pointer');
+                });
+                group.on('mouseout', function (event) {
+                    $('#container-'+container).css('cursor', 'auto');
+                });
+
+                return group;
+            }
+
+            function loadImages(sources, callback) {
+                var images = {};
+                var loadedImages = 0;
+                var numImages = 0;
+                var src;
+
+                for(src in sources) {
+                    numImages++;
+                }
+                for(src in sources) {
+                    images[src] = new Image();
+                    images[src].onload = function() {
+                        if(++loadedImages >= numImages) {
+                            callback(images);
+                        }
+                    };
+                    images[src].src = sources[src];
+                }
+            }
+
+            function drawImage(source, x, y, width, height) {
+                return new Kinetic.Image({
+                    image: source,
+                    position: { x: x, y: y },
+                    offset: { x: width / 2, y: height / 2 },
+                    width: width,
+                    height: height
+                });
+            }
+
+            function drawNamedImage(name, source, xText, yText, xImage, yImage, width, height) {
+                var group = new Kinetic.Group();
+
+                group.add(new Kinetic.Text({
+                    x: xText,
+                    y: yText,
+                    text: name,
+                    fontSize: 30,
+                    fontFamily: 'Helvetica Neue',
+                    fill: 'black'
+                }));
+
+                group.add(new Kinetic.Image({
+                    image: source,
+                    position: { x: xImage, y: yImage },
+                    offset: { x: width / 2, y: height / 2 },
+                    width: width,
+                    height: height
+                }));     
+
+                return group;
+            }
+
+            function generateContent(description, data) {
+                /*
+                 * data : {
+                 *   key1: comment1
+                 * }
+                 */
+                var key;
+                var content = "<p>"+description+"</p><pre><code class='hljs javascript'><span class='hljs-keyword'>data</span>: {<br>";
+                for(key in data) {
+                    content +=  "  <span class='hljs-string'>'"+key+"'</span>, <span class='hljs-comment'>// "+data[key]+"</span><br>";
+                }
+                content += "}</code></pre>";
+                return content;
+            }
+
+            function drawCanvasTextEditor(images) {
+                var stage;
+                var layer;
+                var group;
+                var title;
+                var description;
+                var data;
+                var content;
+                var width;
+                var height;
+                var coordinatorText;
+                var coordinatorImg;
+                var textEditorText;
+                var textEditorImg;
+
+                stage = new Kinetic.Stage({
+                    container: 'container-textEditor',
+                    width: 1024,
+                    height: 300
+                });
+                layer = new Kinetic.Layer();
+
+                layer.add(drawNamedImage('Coordinator', images.coordinator, 80, 15, 150, 150, 150, 150));
+                layer.add(drawNamedImage('Text editor', images.textEditor, 730, 15, 800, 150, 250, 200));
+                //layer.add(drawImage(images.textEditor, 800, 135, 250, 200));
+
+                title = 'initEditor';
+                description = 'This event is emitted in order to signal the text editor that the coordinator is ready to work and to set the initial state of the text.';
+                data = {
+                    string: 'The current state of the text'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('textEditor', title, content, 300, 75, 645, 75);
+                layer.add(group);
+                
+
+                title = 'change';
+                description = 'This event is emitted in order to signal the coordinator that the user has modified the document.';
+                data = {
+                    action: "The type of the modification ('insertText' or 'deleteText')",
+                    index: 'The index of the string where the modification occured',
+                    text: 'The text inserted or deleted'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('textEditor', title, content, 645, 145, 300, 145);
+                layer.add(group);
+
+                title = 'update';
+                description = 'This event is emitted in order to signal the text editor that the document has been modified by another user and provide the new state of the document.';
+                data = {
+                    operations: 'Array which contains all the text operations generated by the other client, used to calculate the modification to apply to the position of the cursor',
+                    diffNbLines: "Difference between the previous document's number of lines and the new one, used to scroll in order to not disturb the user (can be negative)"
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('textEditor', title, content, 300, 215, 645, 215);
+                layer.add(group);
+
+                stage.add(layer);
+
+                $('#container-textEditor').on('click', function() {
+                    if(flags.textEditor === true) {
+                        flags.textEditor = false;
+                    }
+                    else {
+                        $('#popover-textEditor').addClass('hide');
+                    }
+                });
+            }
+
+            function drawCanvasNetwork(images) {
+                var stage;
+                var layer;
+                var group;
+                var title;
+                var description;
+                var data;
+                var content;
+                var width;
+                var height;
+                var coordinatorText;
+                var coordinatorImg;
+                var textEditorText;
+                var textEditorImg;
+
+                var xRightCoordinatorClient = 250;
+                var xLeftNetworkClient = 350;
+                var xRightNetworkClient = 450;
+                var xLeftNetworkServer = 600;
+                var xRightNetworkServer = 710;
+                var xLeftCoordinatorServer = 810;
+
+                stage = new Kinetic.Stage({
+                    container: 'container-network',
+                    width: 1024,
+                    height: 420
+                });
+                layer = new Kinetic.Layer();
+
+
+
+                layer.add(drawNamedImage('Client\'s coordinator', images.coordinator, 50, 25, 150, 250, 150, 150));
+                layer.add(drawNamedImage('Client\'s network adapter', images.network, 250, 390, 400, 250, 150, 300));
+                layer.add(drawNamedImage('Server\'s network adapter', images.network, 500, 25, 650, 250, 150, 300));
+                layer.add(drawNamedImage('Server\'s coordinator', images.coordinator, 780, 390, 900, 250, 150, 150));
+
+                title = 'initNetwork';
+                description = 'This event is triggered by the client\'s coordinator to query the network adapter to establish a connection with the server to work collaboratively on a document.';
+                data = {
+                    docID: 'The name of the document the user will work on'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xRightCoordinatorClient, 130, xLeftNetworkClient, 130);
+                layer.add(group);
+
+                title = 'joinDoc';
+                description = 'This message is send by the client to the server to join the work session on a document.';
+                data = {
+                    docID: 'The name of the document the user will work on'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xRightNetworkClient, 145, xLeftNetworkServer, 145);
+                layer.add(group);
+
+                title = 'getDoc';
+                description = 'This event\'s goal is to notify the coordinator that a user wants to work on a document and get its the current state.';
+                data = {
+                    docID: 'The name of the document the user will work on',
+                    socket: 'The connection with the client, will be used when the coordinator will respond in order to send to the correct user the informations requested'
+                }
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xRightNetworkServer, 160, xLeftCoordinatorServer, 160);
+                layer.add(group);
+
+                title = 'doc';
+                description = 'This event is used in order to send the current state of the document to the network adapter, as well as others informations necessary to work collaboratively';
+                data = {
+                    socket: 'The connection with client, will be used by the network adapter to send the informations to the correct user',
+                    docID: 'The document\'s name that the client requested',
+                    replicaNumber: 'The unique number identifying each collaborator',
+                    ropes: 'The data structure modeling the current state of the document',
+                    logootSOperations: 'The logootSOperations generated by users waiting for being applied to the server\'s version of the document',
+                    creationDate : 'The document\'s date of creation'
+                }
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xLeftCoordinatorServer, 190, xRightNetworkServer, 190);
+                layer.add(group);
+
+                title = 'sendDoc';
+                description = 'Work in progress';
+                data = {
+                    replicaNumber: 'The unique number identifying each collaborator',
+                    ropes: 'The data structure modeling the current state of the document',
+                    logootSOperations: 'The logootSOperations generated by users waiting for being applied to the server\'s version of the document',
+                    creationDate: 'The document\'s date of creation'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xLeftNetworkServer, 205, xRightNetworkClient, 205);
+                layer.add(group);
+
+                title = 'receiveDoc';
+                description = 'Work in progress';
+                data = {
+                    replicaNumber: 'The unique number identifying each collaborator',
+                    ropes: 'The data structure modeling the current state of the document',
+                    logootSOperations: 'The logootSOperations generated by users waiting for being applied to the server\'s version of the document',
+                    creationDate: 'The document\'s date of creation'                    
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xLeftNetworkClient, 220, xRightCoordinatorClient, 220);
+                layer.add(group);
+
+                title = 'operations';
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xRightCoordinatorClient, 250, xLeftNetworkClient, 250);
+                layer.add(group);
+
+                title = 'sendOps';
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xRightNetworkClient, 265, xLeftNetworkServer, 265);
+                layer.add(group);
+
+                title = 'ack';
+                description = 'Work in progress';
+                data = {
+                    error: 'Work in progress',
+                    length: 'Work in progress'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xLeftNetworkServer, 295, xRightNetworkClient, 295);
+                layer.add(group);
+
+
+                title = 'receiveOps';
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xRightNetworkServer, 295, xLeftCoordinatorServer, 295);
+                layer.add(group);
+
+                title = 'ack';
+                description = 'Work in progress';
+                data = {
+                    error: 'Work in progress',
+                    length: 'Work in progress'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xLeftNetworkClient, 310, xRightCoordinatorClient, 310);
+                layer.add(group);
+
+                title = 'broadcastOps';
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xLeftNetworkServer, 325, xRightNetworkClient, 325);
+                layer.add(group);
+
+                title = 'receiveOps';
+                description = 'Work in progress';
+                data = {
+                    logootSOperations: 'Work in progress'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xLeftNetworkClient, 340, xRightCoordinatorClient, 340);
+                layer.add(group);
+
+                title = 'disconnect';
+                description = 'Work in progress';
+                data = {
+                    docID: 'Work in progress'
+                };
+                content = generateContent(description, data);
+                group = drawPopoverArrow('network', title, content, xRightNetworkServer, 365, xLeftCoordinatorServer, 365);
+                layer.add(group);
+
+                stage.add(layer);
+
+                $('#container-network').on('click', function() {
+                    if(flags.network === true) {
+                        flags.network = false;
+                    }
+                    else {
+                        $('#popover-network').addClass('hide');
+                    }
+                });
+            }
+
+            var sourcesTextEditor = {
+                coordinator: 'assets/img/coordinator.png',
+                textEditor: 'assets/img/text-editor.png'
+            };
+            loadImages(sourcesTextEditor, drawCanvasTextEditor);
+            var sourcesNetwork = {
+                coordinator: 'assets/img/coordinator.png',
+                network: 'assets/img/network.svg'
+            }
+            loadImages(sourcesNetwork, drawCanvasNetwork);
+        </script>
+    </body>
+</html>

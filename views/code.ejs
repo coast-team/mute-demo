@@ -1,0 +1,20 @@
+<h1><strong>Use MUTE on your own website</strong></h1>
+                            <p class="lead">Install the <a target="_blank" href="https://github.com/MatthieuNICOLAS/mute-client">client-side</a> and <a target="_blank" href="https://github.com/MatthieuNICOLAS/mute-server">server-side</a> modules. Then add theses lines to your code:</p> 
+                            <strong>In your app.js file:</strong>
+                            <pre>
+<code>var server = require('http').createServer(app);
+var Coordinator = require('mute-server').Coordinator,;
+var SocketIOAdapter = require('mute-server').SocketIOAdapter;
+
+var coordinator = new Coordinator();
+var socketIOAdapter = new SocketIOAdapter(server, coordinator);
+coordinator.setNetwork(socketIOAdapter);
+coordinator.addDoc(docID);</code></pre>
+                            <strong>In your HTML:</strong>
+                            <pre>
+<code>var coordinator = new Mute.Coordinator(docID);
+var editor = new Mute.AceEditorAdapter(editorID, coordinator);
+coordinator.setEditor(editor);
+var network = new Mute.SocketIOAdapter(coordinator);
+coordinator.setNetwork(network);
+var awareness = new AwarenessAdapter(coordinator, $('#awarenessID'));</code></pre>

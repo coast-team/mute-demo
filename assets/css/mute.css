@@ -1,0 +1,97 @@
+body {
+	padding-top: 50px;
+}
+
+.form-open
+{
+    max-width: 430px;
+    padding: 15px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+}
+
+.form-open .form-control
+{
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.form-open .form-control:focus
+{
+    z-index: 2;
+}
+.form-open input[type="text"]
+{
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.form-open input[type="password"]
+{
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.profile-icon
+{
+	padding: 0 40% 20px;
+    margin: 10 auto 10px;
+}
+
+.test {
+  background-color: black;
+  width: 300px;
+}
+
+ul.menu {
+  margin: 0;
+  padding: 0;
+  top: 105px;
+  right: 30px;
+  font-size: 13px;    
+}
+
+@media (min-width: 992px) {
+    ul.menu {
+      position: fixed;
+      margin: 0;
+      padding: 0;
+      top: 105px;
+      right: 30px;
+      font-size: 13px;
+    }
+}
+
+
+ul.menu li {
+  list-style: none;
+}
+
+ul.menu ul {
+  height: 0;
+  overflow-y: hidden;
+}
+
+ul.menu ul.active {
+  height: auto;
+}
+
+ul.menu > li > ul > strong > a {
+  color: #353535;
+  font-weight: bold;
+}
+
+ul.menu ul a {
+  color: #7B838A;
+  padding-left: 30px;
+}
+
+ul.menu ul a.active {
+  color: #259dff;
+  border-left: 2px solid #259dff;
+}

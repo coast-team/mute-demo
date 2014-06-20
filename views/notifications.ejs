@@ -1,0 +1,22 @@
+<% 
+    if(error === true || info === true) { %>
+        <div id="modalNotifications" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body <% if(error === true) { %> bg-danger <% } if(info ===true) { %> bg-info <% } %>">
+                        <h4 class="modal-title"><%= notificationTitle %></h4>
+                        <hr>
+                        <p><%= msg %></p>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                        <br>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <script>
+            $(function (){
+                $('#modalNotifications').modal('show');
+            });
+        </script>
+    <% } 
+%>
