@@ -133,10 +133,11 @@ function initListDocs() {
 }
 
 function addDefaultDoc() {
-	docs.demo = new Docs({ docID: 'demo', pwd: false });
-	docs.demo.markModified('pwd');
-	docs.demo.save();
+	doc = new Docs({ docID: 'demo', pwd: false });
+	doc.markModified('pwd');
+	doc.save();
 	coordinator.addDoc('demo');
+	doc.demo = false;
 }
 
 function createID() {
