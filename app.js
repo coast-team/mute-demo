@@ -159,7 +159,7 @@ function validPassword(docID, pwd) {
 		// Access to an unknow document
 		success = false;
 	}
-	else if(docs[docID] === false || docs[docID] !== bcrypt.compareSync(pwd, salt)) {
+	else if(docs[docID] === false || docs[docID] !== bcrypt.compareSync(pwd, SALT)) {
 		// Public document or wrong password
 		success = false;
 	}
@@ -247,7 +247,7 @@ app.post('/createDoc', function (req, res) {
 		// New doc
 		if(pwd.length > 0) {
 			// Private
-			docs[docID] = bcrypt.hashSync(pwd, salt);
+			docs[docID] = bcrypt.hashSync(pwd, SALT);
 			res.cookie(docID, docs[docID], { signed: true });
 		}
 		else {
