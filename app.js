@@ -14,10 +14,15 @@
  *	You should have received a copy of the GNU General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var PREFIX_SALT = 'KKBt64eh8Rz3kM25';
-var SUFFIX_SALT = 'Nhh5z384h39qCJJS';
+var SALT;
 var USERNAME_MAIL;
 var PASS_MAIL;
+var NAME_DB;
+var USERNAME_DB;
+var PASS_DB;
+var HOST_DB;
+var PORT_DB;
+
 var smtpTransport;
 
 var express = require('express'),
@@ -28,11 +33,16 @@ var express = require('express'),
 	session = require('cookie-session'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
-	crypto = require('crypto'),
+	mongoose = require('mongoose'),	
+	bcrypt = require('bcryptjs'),
 	server = require('http').createServer(app),
 	Coordinator = require('mute-server').Coordinator,
 	SocketIOAdapter = require('mute-server').SocketIOAdapter,
 	nodemailer = require("nodemailer");
+
+SALT = bcrypt.genSaltSync(10);
+
+var db;
 
 fs.readFile('mute.conf', 'utf8', function (err,data) {
 	if (err) {
@@ -41,7 +51,6 @@ fs.readFile('mute.conf', 'utf8', function (err,data) {
 	var obj = JSON.parse(data);
 	USERNAME_MAIL = obj.mail.username;
 	PASS_MAIL = obj.mail.pass;
-
 	smtpTransport = nodemailer.createTransport("SMTP",{
 	    service: "Gmail",
 	    auth: {
@@ -49,8 +58,31 @@ fs.readFile('mute.conf', 'utf8', function (err,data) {
 	        pass: PASS_MAIL
 	    }
 	});
+
+	NAME_DB = obj.db.name;
+	USERNAME_DB = obj.db.username;
+	PASS_DB = obj.db.pass;
+	HOST_DB = process.env.OPENSHIFT_MONGODB_DB_HOST || 'localhost';
+	PORT_DB = process.env.OPENSHIFT_MONGODB_PORT || 27017;
+
+	console.log('HOST_DB:')
+
+	// Connection to the mongoDB running instance
+	mongoose.connect('mongodb://'+HOST_DB+':'+PORT_DB+'/'+NAME_DB, { user: USERNAME_DB, pass: PASS_DB });
+	// Check if connection succeed
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function callback () {
+		console.log('Connection to mongoDB instance succeed!');
+	});
 });
 
+var docSchema = mongoose.Schema({
+    docID: String,
+    pwd: {}
+});
+
+var Docs = mongoose.model('Docs', docSchema);
 
 var keys = [];
 var i;
@@ -77,20 +109,42 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 
 var delay = 0;
-var coordinator = new Coordinator();
+var coordinator = new Coordinator(db);
 var socketIOAdapter = new SocketIOAdapter(server, coordinator, delay);
 coordinator.setNetwork(socketIOAdapter);
 
-var docs = {
-	demo: {
-		pwd: false,
-		hash: hash(createID())
-	}
-};
-coordinator.addDoc('demo');
+var docs = {};
+initListDocs();
 
-function hash(str) {
-	return crypto.createHash('sha256').update(PREFIX_SALT + str + SUFFIX_SALT).digest('hex');
+function initListDocs() {
+	var i;
+
+	// Fetch all the documents stored in the DB
+	Docs.find(function (err, storedDocs) {
+		var doc;
+		if(err) {
+			return console.error(err);
+		}
+		console.log('storedDocs: ', storedDocs);
+		if(storedDocs.length > 0) {
+			for(i=0; i<storedDocs.length; i++) {
+				docs[storedDocs[i].docID] = storedDocs[i].pwd;
+			}
+		}
+		else {
+			console.log('On add le doc par défaut');
+			addDefaultDoc();
+		}
+		console.log('Docs existants : ', docs);
+	});
+}
+
+function addDefaultDoc() {
+	var doc = new Docs({ docID: 'demo', pwd: false });
+	doc.markModified('pwd');
+	doc.save();
+	coordinator.addDoc('demo');
+	doc.demo = false;
 }
 
 function createID() {
@@ -103,25 +157,31 @@ function createID() {
     return text;
 }
 
-app.post('/ajax/verifyPwd', function (req, res) {
-	var docID = req.body.docID;
-	var pwd = req.body.pwd;
+function validPassword(docID, pwd) {
 	var success = true;
 
-	if(docID.length === 0 || pwd.length === 0) {
+	if(docID.length === 0) {
 		success = false;
 	}
 	else if(docs[docID] === null || docs[docID] === undefined) {
 		// Access to an unknow document
 		success = false;
 	}
-	else if(docs[docID].pwd !== false && docs[docID].pwd !== hash(pwd)) {
+	else if(docs[docID] === false || docs[docID] !== bcrypt.compareSync(pwd, SALT)) {
 		// Public document or wrong password
 		success = false;
 	}
 
-	if(success === true) {
-		res.cookie(server_session_id + '_' + docID, docs[docID].hash, { signed: true });
+	return success;
+}
+
+app.post('/ajax/verifyPwd', function (req, res) {
+	var docID = req.body.docID;
+	var pwd = req.body.pwd;
+	var success = validPassword(docID, pwd);
+
+	if(success) {
+		res.cookie(docID, docs[docID], { signed: true });
 	}
 	res.send({ success: success });
 });
@@ -134,9 +194,10 @@ app.get('/delay', function (req, res) {
 });
 
 app.get('/listDocs', function (req, res) {
-	var listDocs = coordinator.listDocs();
-	res.setHeader('Content-Type', 'text/html');
-	res.send(listDocs);	
+	coordinator.listDocs(function (list) {
+		res.setHeader('Content-Type', 'text/html');
+		res.send(list);	
+	});	
 });
 
 app.get('/getInfos', function (req, res) {
@@ -192,14 +253,24 @@ app.post('/createDoc', function (req, res) {
 
 	if(docs[docID] === undefined) {
 		// New doc
-		docs[docID] = {
-			pwd: false,
-			hash: hash(createID())
-		};
 		if(pwd.length > 0) {
-			docs[docID].pwd = hash(pwd);
-			res.cookie(server_session_id+ '_'+ docID, docs[docID].hash, { signed: true });
+			// Private
+			docs[docID] = bcrypt.hashSync(pwd, SALT);
+			res.cookie(docID, docs[docID], { signed: true });
 		}
+		else {
+			docs[docID] = false;
+		}
+
+		var doc = new Docs({ docID: docID, pwd: docs[docID] });
+		doc.markModified('pwd');
+		doc.save(function (err, doc) {
+			if (err)  {
+				return console.error(err);
+			}
+			console.log('Save successful!');			
+		});
+
 		coordinator.addDoc(docID);
 
 		req.session.info = true;
@@ -233,9 +304,37 @@ app.get('/about', function (req, res) {
 });
 
 app.get('/accessDoc', function (req, res) {
-	console.log('req: ', req);
 	var docID = req.query.docID;
 	res.redirect('/' + docID);
+});
+
+app.get('/:docID/history', function (req, res) {
+	var docID = req.params.docID;
+	var privateDoc = false;
+	var newDoc = false;
+	//var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+	var error = false;
+	var info = false;
+	var notificationTitle = '';
+	var msg = '';
+
+	// Doc doesn't exist
+	if(docs[docID] === undefined) {
+		req.session.error = true;
+		req.session.notificationTitle = 'Document doesn\'t exist';
+		req.session.msg = 'The document you tried to access doesn\'t exist. Please check the name of the doc you want to access.';
+
+		res.redirect('/');
+	}
+	if(newDoc === false && docs[docID] !== false) {
+		if(req.signedCookies[docID] !== docs[docID]) {
+			// Private doc and not already authentified
+			privateDoc = true;
+		} 
+	}
+	
+	res.setHeader('Content-Type', 'text/html');
+	res.render('history-viewer', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
 });
 
 app.get('/:docID', function (req, res) {
@@ -257,19 +356,27 @@ app.get('/:docID', function (req, res) {
 		delete req.session.msg;
 	}
 
+	// New doc
 	if(docs[docID] === undefined) {
 		newDoc = true;
-		docs[docID] = {
-			pwd: false,
-			hash: hash(createID)
-		};
+		docs[docID] = false;
+
+		var doc = new Docs({ docID: docID, pwd: false });
+		doc.markModified('pwd');
+		doc.save(function (err, doc) {
+			if (err)  {
+				return console.error(err);
+			}
+			console.log('Save successful!');			
+		});
+
 		coordinator.addDoc(req.params.docID);
 		info = true;
 		notificationTitle = 'Document created';
 		msg = 'The document "' + docID + '" has correctly been created.';
 	}
-	if(newDoc === false && docs[docID].pwd !== false) {
-		if(req.signedCookies[server_session_id + '_' + docID] !== docs[docID].hash) {
+	if(newDoc === false && docs[docID] !== false) {
+		if(req.signedCookies[docID] !== docs[docID]) {
 			// Private doc and not already authentified
 			privateDoc = true;
 		} 
