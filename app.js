@@ -133,7 +133,7 @@ function initListDocs() {
 }
 
 function addDefaultDoc() {
-	doc = new Docs({ docID: 'demo', pwd: false });
+	var doc = new Docs({ docID: 'demo', pwd: false });
 	doc.markModified('pwd');
 	doc.save();
 	coordinator.addDoc('demo');
