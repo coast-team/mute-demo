@@ -14,10 +14,15 @@
  *	You should have received a copy of the GNU General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var PREFIX_SALT = 'KKBt64eh8Rz3kM25';
-var SUFFIX_SALT = 'Nhh5z384h39qCJJS';
+var SALT;
 var USERNAME_MAIL;
 var PASS_MAIL;
+var NAME_DB;
+var USERNAME_DB;
+var PASS_DB;
+var HOST_DB;
+var PORT_DB;
+
 var smtpTransport;
 
 var express = require('express'),
@@ -28,11 +33,16 @@ var express = require('express'),
 	session = require('cookie-session'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
-	crypto = require('crypto'),
+	mongoose = require('mongoose'),	
+	bcrypt = require('bcryptjs'),
 	server = require('http').createServer(app),
 	Coordinator = require('mute-server').Coordinator,
 	SocketIOAdapter = require('mute-server').SocketIOAdapter,
 	nodemailer = require("nodemailer");
+
+SALT = bcrypt.genSaltSync(10);
+
+var db;
 
 fs.readFile('mute.conf', 'utf8', function (err,data) ***REMOVED***
 	if (err) ***REMOVED***
@@ -41,7 +51,6 @@ fs.readFile('mute.conf', 'utf8', function (err,data) ***REMOVED***
 	var obj = JSON.parse(data);
 	USERNAME_MAIL = obj.mail.username;
 	PASS_MAIL = obj.mail.pass;
-
 	smtpTransport = nodemailer.createTransport("SMTP",***REMOVED***
 	    service: "Gmail",
 	    auth: ***REMOVED***
@@ -49,8 +58,31 @@ fs.readFile('mute.conf', 'utf8', function (err,data) ***REMOVED***
 	        pass: PASS_MAIL
 	***REMOVED***
 	***REMOVED***);
+
+	NAME_DB = obj.db.name;
+	USERNAME_DB = obj.db.username;
+	PASS_DB = obj.db.pass;
+	HOST_DB = process.env.OPENSHIFT_MONGODB_DB_HOST || 'localhost';
+	PORT_DB = process.env.OPENSHIFT_MONGODB_PORT || 27017;
+
+	console.log('HOST_DB:')
+
+	// Connection to the mongoDB running instance
+	mongoose.connect('mongodb://'+HOST_DB+':'+PORT_DB+'/'+NAME_DB, ***REMOVED*** user: USERNAME_DB, pass: PASS_DB ***REMOVED***);
+	// Check if connection succeed
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function callback () ***REMOVED***
+		console.log('Connection to mongoDB instance succeed!');
+	***REMOVED***);
 ***REMOVED***);
 
+var docSchema = mongoose.Schema(***REMOVED***
+    docID: String,
+    pwd: ***REMOVED******REMOVED***
+***REMOVED***);
+
+var Docs = mongoose.model('Docs', docSchema);
 
 var keys = [];
 var i;
@@ -77,20 +109,42 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 
 var delay = 0;
-var coordinator = new Coordinator();
+var coordinator = new Coordinator(db);
 var socketIOAdapter = new SocketIOAdapter(server, coordinator, delay);
 coordinator.setNetwork(socketIOAdapter);
 
-var docs = ***REMOVED***
-	demo: ***REMOVED***
-		pwd: false,
-		hash: hash(createID())
-	***REMOVED***
-***REMOVED***;
-coordinator.addDoc('demo');
+var docs = ***REMOVED******REMOVED***;
+initListDocs();
 
-function hash(str) ***REMOVED***
-	return crypto.createHash('sha256').update(PREFIX_SALT + str + SUFFIX_SALT).digest('hex');
+function initListDocs() ***REMOVED***
+	var i;
+
+	// Fetch all the documents stored in the DB
+	Docs.find(function (err, storedDocs) ***REMOVED***
+		var doc;
+		if(err) ***REMOVED***
+			return console.error(err);
+		***REMOVED***
+		console.log('storedDocs: ', storedDocs);
+		if(storedDocs.length > 0) ***REMOVED***
+			for(i=0; i<storedDocs.length; i++) ***REMOVED***
+				docs[storedDocs[i].docID] = storedDocs[i].pwd;
+			***REMOVED***
+		***REMOVED***
+		else ***REMOVED***
+			console.log('On add le doc par défaut');
+			addDefaultDoc();
+		***REMOVED***
+		console.log('Docs existants : ', docs);
+	***REMOVED***);
+***REMOVED***
+
+function addDefaultDoc() ***REMOVED***
+	var doc = new Docs(***REMOVED*** docID: 'demo', pwd: false ***REMOVED***);
+	doc.markModified('pwd');
+	doc.save();
+	coordinator.addDoc('demo');
+	doc.demo = false;
 ***REMOVED***
 
 function createID() ***REMOVED***
@@ -103,25 +157,31 @@ function createID() ***REMOVED***
     return text;
 ***REMOVED***
 
-app.post('/ajax/verifyPwd', function (req, res) ***REMOVED***
-	var docID = req.body.docID;
-	var pwd = req.body.pwd;
+function validPassword(docID, pwd) ***REMOVED***
 	var success = true;
 
-	if(docID.length === 0 || pwd.length === 0) ***REMOVED***
+	if(docID.length === 0) ***REMOVED***
 		success = false;
 	***REMOVED***
 	else if(docs[docID] === null || docs[docID] === undefined) ***REMOVED***
 		// Access to an unknow document
 		success = false;
 	***REMOVED***
-	else if(docs[docID].pwd !== false && docs[docID].pwd !== hash(pwd)) ***REMOVED***
+	else if(docs[docID] === false || docs[docID] !== bcrypt.compareSync(pwd, SALT)) ***REMOVED***
 		// Public document or wrong password
 		success = false;
 	***REMOVED***
 
-	if(success === true) ***REMOVED***
-		res.cookie(server_session_id + '_' + docID, docs[docID].hash, ***REMOVED*** signed: true ***REMOVED***);
+	return success;
+***REMOVED***
+
+app.post('/ajax/verifyPwd', function (req, res) ***REMOVED***
+	var docID = req.body.docID;
+	var pwd = req.body.pwd;
+	var success = validPassword(docID, pwd);
+
+	if(success) ***REMOVED***
+		res.cookie(docID, docs[docID], ***REMOVED*** signed: true ***REMOVED***);
 	***REMOVED***
 	res.send(***REMOVED*** success: success ***REMOVED***);
 ***REMOVED***);
@@ -134,9 +194,10 @@ app.get('/delay', function (req, res) ***REMOVED***
 ***REMOVED***);
 
 app.get('/listDocs', function (req, res) ***REMOVED***
-	var listDocs = coordinator.listDocs();
-	res.setHeader('Content-Type', 'text/html');
-	res.send(listDocs);	
+	coordinator.listDocs(function (list) ***REMOVED***
+		res.setHeader('Content-Type', 'text/html');
+		res.send(list);	
+	***REMOVED***);	
 ***REMOVED***);
 
 app.get('/getInfos', function (req, res) ***REMOVED***
@@ -192,14 +253,24 @@ app.post('/createDoc', function (req, res) ***REMOVED***
 
 	if(docs[docID] === undefined) ***REMOVED***
 		// New doc
-		docs[docID] = ***REMOVED***
-			pwd: false,
-			hash: hash(createID())
-		***REMOVED***;
 		if(pwd.length > 0) ***REMOVED***
-			docs[docID].pwd = hash(pwd);
-			res.cookie(server_session_id+ '_'+ docID, docs[docID].hash, ***REMOVED*** signed: true ***REMOVED***);
+			// Private
+			docs[docID] = bcrypt.hashSync(pwd, SALT);
+			res.cookie(docID, docs[docID], ***REMOVED*** signed: true ***REMOVED***);
 		***REMOVED***
+		else ***REMOVED***
+			docs[docID] = false;
+		***REMOVED***
+
+		var doc = new Docs(***REMOVED*** docID: docID, pwd: docs[docID] ***REMOVED***);
+		doc.markModified('pwd');
+		doc.save(function (err, doc) ***REMOVED***
+			if (err)  ***REMOVED***
+				return console.error(err);
+			***REMOVED***
+			console.log('Save successful!');			
+		***REMOVED***);
+
 		coordinator.addDoc(docID);
 
 		req.session.info = true;
@@ -233,9 +304,37 @@ app.get('/about', function (req, res) ***REMOVED***
 ***REMOVED***);
 
 app.get('/accessDoc', function (req, res) ***REMOVED***
-	console.log('req: ', req);
 	var docID = req.query.docID;
 	res.redirect('/' + docID);
+***REMOVED***);
+
+app.get('/:docID/history', function (req, res) ***REMOVED***
+	var docID = req.params.docID;
+	var privateDoc = false;
+	var newDoc = false;
+	//var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+	var error = false;
+	var info = false;
+	var notificationTitle = '';
+	var msg = '';
+
+	// Doc doesn't exist
+	if(docs[docID] === undefined) ***REMOVED***
+		req.session.error = true;
+		req.session.notificationTitle = 'Document doesn\'t exist';
+		req.session.msg = 'The document you tried to access doesn\'t exist. Please check the name of the doc you want to access.';
+
+		res.redirect('/');
+	***REMOVED***
+	if(newDoc === false && docs[docID] !== false) ***REMOVED***
+		if(req.signedCookies[docID] !== docs[docID]) ***REMOVED***
+			// Private doc and not already authentified
+			privateDoc = true;
+		***REMOVED*** 
+	***REMOVED***
+	
+	res.setHeader('Content-Type', 'text/html');
+	res.render('history-viewer', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg ***REMOVED***);
 ***REMOVED***);
 
 app.get('/:docID', function (req, res) ***REMOVED***
@@ -257,19 +356,27 @@ app.get('/:docID', function (req, res) ***REMOVED***
 		delete req.session.msg;
 	***REMOVED***
 
+	// New doc
 	if(docs[docID] === undefined) ***REMOVED***
 		newDoc = true;
-		docs[docID] = ***REMOVED***
-			pwd: false,
-			hash: hash(createID)
-		***REMOVED***;
+		docs[docID] = false;
+
+		var doc = new Docs(***REMOVED*** docID: docID, pwd: false ***REMOVED***);
+		doc.markModified('pwd');
+		doc.save(function (err, doc) ***REMOVED***
+			if (err)  ***REMOVED***
+				return console.error(err);
+			***REMOVED***
+			console.log('Save successful!');			
+		***REMOVED***);
+
 		coordinator.addDoc(req.params.docID);
 		info = true;
 		notificationTitle = 'Document created';
 		msg = 'The document "' + docID + '" has correctly been created.';
 	***REMOVED***
-	if(newDoc === false && docs[docID].pwd !== false) ***REMOVED***
-		if(req.signedCookies[server_session_id + '_' + docID] !== docs[docID].hash) ***REMOVED***
+	if(newDoc === false && docs[docID] !== false) ***REMOVED***
+		if(req.signedCookies[docID] !== docs[docID]) ***REMOVED***
 			// Private doc and not already authentified
 			privateDoc = true;
 		***REMOVED*** 

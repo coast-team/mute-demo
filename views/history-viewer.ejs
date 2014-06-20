@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<% include head %>
+		<% include css %>
+	</head>
+	<body>
+		<% include menu %>
+		<div class="container">
+            <div class="row">
+            	<div class="col-md-12"> <!-- Main content -->
+            		<div class="row"> <!-- Demo -->
+                        <h1><strong>History mode</strong><a href="/<%= docID %>" class="btn btn-default pull-right"><span class="glyphicon glyphicon-pencil">&nbsp;</span>Switch to edition mode</a></h1>
+            			<div class="col-md-10 col-md-offset-1">
+                            <div class="row">
+                                <center>
+                                    <span class="alert alert-info">Drag the slider in order to review the document's different states.</span>
+                                </center>
+                                <div class="range range-primary">
+                                    <button class="btn btn-default btn-sm" type="button" onclick="prevState()">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </button>
+                                    <input id="range" type="range" name="range" min="0" max="1" value="1" oninput="displayState();">
+                                    <output onchange="displayState();" id="rangePrimary">0</output>
+                                    <button class="btn btn-default btn-sm" type="button" onclick="nextState()">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                    </button>
+                                </div>
+            				</div>
+                            <% include editor %>
+	        				<br>
+                        </div>
+                    </div>
+            	</div>
+            </div>
+           	<hr>
+            <% include footer %>
+        </div>
+		<% include scripts %>
+		<% include scripts-editor %>
+		<% include notifications %>
+		<% 
+        	if(privateDoc === true) ***REMOVED*** 
+        		%> <% include modal-pwd-doc %> <%
+        	***REMOVED***
+        %>
+		<script>
+			"use strict";
+
+            function initMute() ***REMOVED***
+            	coordinator.setNetwork(network);
+        ***REMOVED***
+
+            var currentState = 0;
+            var str = '';
+
+            function prevState() ***REMOVED***
+                $('#range').val(currentState-1);
+                displayState();
+        ***REMOVED***
+
+            function nextState() ***REMOVED***
+                $('#range').val(currentState+1);
+                displayState();
+        ***REMOVED***
+
+            function displayState() ***REMOVED***
+                var newState = parseInt($('#range').val());
+                $('#rangePrimary').val(newState);
+                str = coordinator.updateState(str, currentState, newState);
+                currentState = newState;
+                editor.editor.session.doc.setValue(str);
+        ***REMOVED***
+
+            var coordinator = new Mute.Coordinator('<%= docID %>');
+            var editor = new Mute.AceEditorAdapter('<%= editorID %>', null);
+            var network = new Mute.SocketIOAdapter(coordinator);
+            
+            editor.editor.setReadOnly(true);
+            
+            coordinator.on('updateHistoryScroller', function (data) ***REMOVED***
+                $('#range').attr('max', data.length).attr('value', data.length);
+                displayState();
+        ***REMOVED***);
+
+            <% 
+            	if(privateDoc === false) ***REMOVED***
+            		%> initMute(); <%	
+            	***REMOVED***
+            %>
+            console.log('docID: <%= docID %>');
+        </script>
+	</body>
+</html>

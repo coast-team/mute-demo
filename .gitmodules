@@ -1,0 +1,6 @@
+[submodule "assets/js/mute-client"]
+	path = assets/js/mute-client
+	url = https://github.com/MatthieuNICOLAS/mute-client.git
+[submodule "assets/js/zeroclipboard"]
+	path = assets/js/zeroclipboard
+	url = https://github.com/zeroclipboard/zeroclipboard.git

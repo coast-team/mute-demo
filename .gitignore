@@ -1,8 +1,6 @@
 mute.conf
 
 assets/js/ace
-assets/js/mute-client
-assets/js/zeroclipboard
 
 # Dependency directory
 # Commenting this out is preferred by some people, see

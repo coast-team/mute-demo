@@ -34,7 +34,35 @@ AwarenessAdapter.prototype.updateItems = function (data) ***REMOVED***
 ***REMOVED***;
 
 AwarenessAdapter.prototype.updateLastModificationDate = function (data) ***REMOVED***
-    $('#'+this.itemLastModificationDate.id).html(data.lastModificationDate);
+    var now = new Date().valueOf();
+    var lastModificationDate = new Date(data.lastModificationDate).valueOf();
+    var res = '';
+    var timeSecond = 1000;
+    var timeMinute = timeSecond * 60;
+    var timeHour = timeMinute * 60;
+    var timeDay = timeHour * 24;
+    var timeMonth = timeDay * 31;
+    var timeYear = timeMonth * 12;
+
+    if((now - lastModificationDate) / timeYear > 1) ***REMOVED***
+        res = Math.floor((now - lastModificationDate) / timeYear) + ' year(s) ago';
+***REMOVED***
+    else if((now - lastModificationDate) / timeMonth > 1) ***REMOVED***
+        res = Math.floor((now - lastModificationDate) / timeMonth) + ' month(s) ago';
+***REMOVED***
+    else if((now - lastModificationDate) / timeDay > 1) ***REMOVED***
+        res = Math.floor((now - lastModificationDate) / timeDay) + ' day(s) ago';
+***REMOVED***
+    else if((now - lastModificationDate) / timeHour > 1) ***REMOVED***
+        res = Math.floor((now - lastModificationDate) / timeHour) + ' hour(s) ago';
+***REMOVED***
+    else if((now - lastModificationDate) / timeMinute > 1) ***REMOVED***
+        res = Math.floor((now - lastModificationDate) / timeMinute) + ' minute(s) ago';
+***REMOVED***
+    else ***REMOVED***
+        res = Math.floor((now - lastModificationDate) / timeSecond) + ' second(s) ago';
+***REMOVED***
+    $('#'+this.itemLastModificationDate.id).html(res);
 ***REMOVED***;
 
 AwarenessAdapter.prototype.updateRemoteIndicators = function (data) ***REMOVED***
