@@ -1,0 +1,28 @@
+/* styles.less */
+
+@base: #f938ab;
+
+.box-shadow(@style, @c) when (iscolor(@c)) ***REMOVED***
+    box-shadow:         @style @c;
+    -webkit-box-shadow: @style @c;
+    -moz-box-shadow:    @style @c;
+***REMOVED***
+.box-shadow(@style, @alpha: 50%) when (isnumber(@alpha)) ***REMOVED***
+    .box-shadow(@style, rgba(0, 0, 0, @alpha));
+***REMOVED***
+
+// Box styles
+.box ***REMOVED*** 
+    color: saturate(@base, 5%);
+    border-color: lighten(@base, 30%);
+    
+    div ***REMOVED*** .box-shadow(0 0 5px, 30%) ***REMOVED***
+  
+    a ***REMOVED***
+        color: @base;
+        
+        &:hover ***REMOVED***
+            color: lighten(@base, 50%);
+    ***REMOVED***
+***REMOVED***
+***REMOVED***

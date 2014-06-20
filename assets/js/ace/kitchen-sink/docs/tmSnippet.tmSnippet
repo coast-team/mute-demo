@@ -1,0 +1,26 @@
+# Function
+snippet fun
+	function $***REMOVED***1?:function_name***REMOVED***($***REMOVED***2:argument***REMOVED***) ***REMOVED***
+		$***REMOVED***3:// body...***REMOVED***
+	***REMOVED***
+# Anonymous Function
+regex /((=)\s*|(:)\s*|(\()|\b)/f/(\))?/
+name f
+	function$***REMOVED***M1?: $***REMOVED***1:functionName***REMOVED******REMOVED***($2) ***REMOVED***
+		$***REMOVED***0:$TM_SELECTED_TEXT***REMOVED***
+	***REMOVED***$***REMOVED***M2?;***REMOVED***$***REMOVED***M3?,***REMOVED***$***REMOVED***M4?)***REMOVED***
+# Immediate function
+trigger \(?f\(
+endTrigger \)?
+snippet f(
+	(function($***REMOVED***1***REMOVED***) ***REMOVED***
+		$***REMOVED***0:$***REMOVED***TM_SELECTED_TEXT:/* code */***REMOVED******REMOVED***
+	***REMOVED***($***REMOVED***1***REMOVED***));
+# if
+snippet if
+	if ($***REMOVED***1:true***REMOVED***) ***REMOVED***
+		$***REMOVED***0***REMOVED***
+	***REMOVED***
+	
+	
+	

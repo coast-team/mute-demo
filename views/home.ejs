@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<% include head %>
+		<% include css %>
+	</head>
+	<body>
+		<% include menu %>
+		<div class="container">
+            <div class="row">
+            	<div class="col-md-12"> <!-- Main content -->
+            		<div class="row"> <!-- Demo -->
+            			<h1><strong>Try MUTE, the Multi-User Text Editor</strong></h1>
+            			<div class="col-md-10 col-md-offset-1">
+	        				<% include editor %>
+	        				<br>
+                            <div class="row">
+                                <div class="col-md-6">
+	        				       <% include awareness %>
+                                </div>
+                                <div class="col-md-6">
+                                    <form class="form-horizontal" role="form">
+                                        <div class="form-group">
+                                            <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
+                                            <div class="col-sm-7">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
+                                                    <span class="input-group-btn">
+                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;"><img src="assets/img/icon-clipboard.png"></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+            		</div> <!-- End demo -->
+            		<hr>
+            		<div class="row"> <!-- Additionnal informations -->
+            			<div class="col-md-4">
+            				<h1><strong>What's MUTE ?</strong></h1>
+                            <p class="lead"><strong>MUTE</strong>, which stands for <strong>M</strong>ulti-<strong>U</strong>ser <strong>T</strong>ext <strong>E</strong>ditor, is a open-source Javascript library able to change any textarea into real-time collaborative text editors.</p>
+                            <p>Unlike others collaborative text editor, <strong>MUTE</strong> doesn't use an <a target="_blank" href="http://en.wikipedia.org/wiki/Operational_transformation">Operational Transform-based algorithm</a> to resolve conflicts and merge modifications, but works using a <a target="_blank" href="#">Conflict-free Replicated Data Types-based implementation</a>. This allows <strong>MUTE</strong> to <strong>manage effectively large text operations</strong> and to <strong>adopt a high scalable architecture</strong></p>
+                            <p>This demo works using <a target="_blank" href="http://ace.c9.io/#nav=about">Ace</a> as text editor and implement a centralized network architecture. If you want to implement another text editor or network architecture, you can extend <strong>MUTE</strong> by developping your own modules. If you're interested in it, <a href="guide">look at the guide</a>.</p>
+            			</div>
+            			<div class="col-md-4">
+            				<% include form-private-doc %>
+            			</div>
+            			<div class="col-md-4">
+            				<% include code %>
+            			</div>
+            		</div> <!-- End additionnal informations -->
+            	</div> <!-- End main content -->
+          	</div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="range range-primary">
+                        <input id="range" type="range" name="range" min="0" max="63" value="0" onchange="displayState();">
+                        <output id="rangePrimary">0</output>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <% include footer %>
+        </div>
+		<% include scripts %>
+        <% include scripts-editor %>
+        <% include notifications %>
+		<script>
+			"use strict";
+
+            hljs.initHighlightingOnLoad();
+            $('#copy-button').tooltip(***REMOVED*** container: 'body', delay: ***REMOVED*** show: 0, hide: 100 ***REMOVED*** ***REMOVED***);
+            var client = new ZeroClipboard(document.getElementById("copy-button"));
+
+            $('#copy-button').on('mouseout', function () ***REMOVED***
+                 $('#copy-button').attr('data-original-title', 'copy to clipboard');
+        ***REMOVED***);
+
+            client.on( "ready", function( readyEvent ) ***REMOVED***
+                client.on( "aftercopy", function( event ) ***REMOVED***
+                    $('#copy-button').attr('data-original-title', 'copied!');
+                    $('#copy-button').tooltip('show');
+            ***REMOVED*** );
+        ***REMOVED***);
+
+            var currentState = 0;
+            var str = '';
+
+            function displayState() ***REMOVED***
+                var newState = $('#range').val();
+                $('#rangePrimary').val(newState);
+                str = coordinator.updateState(str, currentState, newState);
+                currentState = newState;
+                console.log('Str: ', str);
+        ***REMOVED***
+
+            var coordinator = new Mute.Coordinator('<%= docID %>');
+            console.log(coordinator);
+            var editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+            coordinator.setEditor(editor);
+            var network = new Mute.SocketIOAdapter(coordinator);
+            coordinator.setNetwork(network);
+            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
+
+            console.log('docID: <%= docID %>');
+        </script>
+	</body>
+</html>

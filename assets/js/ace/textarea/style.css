@@ -1,0 +1,230 @@
+@import url(//fonts.googleapis.com/css?family=Droid+Sans+Mono);
+
+body ***REMOVED***
+    margin:0;
+    padding:0;
+    background-color:#e6f5fc;
+    
+***REMOVED***
+
+H2, H3, H4 ***REMOVED***
+    font-family:Trebuchet MS;
+    font-weight:bold;
+    margin:0;
+    padding:0;
+***REMOVED***
+
+H2 ***REMOVED***
+    font-size:28px;
+    color:#263842;
+    padding-bottom:6px;
+***REMOVED***
+
+H3 ***REMOVED***
+    font-family:Trebuchet MS;
+    font-weight:bold;
+    font-size:22px;
+    color:#253741;
+    margin-top:43px;
+    margin-bottom:8px;
+***REMOVED***
+
+H4 ***REMOVED***
+    font-family:Trebuchet MS;
+    font-weight:bold;
+    font-size:21px;
+    color:#222222;
+    margin-bottom:4px;
+***REMOVED***
+
+P ***REMOVED***
+    padding:13px 0;
+    margin:0;
+    line-height:22px;
+***REMOVED***
+
+UL***REMOVED***
+    line-height : 22px;
+***REMOVED***
+
+PRE***REMOVED***
+    background : #333;
+    color : white;
+    padding : 10px;
+***REMOVED***
+
+#header ***REMOVED***
+    height : 227px;
+    position:relative;
+    overflow:hidden;
+    background: url(images/background.png) repeat-x 0 0;
+    border-bottom:1px solid #c9e8fa;   
+***REMOVED***
+
+#header .content .signature ***REMOVED***
+    font-family:Trebuchet MS;
+    font-size:11px;
+    color:#ebe4d6;
+    position:absolute;
+    bottom:5px;
+    right:42px;
+    letter-spacing : 1px;
+***REMOVED***
+
+.content ***REMOVED***
+    width:970px;
+    position:relative;
+    margin:0 auto;
+***REMOVED***
+
+#header .content ***REMOVED***
+    height:184px;
+    margin-top:22px;
+***REMOVED***
+
+#header .content .logo ***REMOVED***
+    width  : 282px;
+    height : 184px;
+    background:url(images/logo.png) no-repeat 0 0;
+    position:absolute;
+    top:0;
+    left:0;
+***REMOVED***
+
+#header .content .title ***REMOVED***
+    width  : 605px;
+    height : 58px;
+    background:url(images/ace.png) no-repeat 0 0;
+    position:absolute;
+    top:98px;
+    left:329px;
+***REMOVED***
+
+#wrapper ***REMOVED***
+    background:url(images/body_background.png) repeat-x 0 0;
+    min-height:250px;
+***REMOVED***
+
+#wrapper .content ***REMOVED***
+    font-family:Arial;
+    font-size:14px;
+    color:#222222;
+    width:1000px;
+***REMOVED***
+
+#wrapper .content .column1 ***REMOVED***
+    position:relative;
+    float:left;
+    width:315px;
+    margin-right:31px;
+***REMOVED***
+
+#wrapper .content .column2 ***REMOVED***
+    position:relative;
+    overflow:hidden;
+    float:left;
+    width:600px;
+    padding-top:47px;
+***REMOVED***
+
+.fork_on_github ***REMOVED***
+    width:310px;
+    height:80px;
+    background:url(images/fork_on_github.png) no-repeat 0 0;
+    position:relative;
+    overflow:hidden;
+    margin-top:49px;
+    cursor:pointer;
+***REMOVED***
+
+.fork_on_github:hover ***REMOVED***
+    background-position:0 -80px;
+***REMOVED***
+
+.divider ***REMOVED***
+    height:3px;
+    background-color:#bedaea;
+    margin-bottom:3px;
+***REMOVED***
+
+.menu ***REMOVED***
+    padding:23px 0 0 24px;
+***REMOVED***
+
+UL.content-list ***REMOVED***
+    padding:15px;
+    margin:0;
+***REMOVED***
+
+UL.menu-list ***REMOVED***
+    padding:0;
+    margin:0 0 20px 0;
+    list-style-type:none;
+    line-height : 16px;
+***REMOVED***
+
+UL.menu-list LI ***REMOVED***
+    color:#2557b4;
+    font-family:Trebuchet MS;
+    font-size:14px;
+    padding:7px 0;
+    border-bottom:1px dotted #d6e2e7;
+***REMOVED***
+
+UL.menu-list LI:last-child ***REMOVED***
+    border-bottom:0;
+***REMOVED***
+
+A ***REMOVED***
+    color:#2557b4;
+    text-decoration:none;
+***REMOVED***
+
+A:hover ***REMOVED***
+    text-decoration:underline;
+***REMOVED***
+
+P#first***REMOVED***
+    background : rgba(255,255,255,0.5);
+    padding : 20px;
+    font-size : 16px;
+    line-height : 24px;
+    margin : 0 0 20px 0;
+***REMOVED***
+
+#footer ***REMOVED***
+    height:40px;
+    position:relative;
+    overflow:hidden;
+    background:url(images/bottombar.png) repeat-x 0 0;
+    position:relative;
+    margin-top:40px;
+***REMOVED***
+
+UL.menu-footer ***REMOVED***
+    padding:0;
+    margin:8px 11px 0 0;
+    list-style-type:none;
+    float:right;
+***REMOVED***
+
+UL.menu-footer LI ***REMOVED***
+    color:white;
+    font-family:Arial;
+    font-size:12px;
+    display:inline-block;
+    margin:0 1px;
+***REMOVED***
+
+UL.menu-footer LI A ***REMOVED***
+    color:#8dd0ff;
+    text-decoration:none;
+***REMOVED***
+
+UL.menu-footer LI A:hover ***REMOVED***
+    text-decoration:underline;
+***REMOVED***
+
+
+
+

@@ -1,0 +1,106 @@
+.mute-remote-cursor ***REMOVED***
+  position: absolute;
+  z-index: 2;
+***REMOVED***
+.mute-remote-cursor .name ***REMOVED***
+  font-size: 0.8em;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px 3px 3px 0;
+  position: absolute;
+  left: -4px;
+***REMOVED***
+.mute-remote-cursor .nubbin ***REMOVED***
+  height: 6px;
+  width: 6px;
+  position: absolute;
+  left: -4px;
+***REMOVED***
+.mute-remote-selection ***REMOVED***
+  position: absolute;
+  z-index: 2;
+***REMOVED***
+.mute-remote-cursor-0 ***REMOVED***
+  border-left: 2px solid #fc0003;
+  position: absolute;
+  z-index: 2;
+***REMOVED***
+.mute-remote-cursor-0 .name,
+.mute-remote-cursor-0 .nubbin ***REMOVED***
+  background-color: #fc0003;
+***REMOVED***
+.mute-remote-cursor-0 .name ***REMOVED***
+  font-size: 0.8em;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px 3px 3px 0;
+  position: absolute;
+  left: -4px;
+***REMOVED***
+.mute-remote-cursor-0 .nubbin ***REMOVED***
+  height: 6px;
+  width: 6px;
+  position: absolute;
+  left: -4px;
+***REMOVED***
+.mute-remote-selection-0 ***REMOVED***
+  background-color: #ff9697;
+  position: absolute;
+  z-index: 2;
+***REMOVED***
+.mute-remote-cursor-1 ***REMOVED***
+  border-left: 2px solid #0099ff;
+  position: absolute;
+  z-index: 2;
+***REMOVED***
+.mute-remote-cursor-1 .name,
+.mute-remote-cursor-1 .nubbin ***REMOVED***
+  background-color: #0099ff;
+***REMOVED***
+.mute-remote-cursor-1 .name ***REMOVED***
+  font-size: 0.8em;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px 3px 3px 0;
+  position: absolute;
+  left: -4px;
+***REMOVED***
+.mute-remote-cursor-1 .nubbin ***REMOVED***
+  height: 6px;
+  width: 6px;
+  position: absolute;
+  left: -4px;
+***REMOVED***
+.mute-remote-selection-1 ***REMOVED***
+  background-color: #b5e1ff;
+  position: absolute;
+  z-index: 2;
+***REMOVED***
+.mute-remote-cursor-2 ***REMOVED***
+  border-left: 2px solid #33cc33;
+  position: absolute;
+  z-index: 2;
+***REMOVED***
+.mute-remote-cursor-2 .name,
+.mute-remote-cursor-2 .nubbin ***REMOVED***
+  background-color: #33cc33;
+***REMOVED***
+.mute-remote-cursor-2 .name ***REMOVED***
+  font-size: 0.8em;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px 3px 3px 0;
+  position: absolute;
+  left: -4px;
+***REMOVED***
+.mute-remote-cursor-2 .nubbin ***REMOVED***
+  height: 6px;
+  width: 6px;
+  position: absolute;
+  left: -4px;
+***REMOVED***
+.mute-remote-selection-2 ***REMOVED***
+  background-color: #b9dbb9;
+  position: absolute;
+  z-index: 2;
+***REMOVED***

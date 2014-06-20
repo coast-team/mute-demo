@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<% include head %>
+		<% include css %>
+	</head>
+	<body>
+		<% include menu %>
+		<div class="container">
+            <div class="row">
+            	<div class="col-md-12"> <!-- Main content -->
+            		<div class="row"> <!-- Demo -->
+                        <h1><strong>Edition mode</strong><a href="/<%= docID %>/history" class="btn btn-default pull-right"><span class="glyphicon glyphicon-time">&nbsp;</span>Switch to history mode</a></h1>
+            			<div class="col-md-10 col-md-offset-1">
+            				<% include editor %>
+	        				<br>
+                    		<div class="row">
+                                <div class="col-md-6">
+                                   <% include awareness %>
+                                </div>
+                                <div class="col-md-6">
+                                    <form class="form-horizontal" role="form">
+                                        <div class="form-group">
+                                            <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
+                                            <div class="col-sm-7">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
+                                                    <span class="input-group-btn">
+                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;"><img src="assets/img/icon-clipboard.png"></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            	</div>
+            </div>
+           	<hr>
+            <% include footer %>
+        </div>
+		<% include scripts %>
+		<% include scripts-editor %>
+		<% include notifications %>
+		<% 
+        	if(privateDoc === true) ***REMOVED*** 
+        		%> <% include modal-pwd-doc %> <%
+        	***REMOVED***
+        %>
+		<script>
+			"use strict";
+
+            hljs.initHighlightingOnLoad();
+            $('#copy-button').tooltip(***REMOVED*** container: 'body', delay: ***REMOVED*** show: 0, hide: 100 ***REMOVED*** ***REMOVED***);
+            var client = new ZeroClipboard(document.getElementById("copy-button"));
+
+            $('#copy-button').on('mouseout', function () ***REMOVED***
+                 $('#copy-button').attr('data-original-title', 'copy to clipboard');
+        ***REMOVED***);
+
+            client.on( "ready", function( readyEvent ) ***REMOVED***
+                client.on( "aftercopy", function( event ) ***REMOVED***
+                    $('#copy-button').attr('data-original-title', 'copied!');
+                    $('#copy-button').tooltip('show');
+            ***REMOVED*** );
+        ***REMOVED***);
+
+            function initMute() ***REMOVED***
+            	coordinator.setEditor(editor);
+            	coordinator.setNetwork(network);
+        ***REMOVED***
+
+            var coordinator = new Mute.Coordinator('<%= docID %>');
+            var editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+            var network = new Mute.SocketIOAdapter(coordinator);
+            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
+            <% 
+            	if(privateDoc === false) ***REMOVED***
+            		%> initMute(); <%	
+            	***REMOVED***
+            %>
+            console.log('docID: <%= docID %>');
+        </script>
+	</body>
+</html>

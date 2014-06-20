@@ -1,0 +1,7 @@
+***REMOVED***foreach $foo as $bar***REMOVED***
+  <a href="***REMOVED***$bar.zig***REMOVED***">***REMOVED***$bar.zag***REMOVED***</a>
+  <a href="***REMOVED***$bar.zig2***REMOVED***">***REMOVED***$bar.zag2***REMOVED***</a>
+  <a href="***REMOVED***$bar.zig3***REMOVED***">***REMOVED***$bar.zag3***REMOVED***</a>
+***REMOVED***foreachelse***REMOVED***
+  There were no rows found.
+***REMOVED***/foreach***REMOVED***

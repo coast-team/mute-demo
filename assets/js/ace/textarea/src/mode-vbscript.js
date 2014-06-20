@@ -1,0 +1,249 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Distributed under the BSD license:
+ *
+ * Copyright (c) 2012, Ajax.org B.V.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *
+ * Contributor(s):
+ * 
+ *
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+__ace_shadowed__.define('ace/mode/vbscript', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/mode/vbscript_highlight_rules'], function(require, exports, module) ***REMOVED***
+
+
+var oop = require("../lib/oop");
+var TextMode = require("./text").Mode;
+var VBScriptHighlightRules = require("./vbscript_highlight_rules").VBScriptHighlightRules;
+
+var Mode = function() ***REMOVED***
+    this.HighlightRules = VBScriptHighlightRules;
+***REMOVED***;
+oop.inherits(Mode, TextMode);
+
+(function() ***REMOVED***
+       
+    this.lineCommentStart = ["'", "REM"];
+    
+    this.$id = "ace/mode/vbscript";
+***REMOVED***).call(Mode.prototype);
+
+exports.Mode = Mode;
+***REMOVED***);
+
+
+__ace_shadowed__.define('ace/mode/vbscript_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text_highlight_rules'], function(require, exports, module) ***REMOVED***
+
+
+var oop = require("../lib/oop");
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+
+var VBScriptHighlightRules = function() ***REMOVED***
+
+    this.$rules = ***REMOVED***
+    "start": [
+        ***REMOVED***
+            token: [
+                "meta.ending-space"
+            ],
+            regex: "$"
+    ***REMOVED***
+        ***REMOVED***
+            token: [
+                null
+            ],
+            regex: "^(?=\\t)",
+            next: "state_3"
+    ***REMOVED***
+        ***REMOVED***
+            token: [null],
+            regex: "^(?= )",
+            next: "state_4"
+    ***REMOVED***
+        ***REMOVED***
+            token: [
+                "text",
+                "storage.type.function.asp",
+                "text",
+                "entity.name.function.asp",
+                "text",
+                "punctuation.definition.parameters.asp",
+                "variable.parameter.function.asp",
+                "punctuation.definition.parameters.asp"
+            ],
+            regex: "^(\\s*)(Function|Sub)(\\s*)([a-zA-Z_]\\w*)(\\s*)(\\()([^)]*)(\\))"
+    ***REMOVED***
+        ***REMOVED***
+            token: "punctuation.definition.comment.asp",
+            regex: "'|REM",
+            next: "comment"
+    ***REMOVED***
+        ***REMOVED***
+            token: [
+                "keyword.control.asp"
+            ],
+            regex: "\\b(?:If|Then|Else|ElseIf|Else If|End If|While|Wend|For|To|Each|Case|Select|End Select|Return|Continue|Do|Until|Loop|Next|With|Exit Do|Exit For|Exit Function|Exit Property|Exit Sub|IIf)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "keyword.operator.asp",
+            regex: "\\b(?:Mod|And|Not|Or|Xor|as)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "storage.type.asp",
+            regex: "Dim|Call|Class|Const|Dim|Redim|Function|Sub|Private Sub|Public Sub|End sub|End Function|Set|Let|Get|New|Randomize|Option Explicit|On Error Resume Next|On Error GoTo"
+    ***REMOVED***
+        ***REMOVED***
+            token: "storage.modifier.asp",
+            regex: "\\b(?:Private|Public|Default)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "constant.language.asp",
+            regex: "\\b(?:Empty|False|Nothing|Null|True)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "punctuation.definition.string.begin.asp",
+            regex: '"',
+            next: "string"
+    ***REMOVED***
+        ***REMOVED***
+            token: [
+                "punctuation.definition.variable.asp"
+            ],
+            regex: "(\\$)[a-zA-Z_x7f-xff][a-zA-Z0-9_x7f-xff]*?\\b\\s*"
+    ***REMOVED***
+        ***REMOVED***
+            token: "support.class.asp",
+            regex: "\\b(?:Application|ObjectContext|Request|Response|Server|Session)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "support.class.collection.asp",
+            regex: "\\b(?:Contents|StaticObjects|ClientCertificate|Cookies|Form|QueryString|ServerVariables)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "support.constant.asp",
+            regex: "\\b(?:TotalBytes|Buffer|CacheControl|Charset|ContentType|Expires|ExpiresAbsolute|IsClientConnected|PICS|Status|ScriptTimeout|CodePage|LCID|SessionID|Timeout)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "support.function.asp",
+            regex: "\\b(?:Lock|Unlock|SetAbort|SetComplete|BinaryRead|AddHeader|AppendToLog|BinaryWrite|Clear|End|Flush|Redirect|Write|CreateObject|HTMLEncode|MapPath|URLEncode|Abandon|Convert|Regex)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "support.function.event.asp",
+            regex: "\\b(?:Application_OnEnd|Application_OnStart|OnTransactionAbort|OnTransactionCommit|Session_OnEnd|Session_OnStart)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "support.function.vb.asp",
+            regex: "\\b(?:Array|Add|Asc|Atn|CBool|CByte|CCur|CDate|CDbl|Chr|CInt|CLng|Conversions|Cos|CreateObject|CSng|CStr|Date|DateAdd|DateDiff|DatePart|DateSerial|DateValue|Day|Derived|Math|Escape|Eval|Exists|Exp|Filter|FormatCurrency|FormatDateTime|FormatNumber|FormatPercent|GetLocale|GetObject|GetRef|Hex|Hour|InputBox|InStr|InStrRev|Int|Fix|IsArray|IsDate|IsEmpty|IsNull|IsNumeric|IsObject|Item|Items|Join|Keys|LBound|LCase|Left|Len|LoadPicture|Log|LTrim|RTrim|Trim|Maths|Mid|Minute|Month|MonthName|MsgBox|Now|Oct|Remove|RemoveAll|Replace|RGB|Right|Rnd|Round|ScriptEngine|ScriptEngineBuildVersion|ScriptEngineMajorVersion|ScriptEngineMinorVersion|Second|SetLocale|Sgn|Sin|Space|Split|Sqr|StrComp|String|StrReverse|Tan|Time|Timer|TimeSerial|TimeValue|TypeName|UBound|UCase|Unescape|VarType|Weekday|WeekdayName|Year)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: [
+                "constant.numeric.asp"
+            ],
+            regex: "-?\\b(?:(?:0(?:x|X)[0-9a-fA-F]*)|(?:(?:[0-9]+\\.?[0-9]*)|(?:\\.[0-9]+))(?:(?:e|E)(?:\\+|-)?[0-9]+)?)(?:L|l|UL|ul|u|U|F|f)?\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: "support.type.vb.asp",
+            regex: "\\b(?:vbtrue|vbfalse|vbcr|vbcrlf|vbformfeed|vblf|vbnewline|vbnullchar|vbnullstring|int32|vbtab|vbverticaltab|vbbinarycompare|vbtextcomparevbsunday|vbmonday|vbtuesday|vbwednesday|vbthursday|vbfriday|vbsaturday|vbusesystemdayofweek|vbfirstjan1|vbfirstfourdays|vbfirstfullweek|vbgeneraldate|vblongdate|vbshortdate|vblongtime|vbshorttime|vbobjecterror|vbEmpty|vbNull|vbInteger|vbLong|vbSingle|vbDouble|vbCurrency|vbDate|vbString|vbObject|vbError|vbBoolean|vbVariant|vbDataObject|vbDecimal|vbByte|vbArray)\\b"
+    ***REMOVED***
+        ***REMOVED***
+            token: [
+                "entity.name.function.asp"
+            ],
+            regex: "(?:(\\b[a-zA-Z_x7f-xff][a-zA-Z0-9_x7f-xff]*?\\b)(?=\\(\\)?))"
+    ***REMOVED***
+        ***REMOVED***
+            token: [
+                "keyword.operator.asp"
+            ],
+            regex: "\\-|\\+|\\*\\\/|\\>|\\<|\\=|\\&"
+    ***REMOVED***
+    ],
+    "state_3": [
+        ***REMOVED***
+            token: [
+                "meta.odd-tab.tabs",
+                "meta.even-tab.tabs"
+            ],
+            regex: "(\\t)(\\t)?"
+    ***REMOVED***
+        ***REMOVED***
+            token: "meta.leading-space",
+            regex: "(?=[^\\t])",
+            next: "start"
+    ***REMOVED***
+        ***REMOVED***
+            token: "meta.leading-space",
+            regex: ".",
+            next: "state_3"
+    ***REMOVED***
+    ],
+    "state_4": [
+        ***REMOVED***
+            token: ["meta.odd-tab.spaces", "meta.even-tab.spaces"],
+            regex: "(  )(  )?"
+    ***REMOVED***
+        ***REMOVED***
+            token: "meta.leading-space",
+            regex: "(?=[^ ])",
+            next: "start"
+    ***REMOVED***
+        ***REMOVED***
+            defaultToken: "meta.leading-space"
+    ***REMOVED***
+    ],
+    "comment": [
+        ***REMOVED***
+            token: "comment.line.apostrophe.asp",
+            regex: "$|(?=(?:%>))",
+            next: "start"
+    ***REMOVED***
+        ***REMOVED***
+            defaultToken: "comment.line.apostrophe.asp"
+    ***REMOVED***
+    ],
+    "string": [
+        ***REMOVED***
+            token: "constant.character.escape.apostrophe.asp",
+            regex: '""'
+    ***REMOVED***
+        ***REMOVED***
+            token: "string.quoted.double.asp",
+            regex: '"',
+            next: "start"
+    ***REMOVED***
+        ***REMOVED***
+            defaultToken: "string.quoted.double.asp"
+    ***REMOVED***
+    ]
+***REMOVED***
+
+***REMOVED***;
+
+oop.inherits(VBScriptHighlightRules, TextHighlightRules);
+
+exports.VBScriptHighlightRules = VBScriptHighlightRules;
+***REMOVED***);

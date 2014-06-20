@@ -1,0 +1,46 @@
+/**
+ * Greets a person using "Hello" by default.
+ * @param name The name of the person.
+ * @param? greetingWord Optional greeting word to use instead of "Hello".
+ */
+***REMOVED***template .helloName #eee***REMOVED***
+  ***REMOVED***if not $greetingWord***REMOVED***
+    Hello ***REMOVED***$name***REMOVED***!
+  ***REMOVED***else***REMOVED***
+    ***REMOVED***$greetingWord***REMOVED*** ***REMOVED***$name***REMOVED***!
+  ***REMOVED***/if***REMOVED***
+***REMOVED***/template***REMOVED***
+
+/**
+ * Greets a person and optionally a list of other people.
+ * @param name The name of the person.
+ * @param additionalNames The additional names to greet. May be an empty list.
+ */
+***REMOVED***template .helloNames***REMOVED***
+  // Greet the person.
+  ***REMOVED***call .helloName data="all" /***REMOVED***<br>
+  // Greet the additional people.
+  ***REMOVED***foreach $additionalName in $additionalNames***REMOVED***
+    ***REMOVED***call .helloName***REMOVED***
+      ***REMOVED***param name: $additionalName /***REMOVED***
+    ***REMOVED***/call***REMOVED***
+    ***REMOVED***if not isLast($additionalName)***REMOVED***
+      <br>  // break after every line except the last
+    ***REMOVED***/if***REMOVED***
+  ***REMOVED***ifempty***REMOVED***
+    No additional people to greet.
+  ***REMOVED***/foreach***REMOVED***
+***REMOVED***/template***REMOVED***
+
+
+***REMOVED***/foreach***REMOVED***
+***REMOVED***if length($items) > 5***REMOVED***
+***REMOVED***msg desc="Says hello to the user."***REMOVED***
+
+
+***REMOVED***namespace ns autoescape="contextual"***REMOVED***
+
+/** Example. */
+***REMOVED***template .example***REMOVED***
+  foo is ***REMOVED***$ij.foo***REMOVED***
+***REMOVED***/template***REMOVED***

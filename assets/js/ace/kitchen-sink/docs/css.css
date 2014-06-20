@@ -1,0 +1,28 @@
+.text-layer ***REMOVED***
+    font-family: Monaco, "Courier New", monospace;
+    font-size: 12pX;
+    cursor: text;
+***REMOVED***
+
+.blinker ***REMOVED***
+    animation-duration: 1s;
+    animation-name: blink;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: linear;
+***REMOVED***
+
+@keyframes blink ***REMOVED***
+    0% ***REMOVED***
+        opacity: 0;
+***REMOVED***
+    40% ***REMOVED***
+        opacity: 0;
+***REMOVED***
+    40.5% ***REMOVED***
+        opacity: 1
+***REMOVED***
+    100% ***REMOVED***
+        opacity: 1
+***REMOVED***
+***REMOVED***
