@@ -61,7 +61,7 @@ fs.readFile('mute.conf', 'utf8', function (err,data) ***REMOVED***
 	PASS_DB = obj.db.pass;
 
 	// Connection to the mongoDB running instance
-	mongoose.connect('mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_PORT/'+NAME_DB, ***REMOVED*** user: USERNAME_DB, pass: PASS_DB ***REMOVED***);
+	mongoose.connect('mongodb://'+process.env.OPENSHIFT_MONGODB_DB_HOST+':'+process.env.OPENSHIFT_MONGODB_PORT+'/'+NAME_DB, ***REMOVED*** user: USERNAME_DB, pass: PASS_DB ***REMOVED***);
 	// Check if connection succeed
 	var db = mongoose.connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
