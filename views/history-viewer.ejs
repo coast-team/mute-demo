@@ -38,6 +38,7 @@
         </div>
 		<% include scripts %>
 		<% include scripts-editor %>
+        <% include script-dbjs %>
 		<% include notifications %>
 		<% 
         	if(privateDoc === true) { 
@@ -47,12 +48,53 @@
 		<script>
 			"use strict";
 
-            function initMute() {
-            	coordinator.setNetwork(network);
-            }
+            var serverDB;
+            var coordinator;
+            var editor;
+            var network;
 
             var currentState = 0;
             var str = '';
+
+            var online = false;
+            var posting = $.post('/ajax/testConnection');
+            posting.done(function (data) {
+                console.log('Ca a fonctionné!');
+                //online = true;
+            });
+            posting.always(function () {
+                db.open({
+                    server: 'mute',
+                    version: 1,
+                    schema: {
+                        models: {
+                            key: { keyPath: 'id' , autoIncrement: true },
+                            // Optionally add indexes
+                            indexes: {
+                                creationDate: {},
+                                docID: { unique: true },
+                                history: {},
+                                lastModificationDate: {},
+                                replicaNumber: {},
+                                ropes: {},
+                                bufferLocalLogootSOp: {}
+                            }
+                        }
+                    }
+                })
+                .done(function (s) {
+                    serverDB = s
+                    initPage();
+                });
+            });
+
+            function initMute() {
+                if(online === true) {
+                    network = new Mute.SocketIOAdapter(coordinator);
+                    coordinator.setNetwork(network);    
+                }
+                coordinator.init();
+            }
 
             function prevState() {
                 $('#range').val(currentState-1);
@@ -72,22 +114,22 @@
                 editor.editor.session.doc.setValue(str);
             }
 
-            var coordinator = new Mute.Coordinator('<%= docID %>');
-            var editor = new Mute.AceEditorAdapter('<%= editorID %>', null);
-            var network = new Mute.SocketIOAdapter(coordinator);
-            
-            editor.editor.setReadOnly(true);
-            
-            coordinator.on('updateHistoryScroller', function (data) {
-                $('#range').attr('max', data.length).attr('value', data.length);
-                displayState();
-            });
+            function initPage() {
+                coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
+                editor = new Mute.AceEditorAdapter('<%= editorID %>', null);
+                
+                editor.editor.setReadOnly(true);
+                
+                coordinator.on('updateHistoryScroller', function (data) {
+                    $('#range').attr('max', data.length).attr('value', data.length);
+                    displayState();
+                });
 
-            <% 
-            	if(privateDoc === false) {
-            		%> initMute(); <%	
-            	}
-            %>
+                if(<%= privateDoc%> === false) {
+                    initMute();
+                }
+            }
+
             console.log('docID: <%= docID %>');
         </script>
 	</body>

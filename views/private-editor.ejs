@@ -43,6 +43,7 @@
         </div>
 		<% include scripts %>
 		<% include scripts-editor %>
+        <% include script-dbjs %>
 		<% include notifications %>
 		<% 
         	if(privateDoc === true) { 
@@ -52,35 +53,80 @@
 		<script>
 			"use strict";
 
-            hljs.initHighlightingOnLoad();
-            $('#copy-button').tooltip({ container: 'body', delay: { show: 0, hide: 100 } });
-            var client = new ZeroClipboard(document.getElementById("copy-button"));
+            var serverDB;
+            var client;
+            var coordinator;
+            var editor;
+            var network;
+            var awareness;
 
-            $('#copy-button').on('mouseout', function () {
-                 $('#copy-button').attr('data-original-title', 'copy to clipboard');
+            var online = false;
+            var posting = $.post('/ajax/testConnection');
+            posting.done(function (data) {
+                console.log('Ca a fonctionné!');
+                online = true;
             });
-
-            client.on( "ready", function( readyEvent ) {
-                client.on( "aftercopy", function( event ) {
-                    $('#copy-button').attr('data-original-title', 'copied!');
-                    $('#copy-button').tooltip('show');
-                } );
+            posting.always(function () {
+                db.open({
+                    server: 'mute',
+                    version: 1,
+                    schema: {
+                        models: {
+                            key: { keyPath: 'id' , autoIncrement: true },
+                            // Optionally add indexes
+                            indexes: {
+                                creationDate: {},
+                                docID: { unique: true },
+                                history: {},
+                                lastModificationDate: {},
+                                replicaNumber: {},
+                                ropes: {},
+                                bufferLocalLogootSOp: {}
+                            }
+                        }
+                    }
+                })
+                .done(function (s) {
+                    serverDB = s
+                    initPage();
+                });
             });
 
             function initMute() {
-            	coordinator.setEditor(editor);
-            	coordinator.setNetwork(network);
+                coordinator.setEditor(editor);
+                if(online === true) {
+                    network = new Mute.SocketIOAdapter(coordinator);
+                    coordinator.setNetwork(network);
+                }
+                coordinator.init();
             }
 
-            var coordinator = new Mute.Coordinator('<%= docID %>');
-            var editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
-            var network = new Mute.SocketIOAdapter(coordinator);
-            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
-            <% 
-            	if(privateDoc === false) {
-            		%> initMute(); <%	
-            	}
-            %>
+            function initPage () {
+                hljs.initHighlightingOnLoad();
+
+                if(online === true) {
+                    $('#copy-button').tooltip({ container: 'body', delay: { show: 0, hide: 100 } });
+                    client = new ZeroClipboard(document.getElementById("copy-button"));
+
+                    $('#copy-button').on('mouseout', function () {
+                         $('#copy-button').attr('data-original-title', 'copy to clipboard');
+                    });
+
+                    client.on( "ready", function( readyEvent ) {
+                        client.on( "aftercopy", function( event ) {
+                            $('#copy-button').attr('data-original-title', 'copied!');
+                            $('#copy-button').tooltip('show');
+                        } );
+                    });
+                }
+
+                coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
+                editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+                awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
+                if(<%= privateDoc %> === false) {
+                    initMute();
+                }
+            }
             console.log('docID: <%= docID %>');
         </script>
 	</body>
