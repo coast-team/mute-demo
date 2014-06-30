@@ -38,6 +38,7 @@
         </div>
 		<% include scripts %>
 		<% include scripts-editor %>
+        <% include script-dbjs %>
 		<% include notifications %>
 		<% 
         	if(privateDoc === true) ***REMOVED*** 
@@ -47,12 +48,53 @@
 		<script>
 			"use strict";
 
-            function initMute() ***REMOVED***
-            	coordinator.setNetwork(network);
-        ***REMOVED***
+            var serverDB;
+            var coordinator;
+            var editor;
+            var network;
 
             var currentState = 0;
             var str = '';
+
+            var online = false;
+            var posting = $.post('/ajax/testConnection');
+            posting.done(function (data) ***REMOVED***
+                console.log('Ca a fonctionné!');
+                //online = true;
+        ***REMOVED***);
+            posting.always(function () ***REMOVED***
+                db.open(***REMOVED***
+                    server: 'mute',
+                    version: 1,
+                    schema: ***REMOVED***
+                        models: ***REMOVED***
+                            key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
+                            // Optionally add indexes
+                            indexes: ***REMOVED***
+                                creationDate: ***REMOVED******REMOVED***,
+                                docID: ***REMOVED*** unique: true ***REMOVED***,
+                                history: ***REMOVED******REMOVED***,
+                                lastModificationDate: ***REMOVED******REMOVED***,
+                                replicaNumber: ***REMOVED******REMOVED***,
+                                ropes: ***REMOVED******REMOVED***,
+                                bufferLocalLogootSOp: ***REMOVED******REMOVED***
+                        ***REMOVED***
+                    ***REMOVED***
+                ***REMOVED***
+            ***REMOVED***)
+                .done(function (s) ***REMOVED***
+                    serverDB = s
+                    initPage();
+            ***REMOVED***);
+        ***REMOVED***);
+
+            function initMute() ***REMOVED***
+                if(online === true) ***REMOVED***
+                    network = new Mute.SocketIOAdapter(coordinator);
+                    coordinator.setNetwork(network);    
+            ***REMOVED***
+                coordinator.init();
+        ***REMOVED***
 
             function prevState() ***REMOVED***
                 $('#range').val(currentState-1);
@@ -72,22 +114,22 @@
                 editor.editor.session.doc.setValue(str);
         ***REMOVED***
 
-            var coordinator = new Mute.Coordinator('<%= docID %>');
-            var editor = new Mute.AceEditorAdapter('<%= editorID %>', null);
-            var network = new Mute.SocketIOAdapter(coordinator);
-            
-            editor.editor.setReadOnly(true);
-            
-            coordinator.on('updateHistoryScroller', function (data) ***REMOVED***
-                $('#range').attr('max', data.length).attr('value', data.length);
-                displayState();
-        ***REMOVED***);
+            function initPage() ***REMOVED***
+                coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
+                editor = new Mute.AceEditorAdapter('<%= editorID %>', null);
+                
+                editor.editor.setReadOnly(true);
+                
+                coordinator.on('updateHistoryScroller', function (data) ***REMOVED***
+                    $('#range').attr('max', data.length).attr('value', data.length);
+                    displayState();
+            ***REMOVED***);
 
-            <% 
-            	if(privateDoc === false) ***REMOVED***
-            		%> initMute(); <%	
-            	***REMOVED***
-            %>
+                if(<%= privateDoc%> === false) ***REMOVED***
+                    initMute();
+            ***REMOVED***
+        ***REMOVED***
+
             console.log('docID: <%= docID %>');
         </script>
 	</body>
