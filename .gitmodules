@@ -4,3 +4,6 @@
 [submodule "assets/js/zeroclipboard"]
 	path = assets/js/zeroclipboard
 	url = https://github.com/zeroclipboard/zeroclipboard.git
+[submodule "assets/js/dbjs"]
+	path = assets/js/dbjs
+	url = https://github.com/aaronpowell/db.js.git

@@ -102,7 +102,11 @@ body {
     background-color: rgb(66, 139, 202);
 }
 .range.range-primary output {
-    background-color: rgb(66, 139, 202);
+    background-color: #fff;
+    color: #333;
+    border: 1px solid transparent;
+    border-color: #ccc;
+    padding-top: 2px;
 }
 .range.range-primary input[type="range"] {
     outline-color: rgb(66, 139, 202);
