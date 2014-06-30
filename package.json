@@ -1,11 +1,12 @@
 ***REMOVED***
   "name": "mute",
-  "version": "0.0.2",
+  "version": "0.1.1",
   "description": "",
   "main": "app.js",
   "dependencies": ***REMOVED***
     "bcryptjs": "^1.0.1",
     "body-parser": "1.2.2",
+    "connect-cache-manifest": "0.2.0",
     "cookie-parser": "1.1.0",
     "cookie-session": "1.0.2",
     "ejs": "1.0.0",

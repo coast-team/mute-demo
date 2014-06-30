@@ -10,7 +10,7 @@
             <div class="row">
             	<div class="col-md-12"> <!-- Main content -->
             		<div class="row"> <!-- Demo -->
-                        <h1><strong>Edition mode</strong><a href="/<%= docID %>/history" class="btn btn-default pull-right"><span class="glyphicon glyphicon-time">&nbsp;</span>Switch to history mode</a></h1>
+                        <h1><strong><%= docID %></strong><a href="/doc/<%= docID %>/history" class="btn btn-default pull-right"><span class="glyphicon glyphicon-time">&nbsp;</span>Switch to history mode</a></h1>
             			<div class="col-md-10 col-md-offset-1">
             				<% include editor %>
 	        				<br>
@@ -43,6 +43,7 @@
         </div>
 		<% include scripts %>
 		<% include scripts-editor %>
+        <% include script-dbjs %>
 		<% include notifications %>
 		<% 
         	if(privateDoc === true) ***REMOVED*** 
@@ -52,35 +53,80 @@
 		<script>
 			"use strict";
 
-            hljs.initHighlightingOnLoad();
-            $('#copy-button').tooltip(***REMOVED*** container: 'body', delay: ***REMOVED*** show: 0, hide: 100 ***REMOVED*** ***REMOVED***);
-            var client = new ZeroClipboard(document.getElementById("copy-button"));
+            var serverDB;
+            var client;
+            var coordinator;
+            var editor;
+            var network;
+            var awareness;
 
-            $('#copy-button').on('mouseout', function () ***REMOVED***
-                 $('#copy-button').attr('data-original-title', 'copy to clipboard');
+            var online = false;
+            var posting = $.post('/ajax/testConnection');
+            posting.done(function (data) ***REMOVED***
+                console.log('Ca a fonctionné!');
+                online = true;
         ***REMOVED***);
-
-            client.on( "ready", function( readyEvent ) ***REMOVED***
-                client.on( "aftercopy", function( event ) ***REMOVED***
-                    $('#copy-button').attr('data-original-title', 'copied!');
-                    $('#copy-button').tooltip('show');
-            ***REMOVED*** );
+            posting.always(function () ***REMOVED***
+                db.open(***REMOVED***
+                    server: 'mute',
+                    version: 1,
+                    schema: ***REMOVED***
+                        models: ***REMOVED***
+                            key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
+                            // Optionally add indexes
+                            indexes: ***REMOVED***
+                                creationDate: ***REMOVED******REMOVED***,
+                                docID: ***REMOVED*** unique: true ***REMOVED***,
+                                history: ***REMOVED******REMOVED***,
+                                lastModificationDate: ***REMOVED******REMOVED***,
+                                replicaNumber: ***REMOVED******REMOVED***,
+                                ropes: ***REMOVED******REMOVED***,
+                                bufferLocalLogootSOp: ***REMOVED******REMOVED***
+                        ***REMOVED***
+                    ***REMOVED***
+                ***REMOVED***
+            ***REMOVED***)
+                .done(function (s) ***REMOVED***
+                    serverDB = s
+                    initPage();
+            ***REMOVED***);
         ***REMOVED***);
 
             function initMute() ***REMOVED***
-            	coordinator.setEditor(editor);
-            	coordinator.setNetwork(network);
+                coordinator.setEditor(editor);
+                if(online === true) ***REMOVED***
+                    network = new Mute.SocketIOAdapter(coordinator);
+                    coordinator.setNetwork(network);
+            ***REMOVED***
+                coordinator.init();
         ***REMOVED***
 
-            var coordinator = new Mute.Coordinator('<%= docID %>');
-            var editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
-            var network = new Mute.SocketIOAdapter(coordinator);
-            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
-            <% 
-            	if(privateDoc === false) ***REMOVED***
-            		%> initMute(); <%	
-            	***REMOVED***
-            %>
+            function initPage () ***REMOVED***
+                hljs.initHighlightingOnLoad();
+
+                if(online === true) ***REMOVED***
+                    $('#copy-button').tooltip(***REMOVED*** container: 'body', delay: ***REMOVED*** show: 0, hide: 100 ***REMOVED*** ***REMOVED***);
+                    client = new ZeroClipboard(document.getElementById("copy-button"));
+
+                    $('#copy-button').on('mouseout', function () ***REMOVED***
+                         $('#copy-button').attr('data-original-title', 'copy to clipboard');
+                ***REMOVED***);
+
+                    client.on( "ready", function( readyEvent ) ***REMOVED***
+                        client.on( "aftercopy", function( event ) ***REMOVED***
+                            $('#copy-button').attr('data-original-title', 'copied!');
+                            $('#copy-button').tooltip('show');
+                    ***REMOVED*** );
+                ***REMOVED***);
+            ***REMOVED***
+
+                coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
+                editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+                awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
+                if(<%= privateDoc %> === false) ***REMOVED***
+                    initMute();
+            ***REMOVED***
+        ***REMOVED***
             console.log('docID: <%= docID %>');
         </script>
 	</body>
