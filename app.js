@@ -499,7 +499,7 @@ app.get('/', function (req, res) {
 
 app.use(function(req, res, next){
     res.setHeader('Content-Type', 'text/html');
-    res.render('404');
+    res.render('404', { title: 'MUTE - Multi-User Text Editor', page: '404'});
 });
 
 server.listen( port, ipaddress, function() {
