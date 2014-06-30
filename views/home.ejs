@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" manifest="mute.manifest">
 	<head>
 		<% include head %>
 		<% include css %>
@@ -11,7 +11,7 @@
             	<div class="col-md-12"> <!-- Main content -->
             		<div class="row"> <!-- Demo -->
             			<h1><strong>Try MUTE, the Multi-User Text Editor</strong></h1>
-            			<div class="col-md-10 col-md-offset-1">
+            			<div class="col-md-12">
 	        				<% include editor %>
 	        				<br>
                             <div class="row">
@@ -58,45 +58,92 @@
         </div>
 		<% include scripts %>
         <% include scripts-editor %>
+        <% include script-dbjs %>
         <% include notifications %>
 		<script>
 			"use strict";
 
-            hljs.initHighlightingOnLoad();
-            $('#copy-button').tooltip({ container: 'body', delay: { show: 0, hide: 100 } });
-            var client = new ZeroClipboard(document.getElementById("copy-button"));
+            var serverDB;
+            var coordinator;
+            var editor;
+            var network;
+            var awareness;
 
-            $('#copy-button').on('mouseout', function () {
-                 $('#copy-button').attr('data-original-title', 'copy to clipboard');
+            var online = false;
+            var posting = $.post('/ajax/testConnection');
+            posting.done(function (data) {
+                online = true;
+            });
+            posting.fail(function () {
+                console.log('Yo');
+                location.href = '/list';
+            });
+            posting.always(function () {
+                db.open({
+                    server: 'mute',
+                    version: 1,
+                    schema: {
+                        models: {
+                            key: { keyPath: 'id' , autoIncrement: true },
+                            // Optionally add indexes
+                            indexes: {
+                                creationDate: {},
+                                docID: { unique: true },
+                                history: {},
+                                lastModificationDate: {},
+                                replicaNumber: {},
+                                ropes: {},
+                                bufferLocalLogootSOp: {}
+                            }
+                        }
+                    }
+                })
+                .done(function (s) {
+                    serverDB = s
+                    initPage();
+                });
             });
 
-            client.on( "ready", function( readyEvent ) {
-                client.on( "aftercopy", function( event ) {
-                    $('#copy-button').attr('data-original-title', 'copied!');
-                    $('#copy-button').tooltip('show');
-                } );
-            });
+            function initPage () {
+                var currentState = 0;
+                var str = '';
+                var client;
 
-            var currentState = 0;
-            var str = '';
+                console.log('Online:', online);
 
-            function displayState() {
-                var newState = $('#range').val();
-                $('#rangePrimary').val(newState);
-                str = coordinator.updateState(str, currentState, newState);
-                currentState = newState;
-                console.log('Str: ', str);
+                hljs.initHighlightingOnLoad();
+
+                if(online === true) {
+                    $('#copy-button').tooltip({ container: 'body', delay: { show: 0, hide: 100 } });
+                    client = new ZeroClipboard(document.getElementById("copy-button"));
+
+                    $('#copy-button').on('mouseout', function () {
+                         $('#copy-button').attr('data-original-title', 'copy to clipboard');
+                    });
+
+                    client.on( "ready", function( readyEvent ) {
+                        client.on( "aftercopy", function( event ) {
+                            $('#copy-button').attr('data-original-title', 'copied!');
+                            $('#copy-button').tooltip('show');
+                        } );
+                    });
+                }
+
+
+                currentState = 0;
+                str = '';
+
+                coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
+                editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+                coordinator.setEditor(editor);
+                if(online === true) {
+                    network = new Mute.SocketIOAdapter(coordinator);
+                    coordinator.setNetwork(network);
+                }
+                awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
+                coordinator.init();
+                console.log('<%= docID %>');
             }
-
-            var coordinator = new Mute.Coordinator('<%= docID %>');
-            console.log(coordinator);
-            var editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
-            coordinator.setEditor(editor);
-            var network = new Mute.SocketIOAdapter(coordinator);
-            coordinator.setNetwork(network);
-            var awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
-
-            console.log('docID: <%= docID %>');
         </script>
 	</body>
 </html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="keywords" content="MUTE nodejs real-time collaborative-edition">
+		<meta name="author" content="Matthieu Nicolas">
+		<title>MUTE - Offline mode</title>
+		<link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/assets/css/awareness.css">
+		<link rel="stylesheet" href="/assets/css/mute.css">
+		<link rel="stylesheet" href="/assets/css/highlightjs.min.css">
+		<link rel="stylesheet" href="/assets/css/range-selectors.css">
+		<link rel="stylesheet" href="/assets/css/offline.css">
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/list">MUTE</a>
+				</div>
+				<div class="collapse navbar-collapse">
+					<form id="formAccess" class="navbar-form navbar-left" method="get" action="/accessDoc">
+						<div class="form-group">
+							<input type="text" class="form-control" id="access-document" name="docID" placeholder="Access a document">
+						</div>
+						<button type="submit" class="btn btn-default">Access</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="active"><a href="/list">List</a></li>
+					</ul>
+				</div><!--/.nav-collapse -->
+			</div>
+		</nav>
+		<div class="container">
+            <div class="row">
+            	<div class="col-md-12"> <!-- Main content -->
+            		<div class="row">
+            			<div class="col-md-10 col-md-offset-1">
+                            <div class="row">
+		            			<center>
+		                            <div class="alert alert-info">
+		                            	You're currently offline, the application will allow you to only edit the documents you've previously accessed. Please check your internet connection.
+		                            </div>
+		                        </center>
+	                            <div class="panel panel-primary">
+					                <div class="panel-heading">
+					                    <span class="glyphicon glyphicon-list"></span>Documents list
+					                    <div class="pull-right action-buttons">
+					                        <div class="pull-right">
+					                            <button type="button" class="btn btn-xs btn-default">
+					                            	<span class="glyphicon glyphicon-trash">&nbsp;Delete selection</span>
+					                            </button>
+					                        </div>
+					                    </div>
+					                </div>
+					                <div class="panel-body">
+					                    <ul id ="list-docs" class="list-group">
+					                    </ul>
+					                </div>
+					                <div class="panel-footer">
+					                    <div class="row">
+					                        <div class="col-md-6">
+					                            <h6>
+					                                Total Count <span class="label label-info" id="nbDocs">0</span></h6>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+                        	</div>
+                        </div>
+            		</div>
+            	</div>
+            </div>
+            <hr>
+            <footer class="footer">
+			    <p><h3><small>© LORIA 2014</small></h3></p>
+			</footer>
+        </div>
+        <script src="/assets/js/jquery-2.1.0.js"></script>
+		<script src="/assets/js/bootstrap.min.js"></script>
+		<script src="/assets/js/highlightjs.min.js"></script>
+		<script src ="/assets/js/mute.js"></script>
+		<script src="/assets/js/dbjs/src/db.js"></script>
+       	<script>
+       		var serverDB;
+       		db.open({
+                server: 'mute',
+                version: 1,
+                schema: {
+                    models: {
+                        key: { keyPath: 'id' , autoIncrement: true },
+                        // Optionally add indexes
+                        indexes: {
+                            creationDate: {},
+                            docID: { unique: true },
+                            history: {},
+                            lastModificationDate: {},
+                            replicaNumber: {},
+                            ropes: {},
+                            bufferLocalLogootSOp: {}
+                        }
+                    }
+                }
+            })
+            .done(function (s) {
+                serverDB = s
+               	serverDB.models.query()
+               	.all()
+               	.execute()
+               	.done(function (results) {
+               		var i;
+               		var doc;
+               		for(i=0; i<results.length; i++) {
+               			doc = results[i];
+               			$('#list-docs').append(generateListItem(doc));
+               		}
+               		$('#nbDocs').html(results.length);
+               	});
+            });
+
+            function generateListItem(doc) {
+            	var html = [
+            		'<li class="list-group-item" id="'+doc.docID+'"">',
+            			'<div class="checkbox">',
+            				'<input type="checkbox" id="checkbox">',
+            				'<label for="checkbox">',
+            					'<a href="/doc/'+doc.docID+'">',
+            						'<strong>',
+										doc.docID,
+									'</strong>',
+								'</a>',
+            				'</label>',
+            			'</div>',
+            			'<div class="pull-right action-buttons">',
+            				'<a href="/doc/'+doc.docID+'"><span class="glyphicon glyphicon-pencil"></span></a>',
+            				'<a href="http://www.jquery2dotnet.com" class="trash"><span class="glyphicon glyphicon-trash"></span></a>',
+            			'</div>',
+            		'</li>'
+            	]; 
+            	return html.join('\n');
+            }
+
+            //TODO: Suppression d'un ou plusieurs documents
+   		</script>
+    </body>
+</html>

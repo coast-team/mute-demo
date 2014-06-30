@@ -20,6 +20,10 @@ var PASS_MAIL;
 var NAME_DB;
 var USERNAME_DB;
 var PASS_DB;
+var HOST_DB;
+var PORT_DB;
+var VERSION_MANIFEST = createID();
+
 var smtpTransport;
 
 var express = require('express'),
@@ -35,7 +39,8 @@ var express = require('express'),
 	server = require('http').createServer(app),
 	Coordinator = require('mute-server').Coordinator,
 	SocketIOAdapter = require('mute-server').SocketIOAdapter,
-	nodemailer = require("nodemailer");
+	nodemailer = require('nodemailer'),
+	cacheManifest = require('connect-cache-manifest');
 
 SALT = bcrypt.genSaltSync(10);
 
@@ -59,9 +64,13 @@ fs.readFile('mute.conf', 'utf8', function (err,data) {
 	NAME_DB = obj.db.name;
 	USERNAME_DB = obj.db.username;
 	PASS_DB = obj.db.pass;
+	HOST_DB = process.env.OPENSHIFT_MONGODB_DB_HOST || 'localhost';
+	PORT_DB = process.env.OPENSHIFT_MONGODB_PORT || 27017;
+
+	console.log('HOST_DB:')
 
 	// Connection to the mongoDB running instance
-	mongoose.connect('mongodb://'+process.env.OPENSHIFT_MONGODB_DB_HOST+':'+process.env.OPENSHIFT_MONGODB_PORT+'/'+NAME_DB, { user: USERNAME_DB, pass: PASS_DB });
+	mongoose.connect('mongodb://'+HOST_DB+':'+PORT_DB+'/'+NAME_DB, { user: USERNAME_DB, pass: PASS_DB });
 	// Check if connection succeed
 	var db = mongoose.connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
@@ -89,7 +98,9 @@ app.use(cookieParser('q2392sTfDzTc2CQ6'));
 app.use(bodyParser())
 app.use(bodyParser.urlencoded());
 app.use(favicon(__dirname + '/assets/img/favicon.ico'));
-app.use('/assets', express.static(__dirname + '/assets'));
+app.use('/assets', express.static(__dirname + '/assets', { maxAge: 1 }));
+app.use('/views', express.static(__dirname + '/views', { maxAge: 1 }));
+app.use('/offline', express.static(__dirname + '/offline', { maxAge: 1 }));
 
 // set .ejs as the default extension
 app.set('view engine', 'ejs');
@@ -177,6 +188,10 @@ app.post('/ajax/verifyPwd', function (req, res) {
 		res.cookie(docID, docs[docID], { signed: true });
 	}
 	res.send({ success: success });
+});
+
+app.post('/ajax/testConnection', function (req, res) {
+	res.send({ OK: true });
 });
 
 app.get('/delay', function (req, res) {
@@ -270,7 +285,7 @@ app.post('/createDoc', function (req, res) {
 		req.session.notificationTitle = 'Document created';
 		req.session.msg = 'The document "' + docID + '" has correctly been created.';
 		
-		res.redirect('/' + docID);
+		res.redirect('/doc/' + docID);
 	}
 	else {
 		// Already existing
@@ -280,6 +295,90 @@ app.post('/createDoc', function (req, res) {
 		res.redirect('/');
 	}
 });
+
+app.use(cacheManifest({
+	manifestPath: '/mute.manifest',
+	/*
+	files: [{
+	file: __dirname + '/assets/js/foo.js',
+	path: '/js/foo.js'
+	}, 
+	*/
+
+	version: VERSION_MANIFEST,
+	files: [
+		/*
+		{
+			dir: __dirname + '/assets/js',
+			prefix: '/assets/js/',
+			ignore: function(x) { return /\//.test(x); }
+		},
+		*/
+		{
+			file: __dirname + '/assets/js/awareness-adapter.js',
+			path: '/assets/js/awareness-adapter.js'
+		},
+		{
+			file: __dirname + '/assets/js/bootstrap.min.js',
+			path: '/assets/js/bootstrap.min.js'
+		},
+		{
+			file: __dirname + '/assets/js/highlightjs.min.js',
+			path: '/assets/js/highlightjs.min.js'
+		},
+		{
+			file: __dirname + '/assets/js/jquery-2.1.0.js',
+			path: '/assets/js/jquery-2.1.0.js'
+		},
+		{
+			file: __dirname + '/assets/js/kinetic-v5.0.2.min.js',
+			path: '/assets/js/kinetic-v5.0.2.min.js'
+		},
+		{
+			file: __dirname + '/assets/js/mute.js',
+			path: '/assets/js/mute.js'
+		},
+		{
+			dir: __dirname + '/assets/js/ace/src',
+			prefix: '/assets/js/ace/src/'
+		},
+		{
+			dir: __dirname + '/assets/js/mute-client/build',
+			prefix: '/assets/js/mute-client/build/'
+		},
+		{
+			dir: __dirname + '/assets/js/dbjs/src',
+			prefix: '/assets/js/dbjs/src/'
+		},
+		{
+			dir: __dirname + '/assets/css',
+			prefix: '/assets/css/',
+			ignore: function(x) { return /\/\./.test(x); }
+		},
+		{
+			dir: __dirname + '/assets/fonts',
+			prefix: '/assets/fonts/',
+			ignore: function(x) { return /\/\./.test(x); }
+		},
+		{
+			dir: __dirname + '/assets/img',
+			prefix: '/assets/img/',
+			ignore: function(x) { return /\/\./.test(x); }
+		},
+		/*
+		,
+
+		{
+			dir: __dirname + '/views',
+			prefix: '/views/',
+			ignore: function(x) { return /\.bak$/.test(x); },
+			//replace: function(x) { return x.replace(/\.ejs$/, '.html'); }
+		}
+		*/
+	],
+	networks: ['*'],
+	fallbacks: ['/ /offline/404.html', '/list /offline/list.html', '/doc /offline/doc.html', '/socket.io/socket.io.js /assets/js/nope.js', '/assets/js/zeroclipboard/dist/ZeroClipboard.js /assets/js/nope.js']
+}));
 
 app.get('/guide', function (req, res) {
 	res.setHeader('Content-Type', 'text/html');
@@ -297,12 +396,11 @@ app.get('/about', function (req, res) {
 });
 
 app.get('/accessDoc', function (req, res) {
-	console.log('req: ', req);
 	var docID = req.query.docID;
-	res.redirect('/' + docID);
+	res.redirect('/doc/' + docID);
 });
 
-app.get('/:docID/history', function (req, res) {
+app.get('/doc/:docID/history', function (req, res) {
 	var docID = req.params.docID;
 	var privateDoc = false;
 	var newDoc = false;
@@ -331,7 +429,7 @@ app.get('/:docID/history', function (req, res) {
 	res.render('history-viewer', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
 });
 
-app.get('/:docID', function (req, res) {
+app.get('/doc/:docID', function (req, res) {
 	var docID = req.params.docID;
 	var privateDoc = false;
 	var newDoc = false;
@@ -401,7 +499,7 @@ app.get('/', function (req, res) {
 
 app.use(function(req, res, next){
     res.setHeader('Content-Type', 'text/html');
-    res.send(404, 'Page introuvable !');
+    res.render('404', { title: 'MUTE - Multi-User Text Editor', page: '404'});
 });
 
 server.listen( port, ipaddress, function() {
