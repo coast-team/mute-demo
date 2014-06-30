@@ -7,3 +7,6 @@
 [submodule "assets/js/dbjs"]
 	path = assets/js/dbjs
 	url = https://github.com/aaronpowell/db.js.git
+[submodule "assets/js/ace"]
+	path = assets/js/ace
+	url = https://github.com/ajaxorg/ace-builds.git
