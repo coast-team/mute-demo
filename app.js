@@ -22,6 +22,7 @@ var USERNAME_DB;
 var PASS_DB;
 var HOST_DB;
 var PORT_DB;
+var VERSION_MANIFEST = createID();
 
 var smtpTransport;
 
@@ -38,7 +39,8 @@ var express = require('express'),
 	server = require('http').createServer(app),
 	Coordinator = require('mute-server').Coordinator,
 	SocketIOAdapter = require('mute-server').SocketIOAdapter,
-	nodemailer = require("nodemailer");
+	nodemailer = require('nodemailer'),
+	cacheManifest = require('connect-cache-manifest');
 
 SALT = bcrypt.genSaltSync(10);
 
@@ -96,7 +98,9 @@ app.use(cookieParser('q2392sTfDzTc2CQ6'));
 app.use(bodyParser())
 app.use(bodyParser.urlencoded());
 app.use(favicon(__dirname + '/assets/img/favicon.ico'));
-app.use('/assets', express.static(__dirname + '/assets'));
+app.use('/assets', express.static(__dirname + '/assets', ***REMOVED*** maxAge: 1 ***REMOVED***));
+app.use('/views', express.static(__dirname + '/views', ***REMOVED*** maxAge: 1 ***REMOVED***));
+app.use('/offline', express.static(__dirname + '/offline', ***REMOVED*** maxAge: 1 ***REMOVED***));
 
 // set .ejs as the default extension
 app.set('view engine', 'ejs');
@@ -184,6 +188,10 @@ app.post('/ajax/verifyPwd', function (req, res) ***REMOVED***
 		res.cookie(docID, docs[docID], ***REMOVED*** signed: true ***REMOVED***);
 	***REMOVED***
 	res.send(***REMOVED*** success: success ***REMOVED***);
+***REMOVED***);
+
+app.post('/ajax/testConnection', function (req, res) ***REMOVED***
+	res.send(***REMOVED*** OK: true ***REMOVED***);
 ***REMOVED***);
 
 app.get('/delay', function (req, res) ***REMOVED***
@@ -277,7 +285,7 @@ app.post('/createDoc', function (req, res) ***REMOVED***
 		req.session.notificationTitle = 'Document created';
 		req.session.msg = 'The document "' + docID + '" has correctly been created.';
 		
-		res.redirect('/' + docID);
+		res.redirect('/doc/' + docID);
 	***REMOVED***
 	else ***REMOVED***
 		// Already existing
@@ -287,6 +295,90 @@ app.post('/createDoc', function (req, res) ***REMOVED***
 		res.redirect('/');
 	***REMOVED***
 ***REMOVED***);
+
+app.use(cacheManifest(***REMOVED***
+	manifestPath: '/mute.manifest',
+	/*
+	files: [***REMOVED***
+	file: __dirname + '/assets/js/foo.js',
+	path: '/js/foo.js'
+	***REMOVED***, 
+	*/
+
+	version: VERSION_MANIFEST,
+	files: [
+		/*
+		***REMOVED***
+			dir: __dirname + '/assets/js',
+			prefix: '/assets/js/',
+			ignore: function(x) ***REMOVED*** return /\//.test(x); ***REMOVED***
+		***REMOVED***,
+		*/
+		***REMOVED***
+			file: __dirname + '/assets/js/awareness-adapter.js',
+			path: '/assets/js/awareness-adapter.js'
+		***REMOVED***,
+		***REMOVED***
+			file: __dirname + '/assets/js/bootstrap.min.js',
+			path: '/assets/js/bootstrap.min.js'
+		***REMOVED***,
+		***REMOVED***
+			file: __dirname + '/assets/js/highlightjs.min.js',
+			path: '/assets/js/highlightjs.min.js'
+		***REMOVED***,
+		***REMOVED***
+			file: __dirname + '/assets/js/jquery-2.1.0.js',
+			path: '/assets/js/jquery-2.1.0.js'
+		***REMOVED***,
+		***REMOVED***
+			file: __dirname + '/assets/js/kinetic-v5.0.2.min.js',
+			path: '/assets/js/kinetic-v5.0.2.min.js'
+		***REMOVED***,
+		***REMOVED***
+			file: __dirname + '/assets/js/mute.js',
+			path: '/assets/js/mute.js'
+		***REMOVED***,
+		***REMOVED***
+			dir: __dirname + '/assets/js/ace/src',
+			prefix: '/assets/js/ace/src/'
+		***REMOVED***,
+		***REMOVED***
+			dir: __dirname + '/assets/js/mute-client/build',
+			prefix: '/assets/js/mute-client/build/'
+		***REMOVED***,
+		***REMOVED***
+			dir: __dirname + '/assets/js/dbjs/src',
+			prefix: '/assets/js/dbjs/src/'
+		***REMOVED***,
+		***REMOVED***
+			dir: __dirname + '/assets/css',
+			prefix: '/assets/css/',
+			ignore: function(x) ***REMOVED*** return /\/\./.test(x); ***REMOVED***
+		***REMOVED***,
+		***REMOVED***
+			dir: __dirname + '/assets/fonts',
+			prefix: '/assets/fonts/',
+			ignore: function(x) ***REMOVED*** return /\/\./.test(x); ***REMOVED***
+		***REMOVED***,
+		***REMOVED***
+			dir: __dirname + '/assets/img',
+			prefix: '/assets/img/',
+			ignore: function(x) ***REMOVED*** return /\/\./.test(x); ***REMOVED***
+		***REMOVED***,
+		/*
+		,
+
+		***REMOVED***
+			dir: __dirname + '/views',
+			prefix: '/views/',
+			ignore: function(x) ***REMOVED*** return /\.bak$/.test(x); ***REMOVED***,
+			//replace: function(x) ***REMOVED*** return x.replace(/\.ejs$/, '.html'); ***REMOVED***
+		***REMOVED***
+		*/
+	],
+	networks: ['*'],
+	fallbacks: ['/ /offline/404.html', '/list /offline/list.html', '/doc /offline/doc.html', '/socket.io/socket.io.js /assets/js/nope.js', '/assets/js/zeroclipboard/dist/ZeroClipboard.js /assets/js/nope.js']
+***REMOVED***));
 
 app.get('/guide', function (req, res) ***REMOVED***
 	res.setHeader('Content-Type', 'text/html');
@@ -305,10 +397,10 @@ app.get('/about', function (req, res) ***REMOVED***
 
 app.get('/accessDoc', function (req, res) ***REMOVED***
 	var docID = req.query.docID;
-	res.redirect('/' + docID);
+	res.redirect('/doc/' + docID);
 ***REMOVED***);
 
-app.get('/:docID/history', function (req, res) ***REMOVED***
+app.get('/doc/:docID/history', function (req, res) ***REMOVED***
 	var docID = req.params.docID;
 	var privateDoc = false;
 	var newDoc = false;
@@ -337,7 +429,7 @@ app.get('/:docID/history', function (req, res) ***REMOVED***
 	res.render('history-viewer', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg ***REMOVED***);
 ***REMOVED***);
 
-app.get('/:docID', function (req, res) ***REMOVED***
+app.get('/doc/:docID', function (req, res) ***REMOVED***
 	var docID = req.params.docID;
 	var privateDoc = false;
 	var newDoc = false;
@@ -407,7 +499,7 @@ app.get('/', function (req, res) ***REMOVED***
 
 app.use(function(req, res, next)***REMOVED***
     res.setHeader('Content-Type', 'text/html');
-    res.send(404, 'Page introuvable !');
+    res.render('404');
 ***REMOVED***);
 
 server.listen( port, ipaddress, function() ***REMOVED***
