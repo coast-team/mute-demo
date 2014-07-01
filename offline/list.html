@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" manifest="/mute.manifest">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,7 @@
 						<button type="submit" class="btn btn-default">Access</button>
 					</form>
 					<ul class="nav navbar-nav navbar-right">
-						<li class="active"><a href="/list">List</a></li>
+						<li class="active"><a href="/list"><span class="glyphicon glyphicon-list"></span>&nbsp;List</a></li>
 					</ul>
 				</div><!--/.nav-collapse -->
 			</div>
@@ -55,7 +55,8 @@
 					                    <div class="pull-right action-buttons">
 					                        <div class="pull-right">
 					                            <button type="button" class="btn btn-xs btn-default">
-					                            	<span class="glyphicon glyphicon-trash">&nbsp;Delete selection</span>
+					                            	<span class="glyphicon glyphicon-trash"></span>
+					                            	Delete selection
 					                            </button>
 					                        </div>
 					                    </div>
@@ -89,41 +90,55 @@
 		<script src ="/assets/js/mute.js"></script>
 		<script src="/assets/js/dbjs/src/db.js"></script>
        	<script>
-       		var serverDB;
-       		db.open({
-                server: 'mute',
-                version: 1,
-                schema: {
-                    models: {
-                        key: { keyPath: 'id' , autoIncrement: true },
-                        // Optionally add indexes
-                        indexes: {
-                            creationDate: {},
-                            docID: { unique: true },
-                            history: {},
-                            lastModificationDate: {},
-                            replicaNumber: {},
-                            ropes: {},
-                            bufferLocalLogootSOp: {}
-                        }
-                    }
-                }
-            })
-            .done(function (s) {
-                serverDB = s
-               	serverDB.models.query()
-               	.all()
-               	.execute()
-               	.done(function (results) {
-               		var i;
-               		var doc;
-               		for(i=0; i<results.length; i++) {
-               			doc = results[i];
-               			$('#list-docs').append(generateListItem(doc));
-               		}
-               		$('#nbDocs').html(results.length);
-               	});
-            });
+	       	// We only want to render the page if we're not in the hidden iframe
+			if ( location.hash !== '#iframed' ) {
+				var serverDB;
+	       		db.open({
+	                server: 'mute',
+	                version: 1,
+	                schema: {
+	                    models: {
+	                        key: { keyPath: 'id' , autoIncrement: true },
+	                        // Optionally add indexes
+	                        indexes: {
+	                            creationDate: {},
+	                            docID: { unique: true },
+	                            history: {},
+	                            lastModificationDate: {},
+	                            replicaNumber: {},
+	                            ropes: {},
+	                            bufferLocalLogootSOp: {}
+	                        }
+	                    }
+	                }
+	            })
+	            .done(function (s) {
+	                serverDB = s
+	               	serverDB.models.query()
+	               	.all()
+	               	.execute()
+	               	.done(function (results) {
+	               		var i;
+	               		var doc;
+	               		for(i=0; i<results.length; i++) {
+	               			doc = results[i];
+	               			$('#list-docs').append(generateListItem(doc));
+	               		}
+	               		$('#nbDocs').html(results.length);
+	               	});
+	            });
+			}
+			else {
+					applicationCache.ondownloading = function () {
+						window.parent.handleDownloading();
+					};
+					applicationCache.onupdateready = function () {
+						window.parent.handleUpdateReady();
+					};
+					applicationCache.onnoupdate = function () {
+						window.parent.handleNoUpdate();
+					};
+			}
 
             function generateListItem(doc) {
             	var html = [

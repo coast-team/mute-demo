@@ -377,8 +377,13 @@ app.use(cacheManifest({
 		*/
 	],
 	networks: ['*'],
-	fallbacks: ['/ /offline/404.html', '/list /offline/list.html', '/doc /offline/doc.html', '/socket.io/socket.io.js /assets/js/nope.js', '/assets/js/zeroclipboard/dist/ZeroClipboard.js /assets/js/nope.js']
+	fallbacks: ['/ /offline/list.html', '/doc /offline/doc.html']
 }));
+
+app.get('/list', function (req, res) {
+	res.setHeader('Content-Type', 'text/html');
+	res.render('list', { title: 'MUTE - Multi-User Text Editor', page: 'list' });
+});
 
 app.get('/guide', function (req, res) {
 	res.setHeader('Content-Type', 'text/html');
