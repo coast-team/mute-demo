@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" manifest="/mute.manifest">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,7 @@
 						<button type="submit" class="btn btn-default">Access</button>
 					</form>
 					<ul class="nav navbar-nav navbar-right">
-						<li class="active"><a href="/list">List</a></li>
+						<li class="active"><a href="/list"><span class="glyphicon glyphicon-list"></span>&nbsp;List</a></li>
 					</ul>
 				</div><!--/.nav-collapse -->
 			</div>
@@ -55,7 +55,8 @@
 					                    <div class="pull-right action-buttons">
 					                        <div class="pull-right">
 					                            <button type="button" class="btn btn-xs btn-default">
-					                            	<span class="glyphicon glyphicon-trash">&nbsp;Delete selection</span>
+					                            	<span class="glyphicon glyphicon-trash"></span>
+					                            	Delete selection
 					                            </button>
 					                        </div>
 					                    </div>
@@ -89,41 +90,55 @@
 		<script src ="/assets/js/mute.js"></script>
 		<script src="/assets/js/dbjs/src/db.js"></script>
        	<script>
-       		var serverDB;
-       		db.open(***REMOVED***
-                server: 'mute',
-                version: 1,
-                schema: ***REMOVED***
-                    models: ***REMOVED***
-                        key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
-                        // Optionally add indexes
-                        indexes: ***REMOVED***
-                            creationDate: ***REMOVED******REMOVED***,
-                            docID: ***REMOVED*** unique: true ***REMOVED***,
-                            history: ***REMOVED******REMOVED***,
-                            lastModificationDate: ***REMOVED******REMOVED***,
-                            replicaNumber: ***REMOVED******REMOVED***,
-                            ropes: ***REMOVED******REMOVED***,
-                            bufferLocalLogootSOp: ***REMOVED******REMOVED***
-                    ***REMOVED***
-                ***REMOVED***
-            ***REMOVED***
-        ***REMOVED***)
-            .done(function (s) ***REMOVED***
-                serverDB = s
-               	serverDB.models.query()
-               	.all()
-               	.execute()
-               	.done(function (results) ***REMOVED***
-               		var i;
-               		var doc;
-               		for(i=0; i<results.length; i++) ***REMOVED***
-               			doc = results[i];
-               			$('#list-docs').append(generateListItem(doc));
-               		***REMOVED***
-               		$('#nbDocs').html(results.length);
-               	***REMOVED***);
-        ***REMOVED***);
+	       	// We only want to render the page if we're not in the hidden iframe
+			if ( location.hash !== '#iframed' ) ***REMOVED***
+				var serverDB;
+	       		db.open(***REMOVED***
+	                server: 'mute',
+	                version: 1,
+	                schema: ***REMOVED***
+	                    models: ***REMOVED***
+	                        key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
+	                        // Optionally add indexes
+	                        indexes: ***REMOVED***
+	                            creationDate: ***REMOVED******REMOVED***,
+	                            docID: ***REMOVED*** unique: true ***REMOVED***,
+	                            history: ***REMOVED******REMOVED***,
+	                            lastModificationDate: ***REMOVED******REMOVED***,
+	                            replicaNumber: ***REMOVED******REMOVED***,
+	                            ropes: ***REMOVED******REMOVED***,
+	                            bufferLocalLogootSOp: ***REMOVED******REMOVED***
+	                    ***REMOVED***
+	                ***REMOVED***
+	            ***REMOVED***
+	        ***REMOVED***)
+	            .done(function (s) ***REMOVED***
+	                serverDB = s
+	               	serverDB.models.query()
+	               	.all()
+	               	.execute()
+	               	.done(function (results) ***REMOVED***
+	               		var i;
+	               		var doc;
+	               		for(i=0; i<results.length; i++) ***REMOVED***
+	               			doc = results[i];
+	               			$('#list-docs').append(generateListItem(doc));
+	               		***REMOVED***
+	               		$('#nbDocs').html(results.length);
+	               	***REMOVED***);
+	        ***REMOVED***);
+			***REMOVED***
+			else ***REMOVED***
+					applicationCache.ondownloading = function () ***REMOVED***
+						window.parent.handleDownloading();
+					***REMOVED***;
+					applicationCache.onupdateready = function () ***REMOVED***
+						window.parent.handleUpdateReady();
+					***REMOVED***;
+					applicationCache.onnoupdate = function () ***REMOVED***
+						window.parent.handleNoUpdate();
+					***REMOVED***;
+			***REMOVED***
 
             function generateListItem(doc) ***REMOVED***
             	var html = [

@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en" manifest="mute.manifest">
+<!-- <html lang="en" manifest="mute.manifest"> -->
+<html lang="en">
 	<head>
 		<% include head %>
 		<% include css %>
@@ -10,8 +11,14 @@
             <div class="row">
             	<div class="col-md-12"> <!-- Main content -->
             		<div class="row"> <!-- Demo -->
-            			<h1><strong>Try MUTE, the Multi-User Text Editor</strong></h1>
-            			<div class="col-md-12">
+            			<h1>
+                            <strong>Try MUTE, the Multi-User Text Editor</strong>
+                			<button id="btnAppCache" class="btn btn-default pull-right" onclick="updateAppCache()">
+                                <span class="glyphicon glyphicon-download"></span>
+                                Store locally
+                            </button>
+                        </h1>
+                        <div class="col-md-12">
 	        				<% include editor %>
 	        				<br>
                             <div class="row">
@@ -68,6 +75,7 @@
             var editor;
             var network;
             var awareness;
+            var iframeAdded = false;
 
             var online = false;
             var posting = $.post('/ajax/testConnection');
@@ -143,6 +151,40 @@
                 awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
                 coordinator.init();
                 console.log('<%= docID %>');
+        ***REMOVED***
+
+            function handleNoUpdate () ***REMOVED***
+                $('#btnAppCache').attr('onclick', '');
+                $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;No update needed!');
+                setBtnAppCacheToDefault();
+        ***REMOVED***;
+
+            function handleDownloading () ***REMOVED***
+                $('#btnAppCache').attr('onclick', '');
+                $('#btnAppCache').html('<img src="/assets/img/ajax-loader.gif">&nbsp;Downloading...');
+        ***REMOVED***
+
+            function handleUpdateReady () ***REMOVED***
+                $('#iframeAppCache')[0].contentWindow.applicationCache.swapCache();
+                $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Updated!');
+                setBtnAppCacheToDefault();
+        ***REMOVED***
+
+            function setBtnAppCacheToDefault () ***REMOVED***
+                setTimeout(function () ***REMOVED***
+                    $('#btnAppCache').attr('onclick', 'updateAppCache()');
+                    $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Store locally!')
+            ***REMOVED*** 3000);
+        ***REMOVED***
+
+            function updateAppCache () ***REMOVED***
+                if(iframeAdded === false) ***REMOVED***
+                    iframeAdded = true;
+                    $('body').prepend('<iframe id="iframeAppCache" src="/offline/list.html#iframed" style="position:absolute;top:-999em;visibility:hidden"></iframe>');
+            ***REMOVED***
+                else ***REMOVED***
+                    $('#iframeAppCache')[0].contentWindow.applicationCache.update();
+            ***REMOVED***
         ***REMOVED***
         </script>
 	</body>

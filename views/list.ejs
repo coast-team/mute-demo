@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<% include head %>
+		<% include css %>
+		<link rel="stylesheet" href="/assets/css/offline.css">
+	</head>
+	<body>
+		<% include menu %>
+		<div class="container">
+            <div class="row">
+            	<div class="col-md-12"> <!-- Main content -->
+            		<div class="row">
+            			<div class="col-md-10 col-md-offset-1">
+                            <div class="row">
+	                            <div class="panel panel-primary">
+					                <div class="panel-heading">
+					                    <span class="glyphicon glyphicon-list"></span>Documents list
+					                    <div class="pull-right action-buttons">
+					                        <div class="pull-right">
+					                            <button type="button" class="btn btn-xs btn-default">
+					                            	<span class="glyphicon glyphicon-trash"></span>
+					                            	Delete selection
+					                            </button>
+					                        </div>
+					                    </div>
+					                </div>
+					                <div class="panel-body">
+					                    <ul id ="list-docs" class="list-group">
+					                    </ul>
+					                </div>
+					                <div class="panel-footer">
+					                    <div class="row">
+					                        <div class="col-md-6">
+					                            <h6>
+					                                Total Count <span class="label label-info" id="nbDocs">0</span></h6>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+                        	</div>
+                        </div>
+            		</div>
+            	</div>
+            </div>
+            <hr>
+            <% include footer %>
+        </div>
+        <script src="/assets/js/jquery-2.1.0.js"></script>
+		<script src="/assets/js/bootstrap.min.js"></script>
+		<script src="/assets/js/highlightjs.min.js"></script>
+		<script src ="/assets/js/mute.js"></script>
+		<script src="/assets/js/dbjs/src/db.js"></script>
+       	<script>
+       		var serverDB;
+       		db.open(***REMOVED***
+                server: 'mute',
+                version: 1,
+                schema: ***REMOVED***
+                    models: ***REMOVED***
+                        key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
+                        // Optionally add indexes
+                        indexes: ***REMOVED***
+                            creationDate: ***REMOVED******REMOVED***,
+                            docID: ***REMOVED*** unique: true ***REMOVED***,
+                            history: ***REMOVED******REMOVED***,
+                            lastModificationDate: ***REMOVED******REMOVED***,
+                            replicaNumber: ***REMOVED******REMOVED***,
+                            ropes: ***REMOVED******REMOVED***,
+                            bufferLocalLogootSOp: ***REMOVED******REMOVED***
+                    ***REMOVED***
+                ***REMOVED***
+            ***REMOVED***
+        ***REMOVED***)
+            .done(function (s) ***REMOVED***
+                serverDB = s
+               	serverDB.models.query()
+               	.all()
+               	.execute()
+               	.done(function (results) ***REMOVED***
+               		var i;
+               		var doc;
+               		for(i=0; i<results.length; i++) ***REMOVED***
+               			doc = results[i];
+               			$('#list-docs').append(generateListItem(doc));
+               		***REMOVED***
+               		$('#nbDocs').html(results.length);
+               	***REMOVED***);
+        ***REMOVED***);
+
+            function generateListItem(doc) ***REMOVED***
+            	var html = [
+            		'<li class="list-group-item" id="'+doc.docID+'"">',
+            			'<div class="checkbox">',
+            				'<input type="checkbox" id="checkbox">',
+            				'<label for="checkbox">',
+            					'<a href="/doc/'+doc.docID+'">',
+            						'<strong>',
+										doc.docID,
+									'</strong>',
+								'</a>',
+            				'</label>',
+            			'</div>',
+            			'<div class="pull-right action-buttons">',
+            				'<a href="/doc/'+doc.docID+'"><span class="glyphicon glyphicon-pencil"></span></a>',
+            				'<a href="http://www.jquery2dotnet.com" class="trash"><span class="glyphicon glyphicon-trash"></span></a>',
+            			'</div>',
+            		'</li>'
+            	]; 
+            	return html.join('\n');
+        ***REMOVED***
+
+            //TODO: Suppression d'un ou plusieurs documents
+   		</script>
+    </body>
+</html>
