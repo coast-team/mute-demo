@@ -90,8 +90,8 @@
 		<script src ="/assets/js/mute.js"></script>
 		<script src="/assets/js/dbjs/src/db.js"></script>
        	<script>
-	       	// We only want to render the page if we're not in the hidden iframe
 			if ( location.hash !== '#iframed' ) ***REMOVED***
+				// We only want to render and use the page if we're not in the hidden iframe
 				var serverDB;
 	       		db.open(***REMOVED***
 	                server: 'mute',
@@ -129,15 +129,25 @@
 	        ***REMOVED***);
 			***REMOVED***
 			else ***REMOVED***
-					applicationCache.ondownloading = function () ***REMOVED***
-						window.parent.handleDownloading();
-					***REMOVED***;
-					applicationCache.onupdateready = function () ***REMOVED***
-						window.parent.handleUpdateReady();
-					***REMOVED***;
-					applicationCache.onnoupdate = function () ***REMOVED***
-						window.parent.handleNoUpdate();
-					***REMOVED***;
+				console.log('On est là');
+				console.log('window.parent: ', window.parent);
+
+				// If this page is used as an iframe
+				// We want to cache our application
+				// So we have to give a feedback 
+				// To the parent page for the main events of the application cache update process
+				applicationCache.ondownloading = function () ***REMOVED***
+					window.parent.handleDownloading();
+				***REMOVED***;
+				applicationCache.onupdateready = function () ***REMOVED***
+					window.parent.handleUpdateReady();
+				***REMOVED***;
+				applicationCache.oncached = function () ***REMOVED***
+					window.parent.handleCached();
+				***REMOVED***;
+				applicationCache.onnoupdate = function () ***REMOVED***
+					window.parent.handleNoUpdate();
+				***REMOVED***;
 			***REMOVED***
 
             function generateListItem(doc) ***REMOVED***

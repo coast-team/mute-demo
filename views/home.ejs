@@ -164,6 +164,11 @@
                 $('#btnAppCache').html('<img src="/assets/img/ajax-loader.gif">&nbsp;Downloading...');
         ***REMOVED***
 
+            function handleCached () ***REMOVED***
+                $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Cached!');
+                setBtnAppCacheToDefault();
+        ***REMOVED***
+
             function handleUpdateReady () ***REMOVED***
                 $('#iframeAppCache')[0].contentWindow.applicationCache.swapCache();
                 $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Updated!');
