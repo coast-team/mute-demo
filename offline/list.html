@@ -90,8 +90,8 @@
 		<script src ="/assets/js/mute.js"></script>
 		<script src="/assets/js/dbjs/src/db.js"></script>
        	<script>
-	       	// We only want to render the page if we're not in the hidden iframe
 			if ( location.hash !== '#iframed' ) {
+				// We only want to render and use the page if we're not in the hidden iframe
 				var serverDB;
 	       		db.open({
 	                server: 'mute',
@@ -129,15 +129,25 @@
 	            });
 			}
 			else {
-					applicationCache.ondownloading = function () {
-						window.parent.handleDownloading();
-					};
-					applicationCache.onupdateready = function () {
-						window.parent.handleUpdateReady();
-					};
-					applicationCache.onnoupdate = function () {
-						window.parent.handleNoUpdate();
-					};
+				console.log('On est là');
+				console.log('window.parent: ', window.parent);
+
+				// If this page is used as an iframe
+				// We want to cache our application
+				// So we have to give a feedback 
+				// To the parent page for the main events of the application cache update process
+				applicationCache.ondownloading = function () {
+					window.parent.handleDownloading();
+				};
+				applicationCache.onupdateready = function () {
+					window.parent.handleUpdateReady();
+				};
+				applicationCache.oncached = function () {
+					window.parent.handleCached();
+				};
+				applicationCache.onnoupdate = function () {
+					window.parent.handleNoUpdate();
+				};
 			}
 
             function generateListItem(doc) {
