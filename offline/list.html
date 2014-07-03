@@ -26,12 +26,12 @@
 					<a class="navbar-brand" href="/list">MUTE</a>
 				</div>
 				<div class="collapse navbar-collapse">
-					<form id="formAccess" class="navbar-form navbar-left" method="get" action="/accessDoc">
+					<div id="divAccess" class="navbar-form navbar-left">
 						<div class="form-group">
 							<input type="text" class="form-control" id="access-document" name="docID" placeholder="Access a document">
 						</div>
-						<button type="submit" class="btn btn-default">Access</button>
-					</form>
+						<button type="button" class="btn btn-default" onclick="accessDoc()">Access</button>
+					</div>
 					<ul class="nav navbar-nav navbar-right">
 						<li class="active"><a href="/list"><span class="glyphicon glyphicon-list"></span>&nbsp;List</a></li>
 					</ul>
@@ -90,6 +90,19 @@
 		<script src ="/assets/js/mute.js"></script>
 		<script src="/assets/js/dbjs/src/db.js"></script>
        	<script>
+       		function accessDoc() {
+       			location.href = '/doc/' + $('#access-document').val();
+       		}
+
+       		$(function() {
+			    $('#access-document').keypress(function(e) {
+			            // Enter pressed?
+			            if(e.which === 10 || e.which === 13) {
+			                accessDoc();
+			            }
+			     });
+			});
+
 			if ( location.hash !== '#iframed' ) {
 				// We only want to render and use the page if we're not in the hidden iframe
 				var serverDB;

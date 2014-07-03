@@ -10,9 +10,43 @@
             <div class="row">
             	<div class="col-md-12"> <!-- Main content -->
             		<div class="row"> <!-- Demo -->
-                        <h1><strong><%= docID %></strong><a href="/doc/<%= docID %>/history" class="btn btn-default pull-right"><span class="glyphicon glyphicon-time">&nbsp;</span>Switch to history mode</a></h1>
+                        <h1>
+                            <strong><%= docID %></strong>
+                            <div class="pull-right">
+                                <button id="btnHistoryMode" class="btn btn-default" onclick="switchToHistoryMode()">
+                                    <span class="glyphicon glyphicon-time" ></span>
+                                    Switch to history mode
+                                </button>
+                                <button id="btnEditionMode" class="btn btn-default hide" onclick="switchToEditionMode()">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                    Switch to edition mode
+                                </button>
+                                <button id="btnOnlineMode" class="btn btn-default" onclick="switchToOnlineMode()">
+                                    <span class="glyphicon glyphicon-log-in" ></span>
+                                    Switch to online mode
+                                </button>
+                                <button id="btnOfflineMode" class="btn btn-default hide" onclick="switchToOfflineMode()">
+                                    <span class="glyphicon glyphicon-log-out"></span>
+                                    Switch to offline mode
+                                </button>
+                                <div id="connectionIndicator" class="offline-ui offline-ui-down">
+                                    Offline!
+                                </div>
+                            </div>
+
+                        </h1>
             			<div class="col-md-10 col-md-offset-1">
-            				<% include editor %>
+            				<div id="historySlider" class="range range-primary hide">
+                                <button class="btn btn-default btn-sm" type="button" onclick="prevState()">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </button>
+                                <input id="range" type="range" name="range" min="0" max="1" value="1" oninput="displayState();" onclick="console.log('Yo');displayState();">
+                                <output onchange="displayState();" id="rangePrimary">0</output>
+                                <button class="btn btn-default btn-sm" type="button" onclick="nextState()">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </button>
+                            </div>
+                            <% include editor %>
 	        				<br>
                     		<div class="row">
                                 <div class="col-md-6">
@@ -26,7 +60,9 @@
                                                 <div class="input-group">
                                                     <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
                                                     <span class="input-group-btn">
-                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;"><img src="assets/img/icon-clipboard.png"></button>
+                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;">
+                                                            <img src="/assets/img/icon-clipboard.png">
+                                                        </button>
                                                     </span>
                                                 </div>
                                             </div>
@@ -63,7 +99,6 @@
             var online = false;
             var posting = $.post('/ajax/testConnection');
             posting.done(function (data) {
-                console.log('Ca a fonctionné!');
                 online = true;
             });
             posting.always(function () {
@@ -81,7 +116,8 @@
                                 lastModificationDate: {},
                                 replicaNumber: {},
                                 ropes: {},
-                                bufferLocalLogootSOp: {}
+                                bufferLocalLogootSOp: {},
+                                mode: {}
                             }
                         }
                     }
@@ -97,7 +133,30 @@
                 if(online === true) {
                     network = new Mute.SocketIOAdapter(coordinator);
                     coordinator.setNetwork(network);
+                    network.on('disconnect', function () {
+                        $('#btnOfflineMode').addClass('hide');
+                        $('#btnOnlineMode').removeClass('hide');
+                        $('#connectionIndicator').removeClass('offline-ui-up').addClass('offline-ui-down').html('Offline!');
+                    });
+                    network.on('connect', function () {
+                        $('#btnOnlineMode').addClass('hide');
+                        $('#btnOfflineMode').removeClass('hide');
+                        $('#connectionIndicator').removeClass('offline-ui-down').addClass('offline-ui-up').html('Online!');
+                    });
                 }
+                coordinator.on('initEditor', function (data) {
+                    str = '';
+                    currentState = 0;
+                });
+                coordinator.on('updateHistoryScrollerRange', function (data) {
+                    $('#range').attr('max', data.length);
+                    //displayState();
+                });
+                coordinator.on('updateHistoryScrollerValue', function (data) {
+                    $('#range').attr('value', data.length);
+                    displayState();
+                });
+
                 coordinator.init();
             }
 
@@ -112,11 +171,11 @@
                          $('#copy-button').attr('data-original-title', 'copy to clipboard');
                     });
 
-                    client.on( "ready", function( readyEvent ) {
-                        client.on( "aftercopy", function( event ) {
+                    client.on('ready', function (readyEvent) {
+                        client.on('aftercopy', function (event) {
                             $('#copy-button').attr('data-original-title', 'copied!');
                             $('#copy-button').tooltip('show');
-                        } );
+                        });
                     });
                 }
 
@@ -127,6 +186,56 @@
                     initMute();
                 }
             }
+
+            var currentState = 0;
+            var str = '';
+
+            function prevState() {
+                $('#range').val(currentState-1);
+                displayState();
+            }
+
+            function nextState() {
+                $('#range').val(currentState+1);
+                displayState();
+            }
+
+            function displayState() {
+                var newState = parseInt($('#range').val());
+                $('#rangePrimary').val(newState);
+                if(currentState <= coordinator.getHistoryLength()) {
+                    str = coordinator.updateState(str, currentState, newState);    
+                }
+                currentState = newState;
+                editor.editor.session.doc.setValue(str);
+            }
+
+            function switchToHistoryMode() {
+                var length = coordinator.getHistoryLength();
+                $('#btnHistoryMode').addClass('hide');
+                $('#btnEditionMode').removeClass('hide');
+                $('#historySlider').removeClass('hide');
+                coordinator.editor.toHistoryMode();
+                $('#range').attr('max', length);
+                displayState();
+            }
+
+            function switchToEditionMode() {
+                $('#btnEditionMode').addClass('hide');
+                $('#historySlider').addClass('hide');
+                $('#btnHistoryMode').removeClass('hide');
+                editor.editor.session.doc.setValue(coordinator.ropes.str);
+                coordinator.editor.toEditionMode();
+            }
+
+            function switchToOnlineMode() {
+                coordinator.toOnlineMode();
+            }
+
+            function switchToOfflineMode() {
+                coordinator.toOfflineMode();
+            }
+
             console.log('docID: <%= docID %>');
         </script>
 	</body>

@@ -101,7 +101,8 @@
                                 lastModificationDate: {},
                                 replicaNumber: {},
                                 ropes: {},
-                                bufferLocalLogootSOp: {}
+                                bufferLocalLogootSOp: {},
+                                mode: {}
                             }
                         }
                     }
@@ -137,7 +138,6 @@
                     });
                 }
 
-
                 currentState = 0;
                 str = '';
 
@@ -147,6 +147,9 @@
                 if(online === true) {
                     network = new Mute.SocketIOAdapter(coordinator);
                     coordinator.setNetwork(network);
+                    network.on('receiveParole', function (data) {
+                        console.log('Essai: ', data);
+                    });
                 }
                 awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
                 coordinator.init();
