@@ -179,6 +179,14 @@ function validPassword(docID, pwd) ***REMOVED***
 	return success;
 ***REMOVED***
 
+app.post('/paroles/:docID/', function (req, res) ***REMOVED***
+	var parole = req.body.parole;
+	var docID = req.params.docID;
+	socketIOAdapter.io.sockets.in(docID).emit('broadcastParole', ***REMOVED*** parole: parole ***REMOVED***);
+	res.setHeader('Content-Type', 'text/html');
+	res.send(200);
+***REMOVED***);
+
 app.post('/ajax/verifyPwd', function (req, res) ***REMOVED***
 	var docID = req.body.docID;
 	var pwd = req.body.pwd;

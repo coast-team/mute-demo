@@ -26,12 +26,12 @@
 					<a class="navbar-brand" href="/list">MUTE</a>
 				</div>
 				<div class="collapse navbar-collapse">
-					<form id="formAccess" class="navbar-form navbar-left" method="get" action="/accessDoc">
+					<div id="divAccess" class="navbar-form navbar-left">
 						<div class="form-group">
 							<input type="text" class="form-control" id="access-document" name="docID" placeholder="Access a document">
 						</div>
-						<button type="submit" class="btn btn-default">Access</button>
-					</form>
+						<button type="button" class="btn btn-default" onclick="accessDoc()">Access</button>
+					</div>
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="/list"><span class="glyphicon glyphicon-list"></span>&nbsp;List</a></li>
 					</ul>
@@ -45,11 +45,11 @@
 		        		<h1>
 		        			<strong id="docTitle">Demo</strong>
 		        			<button id="btnHistoryMode" class="btn btn-default pull-right" onclick="switchToHistoryMode()">
-		        				<span class="glyphicon glyphicon-time" >&nbsp;</span>
+		        				<span class="glyphicon glyphicon-time" ></span>
 		        				Switch to history mode
 		        			</button>
 		        			<button id="btnEditionMode" class="btn btn-default pull-right hide" onclick="switchToEditionMode()">
-		        				<span class="glyphicon glyphicon-pencil" >&nbsp;</span>
+		        				<span class="glyphicon glyphicon-pencil"></span>
 		        				Switch to edition mode
 		        			</button>
 		        		</h1>
@@ -101,6 +101,15 @@
             var docID = getDocID();
             $('#docTitle').html(docID);
             
+            $(function() ***REMOVED***
+			    $('#access-document').keypress(function(e) ***REMOVED***
+			            // Enter pressed?
+			            if(e.which === 10 || e.which === 13) ***REMOVED***
+			                accessDoc();
+			        ***REMOVED***
+			 ***REMOVED***);
+			***REMOVED***);
+
        		db.open(***REMOVED***
                 server: 'mute',
                 version: 1,
@@ -138,6 +147,9 @@
 
                 		coordinator.init();
                		***REMOVED***
+               		else ***REMOVED***
+               			location.href = '/list';
+               		***REMOVED***
                	***REMOVED***);
         ***REMOVED***);
 
@@ -171,7 +183,7 @@
             	$('#btnHistoryMode').addClass('hide');
             	$('#btnEditionMode').removeClass('hide');
             	$('#historySlider').removeClass('hide');
-            	coordinator.editor.switchToHistoryMode();
+            	coordinator.editor.toHistoryMode();
             	$('#range').attr('max', length);
             	displayState();
         ***REMOVED***
@@ -181,9 +193,8 @@
             	$('#historySlider').addClass('hide');
             	$('#btnHistoryMode').removeClass('hide');
             	editor.editor.session.doc.setValue(coordinator.ropes.str);
-            	coordinator.editor.switchToEditionMode();
+            	coordinator.editor.toEditionMode();
         ***REMOVED***
-
    		</script>
     </body>
 </html>

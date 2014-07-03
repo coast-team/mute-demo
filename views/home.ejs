@@ -101,7 +101,8 @@
                                 lastModificationDate: ***REMOVED******REMOVED***,
                                 replicaNumber: ***REMOVED******REMOVED***,
                                 ropes: ***REMOVED******REMOVED***,
-                                bufferLocalLogootSOp: ***REMOVED******REMOVED***
+                                bufferLocalLogootSOp: ***REMOVED******REMOVED***,
+                                mode: ***REMOVED******REMOVED***
                         ***REMOVED***
                     ***REMOVED***
                 ***REMOVED***
@@ -137,7 +138,6 @@
                 ***REMOVED***);
             ***REMOVED***
 
-
                 currentState = 0;
                 str = '';
 
@@ -147,6 +147,9 @@
                 if(online === true) ***REMOVED***
                     network = new Mute.SocketIOAdapter(coordinator);
                     coordinator.setNetwork(network);
+                    network.on('receiveParole', function (data) ***REMOVED***
+                        console.log('Essai: ', data);
+                ***REMOVED***);
             ***REMOVED***
                 awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
                 coordinator.init();
