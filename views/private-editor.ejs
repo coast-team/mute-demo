@@ -207,7 +207,9 @@
                     str = coordinator.updateState(str, currentState, newState);    
             ***REMOVED***
                 currentState = newState;
-                editor.editor.session.doc.setValue(str);
+                if(editor.isInHistoryMode()) ***REMOVED***
+                    editor.editor.session.doc.setValue(str);
+            ***REMOVED***
         ***REMOVED***
 
             function switchToHistoryMode() ***REMOVED***
