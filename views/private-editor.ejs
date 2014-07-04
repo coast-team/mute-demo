@@ -207,7 +207,9 @@
                     str = coordinator.updateState(str, currentState, newState);    
                 }
                 currentState = newState;
-                editor.editor.session.doc.setValue(str);
+                if(editor.isInHistoryMode()) {
+                    editor.editor.session.doc.setValue(str);
+                }
             }
 
             function switchToHistoryMode() {
