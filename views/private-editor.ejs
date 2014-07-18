@@ -12,7 +12,7 @@
             		<div class="row"> <!-- Demo -->
                         <h1>
                             <strong><%= docID %></strong>
-                            <div class="pull-right">
+                            <span class="pull-right">
                                 <button id="btnHistoryMode" class="btn btn-default" onclick="switchToHistoryMode()">
                                     <span class="glyphicon glyphicon-time" ></span>
                                     Switch to history mode
@@ -32,44 +32,70 @@
                                 <div id="connectionIndicator" class="offline-ui offline-ui-down">
                                     Offline!
                                 </div>
-                            </div>
-
+                            </span>
                         </h1>
             			<div class="col-md-10 col-md-offset-1">
             				<div id="historySlider" class="range range-primary hide">
                                 <button class="btn btn-default btn-sm" type="button" onclick="prevState()">
                                     <span class="glyphicon glyphicon-chevron-left"></span>
                                 </button>
-                                <input id="range" type="range" name="range" min="0" max="1" value="1" oninput="displayState();" onclick="console.log('Yo');displayState();">
-                                <output onchange="displayState();" id="rangePrimary">0</output>
+                                <input id="range" type="range" name="range" min="0" max="1" value="1" oninput="displayState();" onclick="displayState();">
+                                <output id="rangePrimary">0</output>
                                 <button class="btn btn-default btn-sm" type="button" onclick="nextState()">
                                     <span class="glyphicon glyphicon-chevron-right"></span>
                                 </button>
                             </div>
-                            <% include editor %>
-	        				<br>
-                    		<div class="row">
-                                <div class="col-md-6">
-                                   <% include awareness %>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
-                                            <div class="col-sm-7">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
-                                                    <span class="input-group-btn">
-                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;">
-                                                            <img src="/assets/img/icon-clipboard.png">
-                                                        </button>
-                                                    </span>
-                                                </div>
-                                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-10" style="padding-right: 0px;">
+                <% include editor %>
+            </div>
+            <div class="col-md-2" style="padding-top: 15px; padding-left:0px; padding-right: 30px;">
+                <div class="panel-group" id="">
+                    <div class="panel panel-default" style="border: 0px; box-shadow: 0 0px 0px;">
+                        <div class="panel-heading" style="border: 1px solid #ddd">
+                            <h4 class="panel-title">
+                                <span class="glyphicon glyphicon-user" style="margin-right: 10px;"></span>
+                                <strong>Collaborators</strong>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse in">
+                            <ul id="list-collaborators" class="list-group">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+            		<div class="row">
+                        <div class="col-md-6">
+                           <% include awareness %>
+                        </div>
+                        <div class="col-md-6">
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
+                                    <div class="col-sm-7">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
+                                            <span class="input-group-btn">
+                                                <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;">
+                                                    <img src="/assets/img/icon-clipboard.png">
+                                                </button>
+                                            </span>
                                         </div>
-                                    </form>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
             	</div>
@@ -79,6 +105,11 @@
         </div>
 		<% include scripts %>
 		<% include scripts-editor %>
+        <script src="/assets/js/awareness-modules/copy-link.js"></script>
+        <script src="/assets/js/awareness-modules/modification-date.js"></script>
+        <script src="/assets/js/awareness-modules/remote-indicators.js"></script>
+        <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
+        <!-- <script src="/assets/js/awareness-modules/build/infos-users.js"></script> -->
         <% include script-dbjs %>
 		<% include notifications %>
 		<% 
@@ -88,6 +119,7 @@
         %>
 		<script>
 			"use strict";
+            var version = 0;
 
             var serverDB;
             var client;
@@ -95,6 +127,7 @@
             var editor;
             var network;
             var awareness;
+            var infosUsersModule;
 
             var online = false;
             var posting = $.post('/ajax/testConnection');
@@ -102,29 +135,61 @@
                 online = true;
             });
             posting.always(function () {
-                db.open({
-                    server: 'mute',
-                    version: 1,
-                    schema: {
-                        models: {
-                            key: { keyPath: 'id' , autoIncrement: true },
-                            // Optionally add indexes
-                            indexes: {
-                                creationDate: {},
-                                docID: { unique: true },
-                                history: {},
-                                lastModificationDate: {},
-                                replicaNumber: {},
-                                ropes: {},
-                                bufferLocalLogootSOp: {},
-                                mode: {}
-                            }
-                        }
-                    }
-                })
+                openDB()
                 .done(function (s) {
+                    console.log('On passe ici ?');
                     serverDB = s
-                    initPage();
+                    serverDB.docs.query()
+                    .filter('docID', '<%= docID %>')
+                    .execute()
+                    .done(function (results) {
+                        var doc;
+                        if(results.length === 0) {
+                            version = 1;
+                            doc = {
+                                docID: '<%= docID %>',
+                                version: 1
+                            };
+                            serverDB.docs.add(doc)
+                            .done(function (item) {
+                                initPage();
+                            });
+                        }
+                        else {
+                            version = results[0].version + 1;
+                            serverDB.docs.query()
+                            .filter('docID', '<%= docID %>')
+                            .modify({ version: version })
+                            .execute()
+                            .done(function (results) {
+                                initPage();
+                            });
+                        }
+
+                        var interval = setInterval(function () {
+                            serverDB.docs.query()
+                            .filter('docID', '<%= docID %>')
+                            .execute()
+                            .done(function (results) {
+                                if(results.length === 1) {
+                                    if(results[0].version !== version) {
+                                        console.log(results[0].version + ' !== ' + version);
+                                        $('#modalCloseTab').modal('show');
+                                        coordinator.dispose();
+                                        network.dispose();
+                                        editor.disable();
+
+                                        serverDB.close();
+
+                                        coordinator = null;
+                                        editor = null;
+                                        network = null;
+                                        clearInterval(interval);
+                                    }
+                                }
+                            });
+                        }, 3000);
+                    });
                 });
             });
 
@@ -132,6 +197,21 @@
                 coordinator.setEditor(editor);
                 if(online === true) {
                     network = new Mute.SocketIOAdapter(coordinator);
+                    infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
+                    editor.setInfosUsersModule(infosUsersModule);
+                    network.setInfosUsersModule(infosUsersModule);
+                    $('#list-collaborators').collaboratorsListModule({
+                        infosUsersModule: infosUsersModule,
+                        listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
+                    });
+                    $().remoteIndicatorsModule({ 
+                        //coordinator: coordinator,
+                        infosUsersModule: infosUsersModule,
+                        textEditorAdapter: editor,
+                        networkAdapter: network,
+                        cursorsCSSClasses: ['mute-remote-cursor-0', 'mute-remote-cursor-1', 'mute-remote-cursor-2'],
+                        selectionsCSSClasses: ['mute-remote-selection-0', 'mute-remote-selection-1', 'mute-remote-selection-2']
+                    });
                     coordinator.setNetwork(network);
                     network.on('disconnect', function () {
                         $('#btnOfflineMode').addClass('hide');
@@ -164,24 +244,13 @@
                 hljs.initHighlightingOnLoad();
 
                 if(online === true) {
-                    $('#copy-button').tooltip({ container: 'body', delay: { show: 0, hide: 100 } });
-                    client = new ZeroClipboard(document.getElementById("copy-button"));
-
-                    $('#copy-button').on('mouseout', function () {
-                         $('#copy-button').attr('data-original-title', 'copy to clipboard');
-                    });
-
-                    client.on('ready', function (readyEvent) {
-                        client.on('aftercopy', function (event) {
-                            $('#copy-button').attr('data-original-title', 'copied!');
-                            $('#copy-button').tooltip('show');
-                        });
-                    });
+                    $('#copy-button').copyLinkModule();
                 }
 
                 coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
-                awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
+
+                $('#<%= lastModificationDateItemID %>').lastModificationDateModule({ coordinator: coordinator });
                 if(<%= privateDoc %> === false) {
                     initMute();
                 }

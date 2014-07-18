@@ -94,6 +94,7 @@
 		<script src="/assets/js/dbjs/src/db.js"></script>
 		<script src="/assets/js/ace/src/ace.js"></script>
 		<script src="/assets/js/mute-client/build/mute-client.js"></script>
+		<script src="/assets/js/db-helper.js"></script>
        	<script>
        		var serverDB;
        		var coordinator;
@@ -110,34 +111,19 @@
 			     });
 			});
 
-       		db.open({
-                server: 'mute',
-                version: 1,
-                schema: {
-                    models: {
-                        key: { keyPath: 'id' , autoIncrement: true },
-                        // Optionally add indexes
-                        indexes: {
-                            creationDate: {},
-                            docID: { unique: true },
-                            history: {},
-                            lastModificationDate: {},
-                            replicaNumber: {},
-                            ropes: {},
-                            bufferLocalLogootSOp: {}
-                        }
-                    }
-                }
-            })
+       		openDB()
             .done(function (s) {
                 serverDB = s
                	serverDB.models.query()
                	.filter('docID', docID)
                	.execute()
                	.done(function (results) {
+               		console.log('Yo');
                		if(results.length>0) {
                			coordinator = new Mute.Coordinator(docID, serverDB);
                 		editor = new Mute.AceEditorAdapter('editor', coordinator);
+                        infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, null, null, serverDB);
+                        editor.setInfosUsersModule(infosUsersModule);
                 		coordinator.setEditor(editor);
                 		
                 		coordinator.on('updateHistoryScroller', function (data) {
@@ -145,7 +131,9 @@
 		                    displayState();
 		                });
 
+                		console.log('avant init ?');
                 		coordinator.init();
+                		coordinator.toOfflineMode();
                		}
                		else {
                			location.href = '/list';

@@ -39,6 +39,7 @@ var express = require('express'),
 	server = require('http').createServer(app),
 	Coordinator = require('mute-server').Coordinator,
 	SocketIOAdapter = require('mute-server').SocketIOAdapter,
+	InfosUsersModule = require('mute-server').InfosUsersModule,
 	nodemailer = require('nodemailer'),
 	cacheManifest = require('connect-cache-manifest');
 
@@ -114,7 +115,9 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 var delay = 0;
 var coordinator = new Coordinator(db);
-var socketIOAdapter = new SocketIOAdapter(server, coordinator, delay);
+var infosUsersModule = new InfosUsersModule();
+var socketIOAdapter = new SocketIOAdapter(server, coordinator, infosUsersModule, delay);
+infosUsersModule.setNetwork(socketIOAdapter);
 coordinator.setNetwork(socketIOAdapter);
 
 var docs = {};
@@ -345,6 +348,14 @@ app.use(cacheManifest({
 		{
 			file: __dirname + '/assets/js/mute.js',
 			path: '/assets/js/mute.js'
+		},
+		{
+			file: __dirname + '/assets/js/dbjs/src/db.js',
+			path: '/assets/js/dbjs/src/db.js'
+		},
+		{
+			file: __dirname + '/assets/js/db-helper.js',
+			path: '/assets/js/db-helper.js'
 		},
 		{
 			dir: __dirname + '/assets/js/ace/src',

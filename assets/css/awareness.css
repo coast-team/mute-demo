@@ -20,6 +20,21 @@
   position: absolute;
   z-index: 2;
 }
+.mute-collaborator-indicator {
+  margin-right: 10px;
+}
+.mute-collaborator-indicator-0 {
+  color: #fc0003;
+  margin-right: 10px;
+}
+.mute-collaborator-indicator-1 {
+  color: #0099ff;
+  margin-right: 10px;
+}
+.mute-collaborator-indicator-2 {
+  color: #33cc33;
+  margin-right: 10px;
+}
 .mute-remote-cursor-0 {
   border-left: 2px solid #fc0003;
   position: absolute;

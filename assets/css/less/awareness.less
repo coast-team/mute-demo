@@ -1,0 +1,84 @@
+@borderGray: #CCC;
+@cursorRed: #FC0003;
+@selectionRed: #FF9697;
+@cursorBlue: #0099FF;
+@selectionBlue: #B5E1FF;
+@cursorGreen: #33CC33;
+@selectionGreen: #B9DBB9;
+
+ .mute-remote-cursor {
+	position: absolute;
+	z-index: 2;
+	.name {
+		font-size: 0.8em;
+		color: white;
+		padding: 2px 6px;
+		border-radius: 3px 3px 3px 0;
+		position: absolute;
+		left: -4px;
+	}
+	.nubbin {
+		height: 6px;
+		width: 6px;
+		position: absolute;
+		left: -4px;
+	}
+}
+
+.mute-remote-selection {
+  position: absolute;
+  z-index: 2;  
+}
+
+.mute-collaborator-indicator {
+	margin-right: 10px;
+}
+
+.mute-collaborator-indicator-0 {
+	color: @cursorRed;
+	.mute-collaborator-indicator;
+}
+
+.mute-collaborator-indicator-1 {
+	color: @cursorBlue;
+	.mute-collaborator-indicator;
+}
+
+.mute-collaborator-indicator-2 {
+	color: @cursorGreen;
+	.mute-collaborator-indicator;
+}
+
+.mute-remote-cursor-0 {
+	border-left: 2px solid @cursorRed;
+	.name, .nubbin {
+		background-color: @cursorRed;
+	};
+	.mute-remote-cursor;
+}
+.mute-remote-selection-0 {
+	background-color: @selectionRed;
+	.mute-remote-selection
+}
+.mute-remote-cursor-1 {
+	border-left: 2px solid @cursorBlue;
+	.name, .nubbin {
+		background-color: @cursorBlue;
+	};
+	.mute-remote-cursor;
+}
+.mute-remote-selection-1 {
+	background-color: @selectionBlue;
+	.mute-remote-selection
+}
+.mute-remote-cursor-2 {
+	border-left: 2px solid @cursorGreen;
+	.name, .nubbin {
+		background-color: @cursorGreen;
+	};
+	.mute-remote-cursor;
+}
+.mute-remote-selection-2 {
+	background-color: @selectionGreen;
+	.mute-remote-selection
+}
