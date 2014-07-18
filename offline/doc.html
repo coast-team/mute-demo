@@ -94,6 +94,7 @@
 		<script src="/assets/js/dbjs/src/db.js"></script>
 		<script src="/assets/js/ace/src/ace.js"></script>
 		<script src="/assets/js/mute-client/build/mute-client.js"></script>
+		<script src="/assets/js/db-helper.js"></script>
        	<script>
        		var serverDB;
        		var coordinator;
@@ -110,34 +111,19 @@
 			 ***REMOVED***);
 			***REMOVED***);
 
-       		db.open(***REMOVED***
-                server: 'mute',
-                version: 1,
-                schema: ***REMOVED***
-                    models: ***REMOVED***
-                        key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
-                        // Optionally add indexes
-                        indexes: ***REMOVED***
-                            creationDate: ***REMOVED******REMOVED***,
-                            docID: ***REMOVED*** unique: true ***REMOVED***,
-                            history: ***REMOVED******REMOVED***,
-                            lastModificationDate: ***REMOVED******REMOVED***,
-                            replicaNumber: ***REMOVED******REMOVED***,
-                            ropes: ***REMOVED******REMOVED***,
-                            bufferLocalLogootSOp: ***REMOVED******REMOVED***
-                    ***REMOVED***
-                ***REMOVED***
-            ***REMOVED***
-        ***REMOVED***)
+       		openDB()
             .done(function (s) ***REMOVED***
                 serverDB = s
                	serverDB.models.query()
                	.filter('docID', docID)
                	.execute()
                	.done(function (results) ***REMOVED***
+               		console.log('Yo');
                		if(results.length>0) ***REMOVED***
                			coordinator = new Mute.Coordinator(docID, serverDB);
                 		editor = new Mute.AceEditorAdapter('editor', coordinator);
+                        infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, null, null, serverDB);
+                        editor.setInfosUsersModule(infosUsersModule);
                 		coordinator.setEditor(editor);
                 		
                 		coordinator.on('updateHistoryScroller', function (data) ***REMOVED***
@@ -145,7 +131,9 @@
 		                    displayState();
 		            ***REMOVED***);
 
+                		console.log('avant init ?');
                 		coordinator.init();
+                		coordinator.toOfflineMode();
                		***REMOVED***
                		else ***REMOVED***
                			location.href = '/list';

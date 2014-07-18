@@ -12,7 +12,7 @@
             		<div class="row"> <!-- Demo -->
                         <h1>
                             <strong><%= docID %></strong>
-                            <div class="pull-right">
+                            <span class="pull-right">
                                 <button id="btnHistoryMode" class="btn btn-default" onclick="switchToHistoryMode()">
                                     <span class="glyphicon glyphicon-time" ></span>
                                     Switch to history mode
@@ -32,44 +32,70 @@
                                 <div id="connectionIndicator" class="offline-ui offline-ui-down">
                                     Offline!
                                 </div>
-                            </div>
-
+                            </span>
                         </h1>
             			<div class="col-md-10 col-md-offset-1">
             				<div id="historySlider" class="range range-primary hide">
                                 <button class="btn btn-default btn-sm" type="button" onclick="prevState()">
                                     <span class="glyphicon glyphicon-chevron-left"></span>
                                 </button>
-                                <input id="range" type="range" name="range" min="0" max="1" value="1" oninput="displayState();" onclick="console.log('Yo');displayState();">
-                                <output onchange="displayState();" id="rangePrimary">0</output>
+                                <input id="range" type="range" name="range" min="0" max="1" value="1" oninput="displayState();" onclick="displayState();">
+                                <output id="rangePrimary">0</output>
                                 <button class="btn btn-default btn-sm" type="button" onclick="nextState()">
                                     <span class="glyphicon glyphicon-chevron-right"></span>
                                 </button>
                             </div>
-                            <% include editor %>
-	        				<br>
-                    		<div class="row">
-                                <div class="col-md-6">
-                                   <% include awareness %>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
-                                            <div class="col-sm-7">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
-                                                    <span class="input-group-btn">
-                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;">
-                                                            <img src="/assets/img/icon-clipboard.png">
-                                                        </button>
-                                                    </span>
-                                                </div>
-                                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-10" style="padding-right: 0px;">
+                <% include editor %>
+            </div>
+            <div class="col-md-2" style="padding-top: 15px; padding-left:0px; padding-right: 30px;">
+                <div class="panel-group" id="">
+                    <div class="panel panel-default" style="border: 0px; box-shadow: 0 0px 0px;">
+                        <div class="panel-heading" style="border: 1px solid #ddd">
+                            <h4 class="panel-title">
+                                <span class="glyphicon glyphicon-user" style="margin-right: 10px;"></span>
+                                <strong>Collaborators</strong>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse in">
+                            <ul id="list-collaborators" class="list-group">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+            		<div class="row">
+                        <div class="col-md-6">
+                           <% include awareness %>
+                        </div>
+                        <div class="col-md-6">
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
+                                    <div class="col-sm-7">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
+                                            <span class="input-group-btn">
+                                                <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;">
+                                                    <img src="/assets/img/icon-clipboard.png">
+                                                </button>
+                                            </span>
                                         </div>
-                                    </form>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
             	</div>
@@ -79,6 +105,11 @@
         </div>
 		<% include scripts %>
 		<% include scripts-editor %>
+        <script src="/assets/js/awareness-modules/copy-link.js"></script>
+        <script src="/assets/js/awareness-modules/modification-date.js"></script>
+        <script src="/assets/js/awareness-modules/remote-indicators.js"></script>
+        <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
+        <!-- <script src="/assets/js/awareness-modules/build/infos-users.js"></script> -->
         <% include script-dbjs %>
 		<% include notifications %>
 		<% 
@@ -88,6 +119,7 @@
         %>
 		<script>
 			"use strict";
+            var version = 0;
 
             var serverDB;
             var client;
@@ -95,6 +127,7 @@
             var editor;
             var network;
             var awareness;
+            var infosUsersModule;
 
             var online = false;
             var posting = $.post('/ajax/testConnection');
@@ -102,29 +135,61 @@
                 online = true;
         ***REMOVED***);
             posting.always(function () ***REMOVED***
-                db.open(***REMOVED***
-                    server: 'mute',
-                    version: 1,
-                    schema: ***REMOVED***
-                        models: ***REMOVED***
-                            key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
-                            // Optionally add indexes
-                            indexes: ***REMOVED***
-                                creationDate: ***REMOVED******REMOVED***,
-                                docID: ***REMOVED*** unique: true ***REMOVED***,
-                                history: ***REMOVED******REMOVED***,
-                                lastModificationDate: ***REMOVED******REMOVED***,
-                                replicaNumber: ***REMOVED******REMOVED***,
-                                ropes: ***REMOVED******REMOVED***,
-                                bufferLocalLogootSOp: ***REMOVED******REMOVED***,
-                                mode: ***REMOVED******REMOVED***
-                        ***REMOVED***
-                    ***REMOVED***
-                ***REMOVED***
-            ***REMOVED***)
+                openDB()
                 .done(function (s) ***REMOVED***
+                    console.log('On passe ici ?');
                     serverDB = s
-                    initPage();
+                    serverDB.docs.query()
+                    .filter('docID', '<%= docID %>')
+                    .execute()
+                    .done(function (results) ***REMOVED***
+                        var doc;
+                        if(results.length === 0) ***REMOVED***
+                            version = 1;
+                            doc = ***REMOVED***
+                                docID: '<%= docID %>',
+                                version: 1
+                        ***REMOVED***;
+                            serverDB.docs.add(doc)
+                            .done(function (item) ***REMOVED***
+                                initPage();
+                        ***REMOVED***);
+                    ***REMOVED***
+                        else ***REMOVED***
+                            version = results[0].version + 1;
+                            serverDB.docs.query()
+                            .filter('docID', '<%= docID %>')
+                            .modify(***REMOVED*** version: version ***REMOVED***)
+                            .execute()
+                            .done(function (results) ***REMOVED***
+                                initPage();
+                        ***REMOVED***);
+                    ***REMOVED***
+
+                        var interval = setInterval(function () ***REMOVED***
+                            serverDB.docs.query()
+                            .filter('docID', '<%= docID %>')
+                            .execute()
+                            .done(function (results) ***REMOVED***
+                                if(results.length === 1) ***REMOVED***
+                                    if(results[0].version !== version) ***REMOVED***
+                                        console.log(results[0].version + ' !== ' + version);
+                                        $('#modalCloseTab').modal('show');
+                                        coordinator.dispose();
+                                        network.dispose();
+                                        editor.disable();
+
+                                        serverDB.close();
+
+                                        coordinator = null;
+                                        editor = null;
+                                        network = null;
+                                        clearInterval(interval);
+                                ***REMOVED***
+                            ***REMOVED***
+                        ***REMOVED***);
+                    ***REMOVED*** 3000);
+                ***REMOVED***);
             ***REMOVED***);
         ***REMOVED***);
 
@@ -132,6 +197,21 @@
                 coordinator.setEditor(editor);
                 if(online === true) ***REMOVED***
                     network = new Mute.SocketIOAdapter(coordinator);
+                    infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
+                    editor.setInfosUsersModule(infosUsersModule);
+                    network.setInfosUsersModule(infosUsersModule);
+                    $('#list-collaborators').collaboratorsListModule(***REMOVED***
+                        infosUsersModule: infosUsersModule,
+                        listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
+                ***REMOVED***);
+                    $().remoteIndicatorsModule(***REMOVED*** 
+                        //coordinator: coordinator,
+                        infosUsersModule: infosUsersModule,
+                        textEditorAdapter: editor,
+                        networkAdapter: network,
+                        cursorsCSSClasses: ['mute-remote-cursor-0', 'mute-remote-cursor-1', 'mute-remote-cursor-2'],
+                        selectionsCSSClasses: ['mute-remote-selection-0', 'mute-remote-selection-1', 'mute-remote-selection-2']
+                ***REMOVED***);
                     coordinator.setNetwork(network);
                     network.on('disconnect', function () ***REMOVED***
                         $('#btnOfflineMode').addClass('hide');
@@ -164,24 +244,13 @@
                 hljs.initHighlightingOnLoad();
 
                 if(online === true) ***REMOVED***
-                    $('#copy-button').tooltip(***REMOVED*** container: 'body', delay: ***REMOVED*** show: 0, hide: 100 ***REMOVED*** ***REMOVED***);
-                    client = new ZeroClipboard(document.getElementById("copy-button"));
-
-                    $('#copy-button').on('mouseout', function () ***REMOVED***
-                         $('#copy-button').attr('data-original-title', 'copy to clipboard');
-                ***REMOVED***);
-
-                    client.on('ready', function (readyEvent) ***REMOVED***
-                        client.on('aftercopy', function (event) ***REMOVED***
-                            $('#copy-button').attr('data-original-title', 'copied!');
-                            $('#copy-button').tooltip('show');
-                    ***REMOVED***);
-                ***REMOVED***);
+                    $('#copy-button').copyLinkModule();
             ***REMOVED***
 
                 coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
-                awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
+
+                $('#<%= lastModificationDateItemID %>').lastModificationDateModule(***REMOVED*** coordinator: coordinator ***REMOVED***);
                 if(<%= privateDoc %> === false) ***REMOVED***
                     initMute();
             ***REMOVED***

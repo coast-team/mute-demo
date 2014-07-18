@@ -2,7 +2,6 @@ var AwarenessAdapter = function (coordinator, textEditorAdapter, itemNbOperation
 	var awarenessAdapter = this;
 	this.coordinator = coordinator;
     this.textEditorAdapter = textEditorAdapter;
-
     this.nbColors = 3;
 
 	this.itemNbOperations = itemNbOperations;
@@ -75,9 +74,10 @@ AwarenessAdapter.prototype.updateRemoteIndicators = function (data) ***REMOVED**
 
     this.textEditorAdapter.clearRemoteIndicators();
     for(userID in infosUsers) ***REMOVED***
-        color = userID%this.nbColors;
         infosUser = infosUsers[userID];
-        this.textEditorAdapter.addRemoteCursor(infosUser.indexCursor, userID, 'mute-remote-cursor-'+color);
+        console.log('infosUsers: ', infosUsers);
+        color = userID/*infosUser.replicaNumber*/%this.nbColors;
+        this.textEditorAdapter.addRemoteCursor(infosUser.indexCursor, userID/*infosUser.replicaNumber*/, 'mute-remote-cursor-'+color);
         this.textEditorAdapter.addRemoteSelection(infosUser.selections, 'mute-remote-selection-'+color);
 ***REMOVED***;
 

@@ -89,6 +89,7 @@
 		<script src="/assets/js/highlightjs.min.js"></script>
 		<script src ="/assets/js/mute.js"></script>
 		<script src="/assets/js/dbjs/src/db.js"></script>
+		<script src="/assets/js/db-helper.js"></script>
        	<script>
        		function accessDoc() ***REMOVED***
        			location.href = '/doc/' + $('#access-document').val();
@@ -106,25 +107,7 @@
 			if ( location.hash !== '#iframed' ) ***REMOVED***
 				// We only want to render and use the page if we're not in the hidden iframe
 				var serverDB;
-	       		db.open(***REMOVED***
-	                server: 'mute',
-	                version: 1,
-	                schema: ***REMOVED***
-	                    models: ***REMOVED***
-	                        key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
-	                        // Optionally add indexes
-	                        indexes: ***REMOVED***
-	                            creationDate: ***REMOVED******REMOVED***,
-	                            docID: ***REMOVED*** unique: true ***REMOVED***,
-	                            history: ***REMOVED******REMOVED***,
-	                            lastModificationDate: ***REMOVED******REMOVED***,
-	                            replicaNumber: ***REMOVED******REMOVED***,
-	                            ropes: ***REMOVED******REMOVED***,
-	                            bufferLocalLogootSOp: ***REMOVED******REMOVED***
-	                    ***REMOVED***
-	                ***REMOVED***
-	            ***REMOVED***
-	        ***REMOVED***)
+	       		openDB()
 	            .done(function (s) ***REMOVED***
 	                serverDB = s
 	               	serverDB.models.query()

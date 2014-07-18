@@ -51,27 +51,10 @@
 		<script src="/assets/js/highlightjs.min.js"></script>
 		<script src ="/assets/js/mute.js"></script>
 		<script src="/assets/js/dbjs/src/db.js"></script>
+       	<script src="/assets/js/db-helper.js"></script>
        	<script>
        		var serverDB;
-       		db.open(***REMOVED***
-                server: 'mute',
-                version: 1,
-                schema: ***REMOVED***
-                    models: ***REMOVED***
-                        key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
-                        // Optionally add indexes
-                        indexes: ***REMOVED***
-                            creationDate: ***REMOVED******REMOVED***,
-                            docID: ***REMOVED*** unique: true ***REMOVED***,
-                            history: ***REMOVED******REMOVED***,
-                            lastModificationDate: ***REMOVED******REMOVED***,
-                            replicaNumber: ***REMOVED******REMOVED***,
-                            ropes: ***REMOVED******REMOVED***,
-                            bufferLocalLogootSOp: ***REMOVED******REMOVED***
-                    ***REMOVED***
-                ***REMOVED***
-            ***REMOVED***
-        ***REMOVED***)
+       		openDB()
             .done(function (s) ***REMOVED***
                 serverDB = s
                	serverDB.models.query()
