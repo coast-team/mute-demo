@@ -103,6 +103,34 @@
            	<hr>
             <% include footer %>
         </div>
+
+        <div class="modal fade" id="modalCloseTab" tabindex="-1" role="dialog" aria-labelledby="modalCloseTabLabel" data-backdrop="static" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="modalCloseTabLabel">Open in a new tab</h4>
+                    </div>
+                    <div id="modal-body" class="modal-body">
+                        <p class="lead">
+                            This document has been opened in another tab/window. In order to avoid some mischievous bugs, you can no longer edit this document using this tab/window. Please go back to your documents list.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Dismiss pop-up
+                        </button>
+                        <a href="/list" type="button" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-list"></span>
+                            Documents list
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 		<% include scripts %>
 		<% include scripts-editor %>
         <script src="/assets/js/awareness-modules/copy-link.js"></script>
@@ -205,7 +233,6 @@
                         listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
                 ***REMOVED***);
                     $().remoteIndicatorsModule(***REMOVED*** 
-                        //coordinator: coordinator,
                         infosUsersModule: infosUsersModule,
                         textEditorAdapter: editor,
                         networkAdapter: network,
