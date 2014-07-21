@@ -15,7 +15,6 @@
             <div class="row">
             	<div class="col-md-12"> <!-- Main content -->
             		<div class="row"> <!-- Demo -->
-<<<<<<< HEAD
             			<h1>
                             <strong>Try MUTE, the Multi-User Text Editor</strong>
                             <span class="pull-right">
@@ -59,35 +58,6 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12"> <!-- Main content -->
-=======
-            			<h1><strong>Try MUTE, the Multi-User Text Editor</strong></h1>
-            			<div class="col-md-12">
-	        				<% include editor %>
-	        				<br>
-                            <div class="row">
-                                <div class="col-md-6">
-	        				       <% include awareness %>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
-                                            <div class="col-sm-7">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
-                                                    <span class="input-group-btn">
-                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;"><img src="assets/img/icon-clipboard.png"></button>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-            		</div> <!-- End demo -->
-            		<hr>
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
             		<div class="row"> <!-- Additionnal informations -->
             			<div class="col-md-4">
             				<h1><strong>What's MUTE ?</strong></h1>
@@ -107,8 +77,6 @@
             <hr>
             <% include footer %>
         </div>
-<<<<<<< HEAD
-
         <div class="modal fade" id="modalCloseTab" tabindex="-1" role="dialog" aria-labelledby="modalCloseTabLabel" data-backdrop="static" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -136,17 +104,12 @@
             </div>
         </div>
 
-=======
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 		<% include scripts %>
         <% include scripts-editor %>
         <% include script-dbjs %>
         <% include notifications %>
-<<<<<<< HEAD
         <script src="/assets/js/awareness-modules/remote-indicators.js"></script>
         <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
-=======
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 		<script>
 			"use strict";
 
@@ -155,12 +118,9 @@
             var editor;
             var network;
             var awareness;
-<<<<<<< HEAD
             var iframeAdded = false;
             var version = 0;
             var infosUsersModule;
-=======
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 
             var online = false;
             var posting = $.post('/ajax/testConnection');
@@ -172,7 +132,6 @@
                 location.href = '/list';
             });
             posting.always(function () {
-<<<<<<< HEAD
                 openDB()
                 .done(function (s) {
                     console.log('On passe ici ?');
@@ -226,30 +185,6 @@
                             });
                         }, 3000);
                     });
-=======
-                db.open({
-                    server: 'mute',
-                    version: 1,
-                    schema: {
-                        models: {
-                            key: { keyPath: 'id' , autoIncrement: true },
-                            // Optionally add indexes
-                            indexes: {
-                                creationDate: {},
-                                docID: { unique: true },
-                                history: {},
-                                lastModificationDate: {},
-                                replicaNumber: {},
-                                ropes: {},
-                                bufferLocalLogootSOp: {}
-                            }
-                        }
-                    }
-                })
-                .done(function (s) {
-                    serverDB = s
-                    initPage();
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
                 });
             });
 
@@ -261,27 +196,6 @@
                 console.log('Online:', online);
 
                 hljs.initHighlightingOnLoad();
-
-<<<<<<< HEAD
-=======
-                if(online === true) {
-                    $('#copy-button').tooltip({ container: 'body', delay: { show: 0, hide: 100 } });
-                    client = new ZeroClipboard(document.getElementById("copy-button"));
-
-                    $('#copy-button').on('mouseout', function () {
-                         $('#copy-button').attr('data-original-title', 'copy to clipboard');
-                    });
-
-                    client.on( "ready", function( readyEvent ) {
-                        client.on( "aftercopy", function( event ) {
-                            $('#copy-button').attr('data-original-title', 'copied!');
-                            $('#copy-button').tooltip('show');
-                        } );
-                    });
-                }
-
-
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
                 currentState = 0;
                 str = '';
 
@@ -290,7 +204,6 @@
                 coordinator.setEditor(editor);
                 if(online === true) {
                     network = new Mute.SocketIOAdapter(coordinator);
-<<<<<<< HEAD
                     infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
                     editor.setInfosUsersModule(infosUsersModule);
                     network.setInfosUsersModule(infosUsersModule);
@@ -352,14 +265,6 @@
                     $('#iframeAppCache')[0].contentWindow.applicationCache.update();
                 }
             }
-=======
-                    coordinator.setNetwork(network);
-                }
-                awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
-                coordinator.init();
-                console.log('<%= docID %>');
-            }
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
         </script>
 	</body>
 </html>

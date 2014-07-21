@@ -26,7 +26,6 @@
 					<a class="navbar-brand" href="/list">MUTE</a>
 				</div>
 				<div class="collapse navbar-collapse">
-<<<<<<< HEAD
 					<div id="divAccess" class="navbar-form navbar-left">
 						<div class="form-group">
 							<input type="text" class="form-control" id="access-document" name="docID" placeholder="Access a document">
@@ -35,16 +34,6 @@
 					</div>
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="/list"><span class="glyphicon glyphicon-list"></span>&nbsp;List</a></li>
-=======
-					<form id="formAccess" class="navbar-form navbar-left" method="get" action="/accessDoc">
-						<div class="form-group">
-							<input type="text" class="form-control" id="access-document" name="docID" placeholder="Access a document">
-						</div>
-						<button type="submit" class="btn btn-default">Access</button>
-					</form>
-					<ul class="nav navbar-nav navbar-right">
-						<li><a href="/list">List</a></li>
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 					</ul>
 				</div><!--/.nav-collapse -->
 			</div>
@@ -56,19 +45,11 @@
 		        		<h1>
 		        			<strong id="docTitle">Demo</strong>
 		        			<button id="btnHistoryMode" class="btn btn-default pull-right" onclick="switchToHistoryMode()">
-<<<<<<< HEAD
 		        				<span class="glyphicon glyphicon-time" ></span>
 		        				Switch to history mode
 		        			</button>
 		        			<button id="btnEditionMode" class="btn btn-default pull-right hide" onclick="switchToEditionMode()">
 		        				<span class="glyphicon glyphicon-pencil"></span>
-=======
-		        				<span class="glyphicon glyphicon-time" >&nbsp;</span>
-		        				Switch to history mode
-		        			</button>
-		        			<button id="btnEditionMode" class="btn btn-default pull-right hide" onclick="switchToEditionMode()">
-		        				<span class="glyphicon glyphicon-pencil" >&nbsp;</span>
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 		        				Switch to edition mode
 		        			</button>
 		        		</h1>
@@ -113,10 +94,7 @@
 		<script src="/assets/js/dbjs/src/db.js"></script>
 		<script src="/assets/js/ace/src/ace.js"></script>
 		<script src="/assets/js/mute-client/build/mute-client.js"></script>
-<<<<<<< HEAD
 		<script src="/assets/js/db-helper.js"></script>
-=======
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
        	<script>
        		var serverDB;
        		var coordinator;
@@ -124,7 +102,6 @@
             var docID = getDocID();
             $('#docTitle').html(docID);
             
-<<<<<<< HEAD
             $(function() {
 			    $('#access-document').keypress(function(e) {
 			            // Enter pressed?
@@ -135,45 +112,18 @@
 			});
 
        		openDB()
-=======
-       		db.open({
-                server: 'mute',
-                version: 1,
-                schema: {
-                    models: {
-                        key: { keyPath: 'id' , autoIncrement: true },
-                        // Optionally add indexes
-                        indexes: {
-                            creationDate: {},
-                            docID: { unique: true },
-                            history: {},
-                            lastModificationDate: {},
-                            replicaNumber: {},
-                            ropes: {},
-                            bufferLocalLogootSOp: {}
-                        }
-                    }
-                }
-            })
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
             .done(function (s) {
                 serverDB = s
                	serverDB.models.query()
                	.filter('docID', docID)
                	.execute()
                	.done(function (results) {
-<<<<<<< HEAD
                		console.log('Yo');
                		if(results.length>0) {
                			coordinator = new Mute.Coordinator(docID, serverDB);
                 		editor = new Mute.AceEditorAdapter('editor', coordinator);
                         infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, null, null, serverDB);
                         editor.setInfosUsersModule(infosUsersModule);
-=======
-               		if(results.length>0) {
-               			coordinator = new Mute.Coordinator(docID, serverDB);
-                		editor = new Mute.AceEditorAdapter('editor', coordinator);
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
                 		coordinator.setEditor(editor);
                 		
                 		coordinator.on('updateHistoryScroller', function (data) {
@@ -181,16 +131,12 @@
 		                    displayState();
 		                });
 
-<<<<<<< HEAD
                 		console.log('avant init ?');
                 		coordinator.init();
                 		coordinator.toOfflineMode();
                		}
                		else {
                			location.href = '/list';
-=======
-                		coordinator.init();
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
                		}
                	});
             });
@@ -225,11 +171,7 @@
             	$('#btnHistoryMode').addClass('hide');
             	$('#btnEditionMode').removeClass('hide');
             	$('#historySlider').removeClass('hide');
-<<<<<<< HEAD
             	coordinator.editor.toHistoryMode();
-=======
-            	coordinator.editor.switchToHistoryMode();
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
             	$('#range').attr('max', length);
             	displayState();
             }
@@ -239,14 +181,8 @@
             	$('#historySlider').addClass('hide');
             	$('#btnHistoryMode').removeClass('hide');
             	editor.editor.session.doc.setValue(coordinator.ropes.str);
-<<<<<<< HEAD
             	coordinator.editor.toEditionMode();
             }
-=======
-            	coordinator.editor.switchToEditionMode();
-            }
-
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
    		</script>
     </body>
 </html>
