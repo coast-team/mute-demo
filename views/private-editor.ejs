@@ -56,11 +56,35 @@
                 <% include editor %>
             </div>
             <div class="col-md-2" style="padding-top: 15px; padding-left:0px; padding-right: 30px;">
-                <div class="panel-group" id="">
-                    <div class="panel panel-default" style="border: 0px; box-shadow: 0 0px 0px;">
+                <div class="panel-group">
+                    <div class="panel panel-default">
                         <div class="panel-heading" style="border: 1px solid #ddd">
                             <h4 class="panel-title">
                                 <span class="glyphicon glyphicon-user" style="margin-right: 10px;"></span>
+                                <strong>Your username</strong>
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form" role="form">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" class="form-control" id="inputUsername" placeholder="Enter username">
+                                    </div>
+                                </div>
+                                <br>
+                                <center>
+                                    <button type="button" id="btnUsername" class="btn btn-primary" onclick="updateUsername()" data-toggle="tooltip" data-placement="bottom" title="Username updated!">Submit</button>
+                                </center>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-group">
+                    <div class="panel panel-default" style="border: 0px; box-shadow: 0 0px 0px;">
+                        <div class="panel-heading" style="border: 1px solid #ddd">
+                            <h4 class="panel-title">
+                                <span class="glyphicon glyphicon-th-list" style="margin-right: 10px;"></span>
                                 <strong>Collaborators</strong>
                             </h4>
                         </div>
@@ -136,6 +160,7 @@
         <script src="/assets/js/awareness-modules/modification-date.js"></script>
         <script src="/assets/js/awareness-modules/remote-indicators.js"></script>
         <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
+        <script src="/assets/js/awareness-modules/username.js"></script>
         <!-- <script src="/assets/js/awareness-modules/build/infos-users.js"></script> -->
         <% include script-dbjs %>
 		<% include notifications %>
@@ -146,8 +171,9 @@
         %>
 		<script>
 			"use strict";
-            var version = 0;
+            var connexionID = 0;
 
+            var timeoutUpdateUsername = null;
             var serverDB;
             var client;
             var coordinator;
@@ -172,10 +198,10 @@
                     .done(function (results) ***REMOVED***
                         var doc;
                         if(results.length === 0) ***REMOVED***
-                            version = 1;
+                            connexionID = 1;
                             doc = ***REMOVED***
                                 docID: '<%= docID %>',
-                                version: 1
+                                connexionID: 1
                         ***REMOVED***;
                             serverDB.docs.add(doc)
                             .done(function (item) ***REMOVED***
@@ -183,10 +209,10 @@
                         ***REMOVED***);
                     ***REMOVED***
                         else ***REMOVED***
-                            version = results[0].version + 1;
+                            connexionID = results[0].connexionID + 1;
                             serverDB.docs.query()
                             .filter('docID', '<%= docID %>')
-                            .modify(***REMOVED*** version: version ***REMOVED***)
+                            .modify(***REMOVED*** connexionID: connexionID ***REMOVED***)
                             .execute()
                             .done(function (results) ***REMOVED***
                                 initPage();
@@ -199,8 +225,8 @@
                             .execute()
                             .done(function (results) ***REMOVED***
                                 if(results.length === 1) ***REMOVED***
-                                    if(results[0].version !== version) ***REMOVED***
-                                        console.log(results[0].version + ' !== ' + version);
+                                    if(results[0].connexionID !== connexionID) ***REMOVED***
+                                        console.log(results[0].connexionID + ' !== ' + connexionID);
                                         $('#modalCloseTab').modal('show');
                                         coordinator.dispose();
                                         network.dispose();
@@ -228,6 +254,9 @@
                     infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
                     editor.setInfosUsersModule(infosUsersModule);
                     network.setInfosUsersModule(infosUsersModule);
+                    $('#inputUsername').UsernameModule(***REMOVED***
+                        infosUsersModule: infosUsersModule
+                ***REMOVED***);
                     $('#list-collaborators').collaboratorsListModule(***REMOVED***
                         infosUsersModule: infosUsersModule,
                         listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
@@ -336,7 +365,21 @@
                 coordinator.toOfflineMode();
         ***REMOVED***
 
+            function updateUsername() ***REMOVED***
+                timeoutUpdateUsername = setTimeout(function () ***REMOVED***
+                    // Encode the username to avoid some Javascript injections
+                    var username = $('<div/>').text($('#inputUsername').val()).html();
+                    infosUsersModule.updateLocalUsername(username);
+                    $('#btnUsername').tooltip('hide');
+                    clearTimeout(timeoutUpdateUsername);
+            ***REMOVED*** 1000);
+        ***REMOVED***
+
             console.log('docID: <%= docID %>');
+
+            $('#btnUsername').tooltip(***REMOVED***
+                trigger: 'click',
+        ***REMOVED***);
         </script>
 	</body>
 </html>
