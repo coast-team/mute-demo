@@ -130,6 +130,7 @@
         <% include notifications %>
         <script src="/assets/js/awareness-modules/remote-indicators.js"></script>
         <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
+        <script src="/assets/js/awareness-modules/username.js"></script>
 		<script>
 			"use strict";
 
@@ -228,6 +229,9 @@
                     infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
                     editor.setInfosUsersModule(infosUsersModule);
                     network.setInfosUsersModule(infosUsersModule);
+                    $('#inputUsername').UsernameModule({
+                        infosUsersModule: infosUsersModule
+                    });
                     $('#list-collaborators').collaboratorsListModule({
                         infosUsersModule: infosUsersModule,
                         listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
