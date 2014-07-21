@@ -10,6 +10,7 @@
             <div class="row">
             	<div class="col-md-12"> <!-- Main content -->
             		<div class="row"> <!-- Demo -->
+<<<<<<< HEAD
                         <h1>
                             <strong><%= docID %></strong>
                             <span class="pull-right">
@@ -96,6 +97,32 @@
                                     </div>
                                 </div>
                             </form>
+=======
+                        <h1><strong>Edition mode</strong><a href="/doc/<%= docID %>/history" class="btn btn-default pull-right"><span class="glyphicon glyphicon-time">&nbsp;</span>Switch to history mode</a></h1>
+            			<div class="col-md-10 col-md-offset-1">
+            				<% include editor %>
+	        				<br>
+                    		<div class="row">
+                                <div class="col-md-6">
+                                   <% include awareness %>
+                                </div>
+                                <div class="col-md-6">
+                                    <form class="form-horizontal" role="form">
+                                        <div class="form-group">
+                                            <label for="link" class="col-sm-5 control-label">Invite your friends:</label>
+                                            <div class="col-sm-7">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="link" value="<%= link %>" readonly="readonly" style="background-color: white;">
+                                                    <span class="input-group-btn">
+                                                        <button type="button" id="copy-button" class="btn btn-default" data-clipboard-text="<%= link %>" data-toggle="tooltip" data-placement="bottom" title="copy to clipboard" style="height:34px;"><img src="assets/img/icon-clipboard.png"></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
                         </div>
                     </div>
             	</div>
@@ -103,6 +130,7 @@
            	<hr>
             <% include footer %>
         </div>
+<<<<<<< HEAD
 
         <div class="modal fade" id="modalCloseTab" tabindex="-1" role="dialog" aria-labelledby="modalCloseTabLabel" data-backdrop="static" aria-hidden="true">
             <div class="modal-dialog">
@@ -138,6 +166,10 @@
         <script src="/assets/js/awareness-modules/remote-indicators.js"></script>
         <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
         <!-- <script src="/assets/js/awareness-modules/build/infos-users.js"></script> -->
+=======
+		<% include scripts %>
+		<% include scripts-editor %>
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
         <% include script-dbjs %>
 		<% include notifications %>
 		<% 
@@ -147,7 +179,10 @@
         %>
 		<script>
 			"use strict";
+<<<<<<< HEAD
             var version = 0;
+=======
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 
             var serverDB;
             var client;
@@ -155,11 +190,15 @@
             var editor;
             var network;
             var awareness;
+<<<<<<< HEAD
             var infosUsersModule;
+=======
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 
             var online = false;
             var posting = $.post('/ajax/testConnection');
             posting.done(function (data) ***REMOVED***
+<<<<<<< HEAD
                 online = true;
         ***REMOVED***);
             posting.always(function () ***REMOVED***
@@ -218,6 +257,34 @@
                         ***REMOVED***);
                     ***REMOVED*** 3000);
                 ***REMOVED***);
+=======
+                console.log('Ca a fonctionné!');
+                online = true;
+        ***REMOVED***);
+            posting.always(function () ***REMOVED***
+                db.open(***REMOVED***
+                    server: 'mute',
+                    version: 1,
+                    schema: ***REMOVED***
+                        models: ***REMOVED***
+                            key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
+                            // Optionally add indexes
+                            indexes: ***REMOVED***
+                                creationDate: ***REMOVED******REMOVED***,
+                                docID: ***REMOVED*** unique: true ***REMOVED***,
+                                history: ***REMOVED******REMOVED***,
+                                lastModificationDate: ***REMOVED******REMOVED***,
+                                replicaNumber: ***REMOVED******REMOVED***,
+                                ropes: ***REMOVED******REMOVED***,
+                                bufferLocalLogootSOp: ***REMOVED******REMOVED***
+                        ***REMOVED***
+                    ***REMOVED***
+                ***REMOVED***
+            ***REMOVED***)
+                .done(function (s) ***REMOVED***
+                    serverDB = s
+                    initPage();
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
             ***REMOVED***);
         ***REMOVED***);
 
@@ -225,6 +292,7 @@
                 coordinator.setEditor(editor);
                 if(online === true) ***REMOVED***
                     network = new Mute.SocketIOAdapter(coordinator);
+<<<<<<< HEAD
                     infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
                     editor.setInfosUsersModule(infosUsersModule);
                     network.setInfosUsersModule(infosUsersModule);
@@ -264,6 +332,10 @@
                     displayState();
             ***REMOVED***);
 
+=======
+                    coordinator.setNetwork(network);
+            ***REMOVED***
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
                 coordinator.init();
         ***REMOVED***
 
@@ -271,17 +343,38 @@
                 hljs.initHighlightingOnLoad();
 
                 if(online === true) ***REMOVED***
+<<<<<<< HEAD
                     $('#copy-button').copyLinkModule();
+=======
+                    $('#copy-button').tooltip(***REMOVED*** container: 'body', delay: ***REMOVED*** show: 0, hide: 100 ***REMOVED*** ***REMOVED***);
+                    client = new ZeroClipboard(document.getElementById("copy-button"));
+
+                    $('#copy-button').on('mouseout', function () ***REMOVED***
+                         $('#copy-button').attr('data-original-title', 'copy to clipboard');
+                ***REMOVED***);
+
+                    client.on( "ready", function( readyEvent ) ***REMOVED***
+                        client.on( "aftercopy", function( event ) ***REMOVED***
+                            $('#copy-button').attr('data-original-title', 'copied!');
+                            $('#copy-button').tooltip('show');
+                    ***REMOVED*** );
+                ***REMOVED***);
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
             ***REMOVED***
 
                 coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+<<<<<<< HEAD
 
                 $('#<%= lastModificationDateItemID %>').lastModificationDateModule(***REMOVED*** coordinator: coordinator ***REMOVED***);
+=======
+                awareness = new AwarenessAdapter(coordinator, editor, $('#<%= nbOperationsItemID %>')[0], $('#<%= lastModificationDateItemID %>')[0]);
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
                 if(<%= privateDoc %> === false) ***REMOVED***
                     initMute();
             ***REMOVED***
         ***REMOVED***
+<<<<<<< HEAD
 
             var currentState = 0;
             var str = '';
@@ -336,6 +429,8 @@
                 coordinator.toOfflineMode();
         ***REMOVED***
 
+=======
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
             console.log('docID: <%= docID %>');
         </script>
 	</body>
