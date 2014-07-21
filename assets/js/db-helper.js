@@ -22,7 +22,7 @@ function openDB () ***REMOVED***
                 key: ***REMOVED*** keyPath: 'id', autoIncrement: true ***REMOVED***,
                 indexes: ***REMOVED***
                     docID: ***REMOVED*** unique: true ***REMOVED***,
-                    connexionID: ***REMOVED******REMOVED***
+                    version: ***REMOVED******REMOVED***
             ***REMOVED***
         ***REMOVED***
     ***REMOVED***
