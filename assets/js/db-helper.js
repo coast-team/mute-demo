@@ -1,5 +1,5 @@
 function openDB () {
-    return db.open({
+    var serverDB = db.open({
         server: 'mute',
         version: 2,
         schema: {
@@ -15,15 +15,18 @@ function openDB () {
                     ropes: {},
                     bufferLocalLogootSOp: {},
                     mode: {},
+                    username: {}
                 }
             },
             docs: {
                 key: { keyPath: 'id', autoIncrement: true },
                 indexes: {
                     docID: { unique: true },
-                    version: {}
+                    connexionID: {}
                 }
             }
         }
-    });  
+    }); 
+    console.log('serverDB: ', serverDB);
+    return serverDB;
 }

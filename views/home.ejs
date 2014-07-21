@@ -1,10 +1,6 @@
 <!doctype html>
-<<<<<<< HEAD
 <!-- <html lang="en" manifest="mute.manifest"> -->
 <html lang="en">
-=======
-<html lang="en" manifest="mute.manifest">
->>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 	<head>
 		<% include head %>
 		<% include css %>
@@ -38,6 +34,30 @@
                 <% include editor %>
             </div>
             <div class="col-md-2" style="padding-top: 15px; padding-left:0px; padding-right: 30px;">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" style="border: 1px solid #ddd">
+                            <h4 class="panel-title">
+                                <span class="glyphicon glyphicon-user" style="margin-right: 10px;"></span>
+                                <strong>Your username</strong>
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form" role="form">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" class="form-control" id="inputUsername" placeholder="Enter username">
+                                    </div>
+                                </div>
+                                <br>
+                                <center>
+                                    <button type="button" id="btnUsername" class="btn btn-primary" onclick="updateUsername()" data-toggle="tooltip" data-placement="bottom" title="Username updated!">Submit</button>
+                                </center>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="panel-group" id="">
                     <div class="panel panel-default" style="border: 0px; box-shadow: 0 0px 0px;">
                         <div class="panel-heading" style="border: 1px solid #ddd">
@@ -113,13 +133,14 @@
 		<script>
 			"use strict";
 
+            var timeoutUpdateUsername = null;
             var serverDB;
             var coordinator;
             var editor;
             var network;
             var awareness;
             var iframeAdded = false;
-            var version = 0;
+            var connexionID = 0;
             var infosUsersModule;
 
             var online = false;
@@ -142,10 +163,10 @@
                     .done(function (results) {
                         var doc;
                         if(results.length === 0) {
-                            version = 1;
+                            connexionID = 1;
                             doc = {
                                 docID: '<%= docID %>',
-                                version: 1
+                                connexionID: 1
                             };
                             serverDB.docs.add(doc)
                             .done(function (item) {
@@ -153,10 +174,10 @@
                             });
                         }
                         else {
-                            version = results[0].version + 1;
+                            connexionID = results[0].connexionID + 1;
                             serverDB.docs.query()
                             .filter('docID', '<%= docID %>')
-                            .modify({ version: version })
+                            .modify({ connexionID: connexionID })
                             .execute()
                             .done(function (results) {
                                 initPage();
@@ -169,8 +190,8 @@
                             .execute()
                             .done(function (results) {
                                 if(results.length === 1) {
-                                    if(results[0].version !== version) {
-                                        console.log(results[0].version + ' !== ' + version);
+                                    if(results[0].connexionID !== connexionID) {
+                                        console.log(results[0].connexionID + ' !== ' + connexionID);
                                         $('#modalCloseTab').modal('show');
                                         coordinator.dispose();
                                         network.dispose();
@@ -265,6 +286,22 @@
                     $('#iframeAppCache')[0].contentWindow.applicationCache.update();
                 }
             }
+
+            function updateUsername() {
+                timeoutUpdateUsername = setTimeout(function () {
+                    // Encode the username to avoid some Javascript injections
+                    var username = $('<div/>').text($('#inputUsername').val()).html();
+                    infosUsersModule.updateLocalUsername(username);
+                    $('#btnUsername').tooltip('hide');
+                    clearTimeout(timeoutUpdateUsername);
+                }, 1000);
+            }
+
+            console.log('docID: <%= docID %>');
+
+            $('#btnUsername').tooltip({
+                trigger: 'click',
+            });
         </script>
 	</body>
 </html>
