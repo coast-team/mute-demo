@@ -20,6 +20,21 @@
   position: absolute;
   z-index: 2;
 ***REMOVED***
+.mute-collaborator-indicator ***REMOVED***
+  margin-right: 10px;
+***REMOVED***
+.mute-collaborator-indicator-0 ***REMOVED***
+  color: #fc0003;
+  margin-right: 10px;
+***REMOVED***
+.mute-collaborator-indicator-1 ***REMOVED***
+  color: #0099ff;
+  margin-right: 10px;
+***REMOVED***
+.mute-collaborator-indicator-2 ***REMOVED***
+  color: #33cc33;
+  margin-right: 10px;
+***REMOVED***
 .mute-remote-cursor-0 ***REMOVED***
   border-left: 2px solid #fc0003;
   position: absolute;
