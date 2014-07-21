@@ -1,2 +1,11 @@
+<<<<<<< HEAD
 node_modules/
 assets/js/mute-client/node_modules/
+=======
+mute.conf
+
+# Dependency directory
+# Commenting this out is preferred by some people, see
+# https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
+node_modules
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e

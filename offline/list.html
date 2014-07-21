@@ -1,5 +1,9 @@
 <!doctype html>
+<<<<<<< HEAD
 <html lang="en" manifest="/mute.manifest">
+=======
+<html lang="en">
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,6 +30,7 @@
 					<a class="navbar-brand" href="/list">MUTE</a>
 				</div>
 				<div class="collapse navbar-collapse">
+<<<<<<< HEAD
 					<div id="divAccess" class="navbar-form navbar-left">
 						<div class="form-group">
 							<input type="text" class="form-control" id="access-document" name="docID" placeholder="Access a document">
@@ -34,6 +39,16 @@
 					</div>
 					<ul class="nav navbar-nav navbar-right">
 						<li class="active"><a href="/list"><span class="glyphicon glyphicon-list"></span>&nbsp;List</a></li>
+=======
+					<form id="formAccess" class="navbar-form navbar-left" method="get" action="/accessDoc">
+						<div class="form-group">
+							<input type="text" class="form-control" id="access-document" name="docID" placeholder="Access a document">
+						</div>
+						<button type="submit" class="btn btn-default">Access</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="active"><a href="/list">List</a></li>
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 					</ul>
 				</div><!--/.nav-collapse -->
 			</div>
@@ -55,8 +70,12 @@
 					                    <div class="pull-right action-buttons">
 					                        <div class="pull-right">
 					                            <button type="button" class="btn btn-xs btn-default">
+<<<<<<< HEAD
 					                            	<span class="glyphicon glyphicon-trash"></span>
 					                            	Delete selection
+=======
+					                            	<span class="glyphicon glyphicon-trash">&nbsp;Delete selection</span>
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 					                            </button>
 					                        </div>
 					                    </div>
@@ -89,6 +108,7 @@
 		<script src="/assets/js/highlightjs.min.js"></script>
 		<script src ="/assets/js/mute.js"></script>
 		<script src="/assets/js/dbjs/src/db.js"></script>
+<<<<<<< HEAD
 		<script src="/assets/js/db-helper.js"></script>
        	<script>
        		function accessDoc() {
@@ -145,6 +165,44 @@
 					window.parent.handleNoUpdate();
 				};
 			}
+=======
+       	<script>
+       		var serverDB;
+       		db.open({
+                server: 'mute',
+                version: 1,
+                schema: {
+                    models: {
+                        key: { keyPath: 'id' , autoIncrement: true },
+                        // Optionally add indexes
+                        indexes: {
+                            creationDate: {},
+                            docID: { unique: true },
+                            history: {},
+                            lastModificationDate: {},
+                            replicaNumber: {},
+                            ropes: {},
+                            bufferLocalLogootSOp: {}
+                        }
+                    }
+                }
+            })
+            .done(function (s) {
+                serverDB = s
+               	serverDB.models.query()
+               	.all()
+               	.execute()
+               	.done(function (results) {
+               		var i;
+               		var doc;
+               		for(i=0; i<results.length; i++) {
+               			doc = results[i];
+               			$('#list-docs').append(generateListItem(doc));
+               		}
+               		$('#nbDocs').html(results.length);
+               	});
+            });
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
 
             function generateListItem(doc) {
             	var html = [
