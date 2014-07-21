@@ -140,7 +140,7 @@
             var network;
             var awareness;
             var iframeAdded = false;
-            var connexionID = 0;
+            var version = 0;
             var infosUsersModule;
 
             var online = false;
@@ -163,10 +163,10 @@
                     .done(function (results) ***REMOVED***
                         var doc;
                         if(results.length === 0) ***REMOVED***
-                            connexionID = 1;
+                            version = 1;
                             doc = ***REMOVED***
                                 docID: '<%= docID %>',
-                                connexionID: 1
+                                version: 1
                         ***REMOVED***;
                             serverDB.docs.add(doc)
                             .done(function (item) ***REMOVED***
@@ -174,10 +174,10 @@
                         ***REMOVED***);
                     ***REMOVED***
                         else ***REMOVED***
-                            connexionID = results[0].connexionID + 1;
+                            version = results[0].version + 1;
                             serverDB.docs.query()
                             .filter('docID', '<%= docID %>')
-                            .modify(***REMOVED*** connexionID: connexionID ***REMOVED***)
+                            .modify(***REMOVED*** version: version ***REMOVED***)
                             .execute()
                             .done(function (results) ***REMOVED***
                                 initPage();
@@ -190,8 +190,8 @@
                             .execute()
                             .done(function (results) ***REMOVED***
                                 if(results.length === 1) ***REMOVED***
-                                    if(results[0].connexionID !== connexionID) ***REMOVED***
-                                        console.log(results[0].connexionID + ' !== ' + connexionID);
+                                    if(results[0].version !== version) ***REMOVED***
+                                        console.log(results[0].version + ' !== ' + version);
                                         $('#modalCloseTab').modal('show');
                                         coordinator.dispose();
                                         network.dispose();
