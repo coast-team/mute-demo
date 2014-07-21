@@ -22,7 +22,7 @@ function openDB () {
                 key: { keyPath: 'id', autoIncrement: true },
                 indexes: {
                     docID: { unique: true },
-                    connexionID: {}
+                    version: {}
                 }
             }
         }
