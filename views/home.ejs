@@ -140,7 +140,7 @@
             var network;
             var awareness;
             var iframeAdded = false;
-            var connexionID = 0;
+            var version = 0;
             var infosUsersModule;
 
             var online = false;
@@ -163,10 +163,10 @@
                     .done(function (results) {
                         var doc;
                         if(results.length === 0) {
-                            connexionID = 1;
+                            version = 1;
                             doc = {
                                 docID: '<%= docID %>',
-                                connexionID: 1
+                                version: 1
                             };
                             serverDB.docs.add(doc)
                             .done(function (item) {
@@ -174,10 +174,10 @@
                             });
                         }
                         else {
-                            connexionID = results[0].connexionID + 1;
+                            version = results[0].version + 1;
                             serverDB.docs.query()
                             .filter('docID', '<%= docID %>')
-                            .modify({ connexionID: connexionID })
+                            .modify({ version: version })
                             .execute()
                             .done(function (results) {
                                 initPage();
@@ -190,8 +190,8 @@
                             .execute()
                             .done(function (results) {
                                 if(results.length === 1) {
-                                    if(results[0].connexionID !== connexionID) {
-                                        console.log(results[0].connexionID + ' !== ' + connexionID);
+                                    if(results[0].version !== version) {
+                                        console.log(results[0].version + ' !== ' + version);
                                         $('#modalCloseTab').modal('show');
                                         coordinator.dispose();
                                         network.dispose();
