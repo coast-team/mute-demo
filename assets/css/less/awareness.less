@@ -1,3 +1,4 @@
+@borderGray: #CCC;
 @cursorRed: #FC0003;
 @selectionRed: #FF9697;
 @cursorBlue: #0099FF;
@@ -27,6 +28,24 @@
 .mute-remote-selection {
   position: absolute;
   z-index: 2;  
+}
+.mute-collaborator-indicator {
+	margin-right: 10px;
+}
+
+.mute-collaborator-indicator-0 {
+	color: @cursorRed;
+	.mute-collaborator-indicator;
+}
+
+.mute-collaborator-indicator-1 {
+	color: @cursorBlue;
+	.mute-collaborator-indicator;
+}
+
+.mute-collaborator-indicator-2 {
+	color: @cursorGreen;
+	.mute-collaborator-indicator;
 }
 
 .mute-remote-cursor-0 {

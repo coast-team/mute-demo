@@ -26,14 +26,14 @@
 					<a class="navbar-brand" href="/list">MUTE</a>
 				</div>
 				<div class="collapse navbar-collapse">
-					<form id="formAccess" class="navbar-form navbar-left" method="get" action="/accessDoc">
+					<div id="divAccess" class="navbar-form navbar-left">
 						<div class="form-group">
 							<input type="text" class="form-control" id="access-document" name="docID" placeholder="Access a document">
 						</div>
-						<button type="submit" class="btn btn-default">Access</button>
-					</form>
+						<button type="button" class="btn btn-default" onclick="accessDoc()">Access</button>
+					</div>
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="/list">List</a></li>
+						<li><a href="/list"><span class="glyphicon glyphicon-list"></span>&nbsp;List</a></li>
 					</ul>
 				</div><!--/.nav-collapse -->
 			</div>
@@ -45,11 +45,11 @@
 		        		<h1>
 		        			<strong id="docTitle">Demo</strong>
 		        			<button id="btnHistoryMode" class="btn btn-default pull-right" onclick="switchToHistoryMode()">
-		        				<span class="glyphicon glyphicon-time" >&nbsp;</span>
+		        				<span class="glyphicon glyphicon-time" ></span>
 		        				Switch to history mode
 		        			</button>
 		        			<button id="btnEditionMode" class="btn btn-default pull-right hide" onclick="switchToEditionMode()">
-		        				<span class="glyphicon glyphicon-pencil" >&nbsp;</span>
+		        				<span class="glyphicon glyphicon-pencil"></span>
 		        				Switch to edition mode
 		        			</button>
 		        		</h1>
@@ -94,6 +94,7 @@
 		<script src="/assets/js/dbjs/src/db.js"></script>
 		<script src="/assets/js/ace/src/ace.js"></script>
 		<script src="/assets/js/mute-client/build/mute-client.js"></script>
+		<script src="/assets/js/db-helper.js"></script>
        	<script>
        		var serverDB;
        		var coordinator;
@@ -101,34 +102,28 @@
             var docID = getDocID();
             $('#docTitle').html(docID);
             
-       		db.open({
-                server: 'mute',
-                version: 1,
-                schema: {
-                    models: {
-                        key: { keyPath: 'id' , autoIncrement: true },
-                        // Optionally add indexes
-                        indexes: {
-                            creationDate: {},
-                            docID: { unique: true },
-                            history: {},
-                            lastModificationDate: {},
-                            replicaNumber: {},
-                            ropes: {},
-                            bufferLocalLogootSOp: {}
-                        }
-                    }
-                }
-            })
+            $(function() {
+			    $('#access-document').keypress(function(e) {
+			            // Enter pressed?
+			            if(e.which === 10 || e.which === 13) {
+			                accessDoc();
+			            }
+			     });
+			});
+
+       		openDB()
             .done(function (s) {
                 serverDB = s
                	serverDB.models.query()
                	.filter('docID', docID)
                	.execute()
                	.done(function (results) {
+               		console.log('Yo');
                		if(results.length>0) {
                			coordinator = new Mute.Coordinator(docID, serverDB);
                 		editor = new Mute.AceEditorAdapter('editor', coordinator);
+                        infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, null, null, serverDB);
+                        editor.setInfosUsersModule(infosUsersModule);
                 		coordinator.setEditor(editor);
                 		
                 		coordinator.on('updateHistoryScroller', function (data) {
@@ -136,7 +131,12 @@
 		                    displayState();
 		                });
 
+                		console.log('avant init ?');
                 		coordinator.init();
+                		coordinator.toOfflineMode();
+               		}
+               		else {
+               			location.href = '/list';
                		}
                	});
             });
@@ -171,7 +171,7 @@
             	$('#btnHistoryMode').addClass('hide');
             	$('#btnEditionMode').removeClass('hide');
             	$('#historySlider').removeClass('hide');
-            	coordinator.editor.switchToHistoryMode();
+            	coordinator.editor.toHistoryMode();
             	$('#range').attr('max', length);
             	displayState();
             }
@@ -181,9 +181,8 @@
             	$('#historySlider').addClass('hide');
             	$('#btnHistoryMode').removeClass('hide');
             	editor.editor.session.doc.setValue(coordinator.ropes.str);
-            	coordinator.editor.switchToEditionMode();
+            	coordinator.editor.toEditionMode();
             }
-
    		</script>
     </body>
 </html>

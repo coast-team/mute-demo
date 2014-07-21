@@ -39,6 +39,7 @@ var express = require('express'),
 	server = require('http').createServer(app),
 	Coordinator = require('mute-server').Coordinator,
 	SocketIOAdapter = require('mute-server').SocketIOAdapter,
+	InfosUsersModule = require('mute-server').InfosUsersModule,
 	nodemailer = require('nodemailer'),
 	cacheManifest = require('connect-cache-manifest');
 
@@ -114,7 +115,9 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 var delay = 0;
 var coordinator = new Coordinator(db);
-var socketIOAdapter = new SocketIOAdapter(server, coordinator, delay);
+var infosUsersModule = new InfosUsersModule();
+var socketIOAdapter = new SocketIOAdapter(server, coordinator, infosUsersModule, delay);
+infosUsersModule.setNetwork(socketIOAdapter);
 coordinator.setNetwork(socketIOAdapter);
 
 var docs = {};
@@ -178,6 +181,14 @@ function validPassword(docID, pwd) {
 
 	return success;
 }
+
+app.post('/paroles/:docID/', function (req, res) {
+	var parole = req.body.parole;
+	var docID = req.params.docID;
+	socketIOAdapter.io.sockets.in(docID).emit('broadcastParole', { parole: parole });
+	res.setHeader('Content-Type', 'text/html');
+	res.send(200);
+});
 
 app.post('/ajax/verifyPwd', function (req, res) {
 	var docID = req.body.docID;
@@ -339,6 +350,14 @@ app.use(cacheManifest({
 			path: '/assets/js/mute.js'
 		},
 		{
+			file: __dirname + '/assets/js/dbjs/src/db.js',
+			path: '/assets/js/dbjs/src/db.js'
+		},
+		{
+			file: __dirname + '/assets/js/db-helper.js',
+			path: '/assets/js/db-helper.js'
+		},
+		{
 			dir: __dirname + '/assets/js/ace/src',
 			prefix: '/assets/js/ace/src/'
 		},
@@ -377,8 +396,13 @@ app.use(cacheManifest({
 		*/
 	],
 	networks: ['*'],
-	fallbacks: ['/ /offline/404.html', '/list /offline/list.html', '/doc /offline/doc.html', '/socket.io/socket.io.js /assets/js/nope.js', '/assets/js/zeroclipboard/dist/ZeroClipboard.js /assets/js/nope.js']
+	fallbacks: ['/ /offline/list.html', '/doc /offline/doc.html']
 }));
+
+app.get('/list', function (req, res) {
+	res.setHeader('Content-Type', 'text/html');
+	res.render('list', { title: 'MUTE - Multi-User Text Editor', page: 'list' });
+});
 
 app.get('/guide', function (req, res) {
 	res.setHeader('Content-Type', 'text/html');

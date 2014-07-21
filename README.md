@@ -39,3 +39,4 @@ this program. If not, see <http://www.gnu.org/licenses/>.
 The documentation, tutorial and source code are intended as a community
 resource and you can basically use, copy and improve them however you want.
 Included works are subject to their respective licenses.
+>>>>>>> 5fb21f3348e2e80fed0ac2e179da98f16380295e
