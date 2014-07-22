@@ -52,10 +52,16 @@
         </div>
         <hr>
         <div class="row">
-            <div class="col-md-10" style="padding-right: 0px;">
+            <button id="btnPanelController" class="btn btn-default pull-right" style="margin-right: 30px;" onclick="hideCollaboratorsList();">
+                <span id="panelControllerIcon" class="glyphicon glyphicon-arrow-right"></span>
+                <span id="panelControllerLabel">Hide list</span>
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-10" id="divMain" style="padding-right: 0px;">
                 <% include editor %>
             </div>
-            <div class="col-md-2" style="padding-top: 15px; padding-left:0px; padding-right: 30px;">
+            <div class="col-md-2" id="divInfosSup" style="padding-top: 15px; padding-left:0px; padding-right: 30px;">
                 <div class="panel-group">
                     <div class="panel panel-default">
                         <div class="panel-heading" style="border: 1px solid #ddd">
@@ -68,12 +74,13 @@
                             <form class="form" role="form">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" class="form-control" id="inputUsername" placeholder="Enter username">
+                                        <input type="text" maxlength="20" class="form-control" id="inputUsername" placeholder="Enter username">
+                                        <span class="help-block">Only alphanumerics characters, max length: 20.</span>
                                     </div>
                                 </div>
                                 <br>
                                 <center>
-                                    <button type="button" id="btnUsername" class="btn btn-primary" onclick="updateUsername()" data-toggle="tooltip" data-placement="bottom" title="Username updated!">Submit</button>
+                                    <button type="button" id="btnUsername" class="btn btn-primary" onclick="updateUsername()" data-toggle="tooltip" data-placement="bottom" title="Username updated!">Change</button>
                                 </center>
                             </form>
                         </div>
@@ -366,20 +373,63 @@
             }
 
             function updateUsername() {
-                timeoutUpdateUsername = setTimeout(function () {
-                    // Encode the username to avoid some Javascript injections
-                    var username = $('<div/>').text($('#inputUsername').val()).html();
-                    infosUsersModule.updateLocalUsername(username);
+                // Encode the username to avoid some Javascript injections
+                var username = $('<div/>').text($('#inputUsername').val()).html().trim();
+                var regexp = /^[a-zA-Z0-9,]+(\s{0,1}[a-zA-Z0-9,])*$/
+                console.log('test regexp: ', username.match(regexp));
+                $('#btnUsername').tooltip('destroy');
+                if(username.length <= 20 && username.match(regexp) !== null) {
+                    $('#btnUsername').attr('title', 'Username updated!');
+                    if(timeoutUpdateUsername === null) {
+                        timeoutUpdateUsername = setTimeout(function () {        
+                            infosUsersModule.updateLocalUsername(username);
+                            clearTimeout(timeoutUpdateUsername);
+                            timeoutUpdateUsername = null;
+                        }, 1000);  
+                    }
+                }
+                else if(username.match(regexp) === null) {
+                    $('#btnUsername').attr('title', 'Please use only alphanumerics characters!');
+                    console.log('title: ', $('#btnUsername').attr('title'));
+                }
+                else if(username.length > 20) {
+                    $('#btnUsername').attr('title', 'Too long... Choose a shorter username!');
+                }
+                console.log('On affiche!');
+                $('#btnUsername').tooltip({
+                    trigger: 'manual'
+                });
+                $('#btnUsername').tooltip('show');
+                setTimeout(function () {
                     $('#btnUsername').tooltip('hide');
-                    clearTimeout(timeoutUpdateUsername);
                 }, 1000);
             }
 
             console.log('docID: <%= docID %>');
 
-            $('#btnUsername').tooltip({
-                trigger: 'click',
-            });
+            function showCollaboratorsList() {
+                $('#divMain').animate({ width: '83,33%' });
+                $('#divInfosSup').animate({ width: '16,67%' }).show();
+                setTimeout(function () { 
+                    editor.editor.resize();
+                    $('#panelControllerLabel').html('Hide list');
+                    $('#panelControllerIcon').removeClass('glyphicon-arrow-left').addClass('glyphicon-arrow-right');
+                    $('#btnPanelController').attr('onclick', 'hideCollaboratorsList()');
+                }, 0);
+
+            }
+
+            function hideCollaboratorsList() {
+                $('#divInfosSup').animate({ width: '0%'}).hide();
+                $('#divMain').animate({ width: '100%'});
+                setTimeout(function () { 
+                    editor.editor.resize();
+                    $('#panelControllerLabel').html('Show list');
+                    $('#panelControllerIcon').removeClass('glyphicon-arrow-right').addClass('glyphicon-arrow-left');
+                    $('#btnPanelController').attr('onclick', 'showCollaboratorsList()');
+                }, 400);
+            }
+
         </script>
 	</body>
 </html>
