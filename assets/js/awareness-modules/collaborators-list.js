@@ -19,7 +19,7 @@
                 infosUser = infosUsers[userID];
                 cssClass = options.listCSSClasses[userID%options.listCSSClasses.length];
 
-                listHTML = [
+                listHTML += [
                     '<li class="list-group-item">',
                     '<span class="glyphicon glyphicon-user text-primary '+cssClass+'"></span>',
                     '<strong>'+infosUser.username+'</strong>',
