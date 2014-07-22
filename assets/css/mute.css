@@ -1,17 +1,17 @@
-body ***REMOVED***
+body {
 	padding-top: 50px;
-***REMOVED***
+}
 
 .form-open
-***REMOVED***
+{
     max-width: 430px;
     padding: 15px;
     margin: 0 auto;
     margin-bottom: 10px;
-***REMOVED***
+}
 
 .form-open .form-control
-***REMOVED***
+{
     position: relative;
     font-size: 16px;
     height: auto;
@@ -19,79 +19,79 @@ body ***REMOVED***
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-***REMOVED***
+}
 .form-open .form-control:focus
-***REMOVED***
+{
     z-index: 2;
-***REMOVED***
+}
 .form-open input[type="text"]
-***REMOVED***
+{
     margin-bottom: -1px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-***REMOVED***
+}
 .form-open input[type="password"]
-***REMOVED***
+{
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-***REMOVED***
+}
 
 .profile-icon
-***REMOVED***
+{
 	padding: 0 40% 20px;
     margin: 10 auto 10px;
-***REMOVED***
+}
 
-.test ***REMOVED***
+.test {
   background-color: black;
   width: 300px;
-***REMOVED***
+}
 
-ul.menu ***REMOVED***
+ul.menu {
   margin: 0;
   padding: 0;
   top: 105px;
   right: 30px;
   font-size: 13px;    
-***REMOVED***
+}
 
-@media (min-width: 992px) ***REMOVED***
-    ul.menu ***REMOVED***
+@media (min-width: 992px) {
+    ul.menu {
       position: fixed;
       margin: 0;
       padding: 0;
       top: 105px;
       right: 30px;
       font-size: 13px;
-***REMOVED***
-***REMOVED***
+    }
+}
 
 
-ul.menu li ***REMOVED***
+ul.menu li {
   list-style: none;
-***REMOVED***
+}
 
-ul.menu ul ***REMOVED***
+ul.menu ul {
   height: 0;
   overflow-y: hidden;
-***REMOVED***
+}
 
-ul.menu ul.active ***REMOVED***
+ul.menu ul.active {
   height: auto;
-***REMOVED***
+}
 
-ul.menu > li > ul > strong > a ***REMOVED***
+ul.menu > li > ul > strong > a {
   color: #353535;
   font-weight: bold;
-***REMOVED***
+}
 
-ul.menu ul a ***REMOVED***
+ul.menu ul a {
   color: #7B838A;
   padding-left: 30px;
-***REMOVED***
+}
 
-ul.menu ul a.active ***REMOVED***
+ul.menu ul a.active {
   color: #259dff;
   border-left: 2px solid #259dff;
-***REMOVED***
+}

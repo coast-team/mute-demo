@@ -1,121 +1,121 @@
-.mute-remote-cursor ***REMOVED***
+.mute-remote-cursor {
   position: absolute;
   z-index: 2;
-***REMOVED***
-.mute-remote-cursor .name ***REMOVED***
+}
+.mute-remote-cursor .name {
   font-size: 0.8em;
   color: white;
   padding: 2px 6px;
   border-radius: 3px 3px 3px 0;
   position: absolute;
   left: -4px;
-***REMOVED***
-.mute-remote-cursor .nubbin ***REMOVED***
+}
+.mute-remote-cursor .nubbin {
   height: 6px;
   width: 6px;
   position: absolute;
   left: -4px;
-***REMOVED***
-.mute-remote-selection ***REMOVED***
+}
+.mute-remote-selection {
   position: absolute;
   z-index: 2;
-***REMOVED***
-.mute-collaborator-indicator ***REMOVED***
+}
+.mute-collaborator-indicator {
   margin-right: 10px;
-***REMOVED***
-.mute-collaborator-indicator-0 ***REMOVED***
+}
+.mute-collaborator-indicator-0 {
   color: #fc0003;
   margin-right: 10px;
-***REMOVED***
-.mute-collaborator-indicator-1 ***REMOVED***
+}
+.mute-collaborator-indicator-1 {
   color: #0099ff;
   margin-right: 10px;
-***REMOVED***
-.mute-collaborator-indicator-2 ***REMOVED***
+}
+.mute-collaborator-indicator-2 {
   color: #33cc33;
   margin-right: 10px;
-***REMOVED***
-.mute-remote-cursor-0 ***REMOVED***
+}
+.mute-remote-cursor-0 {
   border-left: 2px solid #fc0003;
   position: absolute;
   z-index: 2;
-***REMOVED***
+}
 .mute-remote-cursor-0 .name,
-.mute-remote-cursor-0 .nubbin ***REMOVED***
+.mute-remote-cursor-0 .nubbin {
   background-color: #fc0003;
-***REMOVED***
-.mute-remote-cursor-0 .name ***REMOVED***
+}
+.mute-remote-cursor-0 .name {
   font-size: 0.8em;
   color: white;
   padding: 2px 6px;
   border-radius: 3px 3px 3px 0;
   position: absolute;
   left: -4px;
-***REMOVED***
-.mute-remote-cursor-0 .nubbin ***REMOVED***
+}
+.mute-remote-cursor-0 .nubbin {
   height: 6px;
   width: 6px;
   position: absolute;
   left: -4px;
-***REMOVED***
-.mute-remote-selection-0 ***REMOVED***
+}
+.mute-remote-selection-0 {
   background-color: #ff9697;
   position: absolute;
   z-index: 2;
-***REMOVED***
-.mute-remote-cursor-1 ***REMOVED***
+}
+.mute-remote-cursor-1 {
   border-left: 2px solid #0099ff;
   position: absolute;
   z-index: 2;
-***REMOVED***
+}
 .mute-remote-cursor-1 .name,
-.mute-remote-cursor-1 .nubbin ***REMOVED***
+.mute-remote-cursor-1 .nubbin {
   background-color: #0099ff;
-***REMOVED***
-.mute-remote-cursor-1 .name ***REMOVED***
+}
+.mute-remote-cursor-1 .name {
   font-size: 0.8em;
   color: white;
   padding: 2px 6px;
   border-radius: 3px 3px 3px 0;
   position: absolute;
   left: -4px;
-***REMOVED***
-.mute-remote-cursor-1 .nubbin ***REMOVED***
+}
+.mute-remote-cursor-1 .nubbin {
   height: 6px;
   width: 6px;
   position: absolute;
   left: -4px;
-***REMOVED***
-.mute-remote-selection-1 ***REMOVED***
+}
+.mute-remote-selection-1 {
   background-color: #b5e1ff;
   position: absolute;
   z-index: 2;
-***REMOVED***
-.mute-remote-cursor-2 ***REMOVED***
+}
+.mute-remote-cursor-2 {
   border-left: 2px solid #33cc33;
   position: absolute;
   z-index: 2;
-***REMOVED***
+}
 .mute-remote-cursor-2 .name,
-.mute-remote-cursor-2 .nubbin ***REMOVED***
+.mute-remote-cursor-2 .nubbin {
   background-color: #33cc33;
-***REMOVED***
-.mute-remote-cursor-2 .name ***REMOVED***
+}
+.mute-remote-cursor-2 .name {
   font-size: 0.8em;
   color: white;
   padding: 2px 6px;
   border-radius: 3px 3px 3px 0;
   position: absolute;
   left: -4px;
-***REMOVED***
-.mute-remote-cursor-2 .nubbin ***REMOVED***
+}
+.mute-remote-cursor-2 .nubbin {
   height: 6px;
   width: 6px;
   position: absolute;
   left: -4px;
-***REMOVED***
-.mute-remote-selection-2 ***REMOVED***
+}
+.mute-remote-selection-2 {
   background-color: #b9dbb9;
   position: absolute;
   z-index: 2;
-***REMOVED***
+}

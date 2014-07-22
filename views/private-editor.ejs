@@ -153,9 +153,9 @@
         <% include script-dbjs %>
 		<% include notifications %>
 		<% 
-        	if(privateDoc === true) ***REMOVED*** 
+        	if(privateDoc === true) { 
         		%> <% include modal-pwd-doc %> <%
-        	***REMOVED***
+        	}
         %>
 		<script>
 			"use strict";
@@ -172,48 +172,48 @@
 
             var online = false;
             var posting = $.post('/ajax/testConnection');
-            posting.done(function (data) ***REMOVED***
+            posting.done(function (data) {
                 online = true;
-        ***REMOVED***);
-            posting.always(function () ***REMOVED***
+            });
+            posting.always(function () {
                 openDB()
-                .done(function (s) ***REMOVED***
+                .done(function (s) {
                     console.log('On passe ici ?');
                     serverDB = s
                     serverDB.docs.query()
                     .filter('docID', '<%= docID %>')
                     .execute()
-                    .done(function (results) ***REMOVED***
+                    .done(function (results) {
                         var doc;
-                        if(results.length === 0) ***REMOVED***
+                        if(results.length === 0) {
                             version = 1;
-                            doc = ***REMOVED***
+                            doc = {
                                 docID: '<%= docID %>',
                                 version: 1
-                        ***REMOVED***;
+                            };
                             serverDB.docs.add(doc)
-                            .done(function (item) ***REMOVED***
+                            .done(function (item) {
                                 initPage();
-                        ***REMOVED***);
-                    ***REMOVED***
-                        else ***REMOVED***
+                            });
+                        }
+                        else {
                             version = results[0].version + 1;
                             serverDB.docs.query()
                             .filter('docID', '<%= docID %>')
-                            .modify(***REMOVED*** version: version ***REMOVED***)
+                            .modify({ version: version })
                             .execute()
-                            .done(function (results) ***REMOVED***
+                            .done(function (results) {
                                 initPage();
-                        ***REMOVED***);
-                    ***REMOVED***
+                            });
+                        }
 
-                        var interval = setInterval(function () ***REMOVED***
+                        var interval = setInterval(function () {
                             serverDB.docs.query()
                             .filter('docID', '<%= docID %>')
                             .execute()
-                            .done(function (results) ***REMOVED***
-                                if(results.length === 1) ***REMOVED***
-                                    if(results[0].version !== version) ***REMOVED***
+                            .done(function (results) {
+                                if(results.length === 1) {
+                                    if(results[0].version !== version) {
                                         console.log(results[0].version + ' !== ' + version);
                                         $('#modalCloseTab').modal('show');
                                         coordinator.dispose();
@@ -226,106 +226,106 @@
                                         editor = null;
                                         network = null;
                                         clearInterval(interval);
-                                ***REMOVED***
-                            ***REMOVED***
-                        ***REMOVED***);
-                    ***REMOVED*** 3000);
-                ***REMOVED***);
+                                    }
+                                }
+                            });
+                        }, 3000);
+                    });
 
-            ***REMOVED***);
-        ***REMOVED***);
+                });
+            });
 
-            function initMute() ***REMOVED***
+            function initMute() {
                 coordinator.setEditor(editor);
-                if(online === true) ***REMOVED***
+                if(online === true) {
                     network = new Mute.SocketIOAdapter(coordinator);
                     infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
                     editor.setInfosUsersModule(infosUsersModule);
                     network.setInfosUsersModule(infosUsersModule);
-                    $('#inputUsername').UsernameModule(***REMOVED***
+                    $('#inputUsername').UsernameModule({
                         infosUsersModule: infosUsersModule
-                ***REMOVED***);
-                    $('#list-collaborators').collaboratorsListModule(***REMOVED***
+                    });
+                    $('#list-collaborators').collaboratorsListModule({
                         infosUsersModule: infosUsersModule,
                         listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
-                ***REMOVED***);
-                    $().remoteIndicatorsModule(***REMOVED*** 
+                    });
+                    $().remoteIndicatorsModule({ 
                         infosUsersModule: infosUsersModule,
                         textEditorAdapter: editor,
                         networkAdapter: network,
                         cursorsCSSClasses: ['mute-remote-cursor-0', 'mute-remote-cursor-1', 'mute-remote-cursor-2'],
                         selectionsCSSClasses: ['mute-remote-selection-0', 'mute-remote-selection-1', 'mute-remote-selection-2']
-                ***REMOVED***);
+                    });
                     coordinator.setNetwork(network);
-                    network.on('disconnect', function () ***REMOVED***
+                    network.on('disconnect', function () {
                         $('#btnOfflineMode').addClass('hide');
                         $('#btnOnlineMode').removeClass('hide');
                         $('#connectionIndicator').removeClass('offline-ui-up').addClass('offline-ui-down').html('Offline!');
-                ***REMOVED***);
-                    network.on('connect', function () ***REMOVED***
+                    });
+                    network.on('connect', function () {
                         $('#btnOnlineMode').addClass('hide');
                         $('#btnOfflineMode').removeClass('hide');
                         $('#connectionIndicator').removeClass('offline-ui-down').addClass('offline-ui-up').html('Online!');
-                ***REMOVED***);
-            ***REMOVED***
-                coordinator.on('initEditor', function (data) ***REMOVED***
+                    });
+                }
+                coordinator.on('initEditor', function (data) {
                     str = '';
                     currentState = 0;
-            ***REMOVED***);
-                coordinator.on('updateHistoryScrollerRange', function (data) ***REMOVED***
+                });
+                coordinator.on('updateHistoryScrollerRange', function (data) {
                     $('#range').attr('max', data.length);
                     //displayState();
-            ***REMOVED***);
-                coordinator.on('updateHistoryScrollerValue', function (data) ***REMOVED***
+                });
+                coordinator.on('updateHistoryScrollerValue', function (data) {
                     $('#range').attr('value', data.length);
                     displayState();
-            ***REMOVED***);
+                });
 
                 coordinator.init();
-        ***REMOVED***
+            }
 
-            function initPage () ***REMOVED***
+            function initPage () {
                 hljs.initHighlightingOnLoad();
 
-                if(online === true) ***REMOVED***
+                if(online === true) {
                     $('#copy-button').copyLinkModule();
-            ***REMOVED***
+                }
 
                 coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
 
-                $('#<%= lastModificationDateItemID %>').lastModificationDateModule(***REMOVED*** coordinator: coordinator ***REMOVED***);
-                if(<%= privateDoc %> === false) ***REMOVED***
+                $('#<%= lastModificationDateItemID %>').lastModificationDateModule({ coordinator: coordinator });
+                if(<%= privateDoc %> === false) {
                     initMute();
-            ***REMOVED***
-        ***REMOVED***
+                }
+            }
 
             var currentState = 0;
             var str = '';
 
-            function prevState() ***REMOVED***
+            function prevState() {
                 $('#range').val(currentState-1);
                 displayState();
-        ***REMOVED***
+            }
 
-            function nextState() ***REMOVED***
+            function nextState() {
                 $('#range').val(currentState+1);
                 displayState();
-        ***REMOVED***
+            }
 
-            function displayState() ***REMOVED***
+            function displayState() {
                 var newState = parseInt($('#range').val());
                 $('#rangePrimary').val(newState);
-                if(currentState <= coordinator.getHistoryLength()) ***REMOVED***
+                if(currentState <= coordinator.getHistoryLength()) {
                     str = coordinator.updateState(str, currentState, newState);    
-            ***REMOVED***
+                }
                 currentState = newState;
-                if(editor.isInHistoryMode()) ***REMOVED***
+                if(editor.isInHistoryMode()) {
                     editor.editor.session.doc.setValue(str);
-            ***REMOVED***
-        ***REMOVED***
+                }
+            }
 
-            function switchToHistoryMode() ***REMOVED***
+            function switchToHistoryMode() {
                 var length = coordinator.getHistoryLength();
                 $('#btnHistoryMode').addClass('hide');
                 $('#btnEditionMode').removeClass('hide');
@@ -333,50 +333,50 @@
                 coordinator.editor.toHistoryMode();
                 $('#range').attr('max', length);
                 displayState();
-        ***REMOVED***
+            }
 
-            function switchToEditionMode() ***REMOVED***
+            function switchToEditionMode() {
                 $('#btnEditionMode').addClass('hide');
                 $('#historySlider').addClass('hide');
                 $('#btnHistoryMode').removeClass('hide');
                 editor.editor.session.doc.setValue(coordinator.ropes.str);
                 coordinator.editor.toEditionMode();
-        ***REMOVED***
+            }
 
-            function switchToOnlineMode() ***REMOVED***
+            function switchToOnlineMode() {
                 console.log('switchToOnlineMode');
                 coordinator.toOnlineMode();
-        ***REMOVED***
+            }
 
-            function switchToOfflineMode() ***REMOVED***
+            function switchToOfflineMode() {
                 console.log('switchToOfflineMode');
                 coordinator.toOfflineMode();
-        ***REMOVED***
+            }
 
             console.log('docID: <%= docID %>');
 
-            function showCollaboratorsList() ***REMOVED***
-                $('#divMain').animate(***REMOVED*** width: '83,33%' ***REMOVED***);
-                $('#divInfosSup').animate(***REMOVED*** width: '16,67%' ***REMOVED***).show();
-                setTimeout(function () ***REMOVED*** 
+            function showCollaboratorsList() {
+                $('#divMain').animate({ width: '83,33%' });
+                $('#divInfosSup').animate({ width: '16,67%' }).show();
+                setTimeout(function () { 
                     editor.editor.resize();
                     $('#panelControllerLabel').html('Hide list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-left').addClass('glyphicon-arrow-right');
                     $('#btnPanelController').attr('onclick', 'hideCollaboratorsList()');
-            ***REMOVED*** 0);
+                }, 0);
 
-        ***REMOVED***
+            }
 
-            function hideCollaboratorsList() ***REMOVED***
-                $('#divInfosSup').animate(***REMOVED*** width: '0%'***REMOVED***).hide();
-                $('#divMain').animate(***REMOVED*** width: '100%'***REMOVED***);
-                setTimeout(function () ***REMOVED*** 
+            function hideCollaboratorsList() {
+                $('#divInfosSup').animate({ width: '0%'}).hide();
+                $('#divMain').animate({ width: '100%'});
+                setTimeout(function () { 
                     editor.editor.resize();
                     $('#panelControllerLabel').html('Show list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-right').addClass('glyphicon-arrow-left');
                     $('#btnPanelController').attr('onclick', 'showCollaboratorsList()');
-            ***REMOVED*** 400);
-        ***REMOVED***
+                }, 400);
+            }
 
         </script>
 	</body>

@@ -41,9 +41,9 @@
         <% include script-dbjs %>
 		<% include notifications %>
 		<% 
-        	if(privateDoc === true) ***REMOVED*** 
+        	if(privateDoc === true) { 
         		%> <% include modal-pwd-doc %> <%
-        	***REMOVED***
+        	}
         %>
 		<script>
 			"use strict";
@@ -58,77 +58,77 @@
 
             var online = false;
             var posting = $.post('/ajax/testConnection');
-            posting.done(function (data) ***REMOVED***
+            posting.done(function (data) {
                 console.log('Ca a fonctionné!');
                 //online = true;
-        ***REMOVED***);
-            posting.always(function () ***REMOVED***
-                db.open(***REMOVED***
+            });
+            posting.always(function () {
+                db.open({
                     server: 'mute',
                     version: 1,
-                    schema: ***REMOVED***
-                        models: ***REMOVED***
-                            key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
+                    schema: {
+                        models: {
+                            key: { keyPath: 'id' , autoIncrement: true },
                             // Optionally add indexes
-                            indexes: ***REMOVED***
-                                creationDate: ***REMOVED******REMOVED***,
-                                docID: ***REMOVED*** unique: true ***REMOVED***,
-                                history: ***REMOVED******REMOVED***,
-                                lastModificationDate: ***REMOVED******REMOVED***,
-                                replicaNumber: ***REMOVED******REMOVED***,
-                                ropes: ***REMOVED******REMOVED***,
-                                bufferLocalLogootSOp: ***REMOVED******REMOVED***
-                        ***REMOVED***
-                    ***REMOVED***
-                ***REMOVED***
-            ***REMOVED***)
-                .done(function (s) ***REMOVED***
+                            indexes: {
+                                creationDate: {},
+                                docID: { unique: true },
+                                history: {},
+                                lastModificationDate: {},
+                                replicaNumber: {},
+                                ropes: {},
+                                bufferLocalLogootSOp: {}
+                            }
+                        }
+                    }
+                })
+                .done(function (s) {
                     serverDB = s
                     initPage();
-            ***REMOVED***);
-        ***REMOVED***);
+                });
+            });
 
-            function initMute() ***REMOVED***
-                if(online === true) ***REMOVED***
+            function initMute() {
+                if(online === true) {
                     network = new Mute.SocketIOAdapter(coordinator);
                     coordinator.setNetwork(network);    
-            ***REMOVED***
+                }
                 coordinator.init();
-        ***REMOVED***
+            }
 
-            function prevState() ***REMOVED***
+            function prevState() {
                 $('#range').val(currentState-1);
                 displayState();
-        ***REMOVED***
+            }
 
-            function nextState() ***REMOVED***
+            function nextState() {
                 $('#range').val(currentState+1);
                 displayState();
-        ***REMOVED***
+            }
 
-            function displayState() ***REMOVED***
+            function displayState() {
                 var newState = parseInt($('#range').val());
                 $('#rangePrimary').val(newState);
                 str = coordinator.updateState(str, currentState, newState);
                 currentState = newState;
                 editor.editor.session.doc.setValue(str);
-        ***REMOVED***
+            }
 
-            function initPage() ***REMOVED***
+            function initPage() {
                 coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', null);
                 
                 editor.editor.setReadOnly(true);
                 
-                coordinator.on('updateHistoryScroller', function (data) ***REMOVED***
+                coordinator.on('updateHistoryScroller', function (data) {
                     $('#range').attr('max', data.length).attr('value', data.length);
                     displayState();
-            ***REMOVED***);
+                });
 
-                if(<%= privateDoc%> === false) ***REMOVED***
+                if(<%= privateDoc%> === false) {
                     initMute();
-            ***REMOVED***
-        ***REMOVED***
+                }
+            }
 
             console.log('docID: <%= docID %>');
         </script>

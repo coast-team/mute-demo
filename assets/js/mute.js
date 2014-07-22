@@ -1,43 +1,43 @@
-$(function()***REMOVED***
+$(function(){
     var prev;
     var n = 0;
 
-    var headings = $('h3[data-item-menu]').map(function(i, el) ***REMOVED***
-        return ***REMOVED***
+    var headings = $('h3[data-item-menu]').map(function(i, el) {
+        return {
             top: $(el).offset().top,
             id: el.id
-    ***REMOVED***
-***REMOVED***);
+        }
+    });
 
-    function closest() ***REMOVED***
+    function closest() {
         var h;
         var top = $(window).scrollTop();
         var i = headings.length;
-        while (i--) ***REMOVED***
+        while (i--) {
             h = headings[i];
-            if (i === 0 || top >= h.top - 70) ***REMOVED***
+            if (i === 0 || top >= h.top - 70) {
                 return h;
-        ***REMOVED***
-    ***REMOVED***
-***REMOVED***
+            }
+        }
+    }
 
-    $(document).scroll(function()***REMOVED***
+    $(document).scroll(function(){
         var h = closest();
         if (!h) return;
 
-        if (prev) ***REMOVED***
+        if (prev) {
         prev.removeClass('active');
         prev.parent().parent().removeClass('active');
-    ***REMOVED***
+        }
 
         var a = $('a[href="#' + h.id + '"]');
         a.addClass('active');
         a.parent().parent().addClass('active');
 
         prev = a;
-***REMOVED***);
-***REMOVED***);
+    });
+});
 
-function accessDocument() ***REMOVED***
+function accessDocument() {
     location.href = '/' + encodeURIComponent($('#access-document').val());
-***REMOVED***
+}

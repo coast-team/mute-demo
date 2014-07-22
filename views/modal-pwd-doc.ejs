@@ -29,31 +29,31 @@
     </div>
 </div>
 <script>
-    $(function () ***REMOVED***
+    $(function () {
         $('#modalPrivateDoc').modal('show');
-***REMOVED***);
+    });
 
-    function redirect() ***REMOVED***
+    function redirect() {
         location.href='/';
-***REMOVED***
+    }
 
-    function runAjaxSendPwd(event) ***REMOVED***
-        if(event.keyCode === 13) ***REMOVED***
+    function runAjaxSendPwd(event) {
+        if(event.keyCode === 13) {
             ajaxSendPwd();
-    ***REMOVED***
-***REMOVED***
+        }
+    }
 
-    function ajaxSendPwd() ***REMOVED***
-        var posting = $.post('/ajax/verifyPwd', ***REMOVED*** docID: '<%= docID%>', pwd: $('#inputPwd').val() ***REMOVED***);
-        posting.done(function (data) ***REMOVED***
-            if(data.success === true) ***REMOVED***
+    function ajaxSendPwd() {
+        var posting = $.post('/ajax/verifyPwd', { docID: '<%= docID%>', pwd: $('#inputPwd').val() });
+        posting.done(function (data) {
+            if(data.success === true) {
                 $('#modalPrivateDoc').modal('hide');
                 initMute();
-        ***REMOVED***
-            else ***REMOVED***
+            }
+            else {
                 $('#spanError').html('Wrong password, try again !');
                 $('#spanError').attr('class', 'bg-danger');
-        ***REMOVED***
-    ***REMOVED***);
-***REMOVED***
+            }
+        });
+    }
 </script>

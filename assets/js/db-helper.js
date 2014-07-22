@@ -1,32 +1,32 @@
-function openDB () ***REMOVED***
-    var serverDB = db.open(***REMOVED***
+function openDB () {
+    var serverDB = db.open({
         server: 'mute',
         version: 2,
-        schema: ***REMOVED***
-            models: ***REMOVED***
-                key: ***REMOVED*** keyPath: 'id' , autoIncrement: true ***REMOVED***,
+        schema: {
+            models: {
+                key: { keyPath: 'id' , autoIncrement: true },
                 // Optionally add indexes
-                indexes: ***REMOVED***
-                    creationDate: ***REMOVED******REMOVED***,
-                    docID: ***REMOVED*** unique: true ***REMOVED***,
-                    history: ***REMOVED******REMOVED***,
-                    lastModificationDate: ***REMOVED******REMOVED***,
-                    replicaNumber: ***REMOVED******REMOVED***,
-                    ropes: ***REMOVED******REMOVED***,
-                    bufferLocalLogootSOp: ***REMOVED******REMOVED***,
-                    mode: ***REMOVED******REMOVED***,
-                    username: ***REMOVED******REMOVED***
-            ***REMOVED***
-        ***REMOVED***
-            docs: ***REMOVED***
-                key: ***REMOVED*** keyPath: 'id', autoIncrement: true ***REMOVED***,
-                indexes: ***REMOVED***
-                    docID: ***REMOVED*** unique: true ***REMOVED***,
-                    version: ***REMOVED******REMOVED***
-            ***REMOVED***
-        ***REMOVED***
-    ***REMOVED***
-***REMOVED***); 
+                indexes: {
+                    creationDate: {},
+                    docID: { unique: true },
+                    history: {},
+                    lastModificationDate: {},
+                    replicaNumber: {},
+                    ropes: {},
+                    bufferLocalLogootSOp: {},
+                    mode: {},
+                    username: {}
+                }
+            },
+            docs: {
+                key: { keyPath: 'id', autoIncrement: true },
+                indexes: {
+                    docID: { unique: true },
+                    version: {}
+                }
+            }
+        }
+    }); 
     console.log('serverDB: ', serverDB);
     return serverDB;
-***REMOVED***
+}

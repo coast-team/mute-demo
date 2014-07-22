@@ -1,9 +1,9 @@
 <% 
-    if(error === true || info === true) ***REMOVED*** %>
+    if(error === true || info === true) { %>
         <div id="modalNotifications" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-body <% if(error === true) ***REMOVED*** %> bg-danger <% ***REMOVED*** if(info ===true) ***REMOVED*** %> bg-info <% ***REMOVED*** %>">
+                    <div class="modal-body <% if(error === true) { %> bg-danger <% } if(info ===true) { %> bg-info <% } %>">
                         <h4 class="modal-title"><%= notificationTitle %></h4>
                         <hr>
                         <p><%= msg %></p>
@@ -14,9 +14,9 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
         <script>
-            $(function ()***REMOVED***
+            $(function (){
                 $('#modalNotifications').modal('show');
-        ***REMOVED***);
+            });
         </script>
-    <% ***REMOVED*** 
+    <% } 
 %>

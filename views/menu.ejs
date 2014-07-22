@@ -17,11 +17,11 @@
 				<button type="submit" class="btn btn-default">Access</button>
 			</form>
 			<ul class="nav navbar-nav navbar-right">
-				<li <% if(page==='home') ***REMOVED*** %>class="active" <% ***REMOVED*** %> ><a href="/"><span class="glyphicon glyphicon-home"></span>&nbsp;Home</a></li>
-				<li <% if(page==='list') ***REMOVED*** %>class="active" <% ***REMOVED*** %> ><a href="/list"><span class="glyphicon glyphicon-list"></span>&nbsp;List</a></li>
-				<li <% if(page==='guide') ***REMOVED*** %>class="active" <% ***REMOVED*** %> ><a href="/guide"><span class="glyphicon glyphicon-book"></span>&nbsp;Guide</a></li>
-				<!-- <li <% if(page==='about') ***REMOVED*** %>class="active" <% ***REMOVED*** %> ><a href="/about">About</a></li> -->
-				<li <% if(page==='contact') ***REMOVED*** %>class="active" <% ***REMOVED*** %> ><a href="/contact"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Contact</a></li>
+				<li <% if(page==='home') { %>class="active" <% } %> ><a href="/"><span class="glyphicon glyphicon-home"></span>&nbsp;Home</a></li>
+				<li <% if(page==='list') { %>class="active" <% } %> ><a href="/list"><span class="glyphicon glyphicon-list"></span>&nbsp;List</a></li>
+				<li <% if(page==='guide') { %>class="active" <% } %> ><a href="/guide"><span class="glyphicon glyphicon-book"></span>&nbsp;Guide</a></li>
+				<!-- <li <% if(page==='about') { %>class="active" <% } %> ><a href="/about">About</a></li> -->
+				<li <% if(page==='contact') { %>class="active" <% } %> ><a href="/contact"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Contact</a></li>
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div>

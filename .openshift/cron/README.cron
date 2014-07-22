@@ -5,7 +5,7 @@ directories will be run on a scheduled basis (frequency is as indicated by the
 name of the directory) using run-parts.
 
 run-parts ignores any files that are hidden or dotfiles (.*) or backup
-files (*~ or *,)  or named *.***REMOVED***rpmsave,rpmorig,rpmnew,swp,cfsaved***REMOVED***
+files (*~ or *,)  or named *.{rpmsave,rpmorig,rpmnew,swp,cfsaved}
 
 The presence of two specially named files jobs.deny and jobs.allow controls
 how run-parts executes your scripts/jobs.

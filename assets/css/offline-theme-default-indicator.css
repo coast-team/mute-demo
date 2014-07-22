@@ -1,32 +1,32 @@
 /* line 3, ../sass/_offline-theme-base-indicator.sass */
-.offline-ui, .offline-ui *, .offline-ui:before, .offline-ui:after, .offline-ui *:before, .offline-ui *:after ***REMOVED***
+.offline-ui, .offline-ui *, .offline-ui:before, .offline-ui:after, .offline-ui *:before, .offline-ui *:after {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-***REMOVED***
+}
 
 /* line 6, ../sass/_offline-theme-base-indicator.sass */
-.offline-ui ***REMOVED***
+.offline-ui {
   display: none;
   background: white;
   z-index: 2000;
   padding: 5px;
-***REMOVED***
+}
 /* line 13, ../sass/_offline-theme-base-indicator.sass */
-.offline-ui .offline-ui-retry ***REMOVED***
+.offline-ui .offline-ui-retry {
   display: none;
-***REMOVED***
+}
 /* line 16, ../sass/_offline-theme-base-indicator.sass */
-.offline-ui.offline-ui-up ***REMOVED***
+.offline-ui.offline-ui-up {
   display: inline-table;
-***REMOVED***
+}
 /* line 19, ../sass/_offline-theme-base-indicator.sass */
-.offline-ui.offline-ui-down ***REMOVED***
+.offline-ui.offline-ui-down {
   display: inline-table;
-***REMOVED***
+}
 
 /* line 11, ../sass/offline-theme-default-indicator.sass */
-.offline-ui ***REMOVED***
+.offline-ui {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   -ms-border-radius: 4px;
@@ -36,14 +36,14 @@
   width: 1em;
   height: 1em;
   max-width: 100%;
-***REMOVED***
+}
 /* line 20, ../sass/offline-theme-default-indicator.sass */
-.offline-ui.offline-ui-up ***REMOVED***
+.offline-ui.offline-ui-up {
   background: #d6e9c6;
   color: #468847;
-***REMOVED***
+}
 /* line 24, ../sass/offline-theme-default-indicator.sass */
-.offline-ui.offline-ui-down ***REMOVED***
+.offline-ui.offline-ui-down {
   background: #ec8787;
   color: #551313;
-***REMOVED***
+}

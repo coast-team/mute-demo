@@ -47,20 +47,20 @@ SALT = bcrypt.genSaltSync(10);
 
 var db;
 
-fs.readFile('mute.conf', 'utf8', function (err,data) ***REMOVED***
-	if (err) ***REMOVED***
+fs.readFile('mute.conf', 'utf8', function (err,data) {
+	if (err) {
 		return console.log(err);
-	***REMOVED***
+	}
 	var obj = JSON.parse(data);
 	USERNAME_MAIL = obj.mail.username;
 	PASS_MAIL = obj.mail.pass;
-	smtpTransport = nodemailer.createTransport("SMTP",***REMOVED***
+	smtpTransport = nodemailer.createTransport("SMTP",{
 	    service: "Gmail",
-	    auth: ***REMOVED***
+	    auth: {
 	        user: USERNAME_MAIL,
 	        pass: PASS_MAIL
-	***REMOVED***
-	***REMOVED***);
+	    }
+	});
 
 	NAME_DB = obj.db.name;
 	USERNAME_DB = obj.db.username;
@@ -71,37 +71,37 @@ fs.readFile('mute.conf', 'utf8', function (err,data) ***REMOVED***
 	console.log('HOST_DB:')
 
 	// Connection to the mongoDB running instance
-	mongoose.connect('mongodb://'+HOST_DB+':'+PORT_DB+'/'+NAME_DB, ***REMOVED*** user: USERNAME_DB, pass: PASS_DB ***REMOVED***);
+	mongoose.connect('mongodb://'+HOST_DB+':'+PORT_DB+'/'+NAME_DB, { user: USERNAME_DB, pass: PASS_DB });
 	// Check if connection succeed
 	var db = mongoose.connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
-	db.once('open', function callback () ***REMOVED***
+	db.once('open', function callback () {
 		console.log('Connection to mongoDB instance succeed!');
-	***REMOVED***);
-***REMOVED***);
+	});
+});
 
-var docSchema = mongoose.Schema(***REMOVED***
+var docSchema = mongoose.Schema({
     docID: String,
-    pwd: ***REMOVED******REMOVED***
-***REMOVED***);
+    pwd: {}
+});
 
 var Docs = mongoose.model('Docs', docSchema);
 
 var keys = [];
 var i;
-for(i=0; i<10; i++) ***REMOVED***
+for(i=0; i<10; i++) {
 	keys.push(createID());
-***REMOVED***
-app.use(session(***REMOVED***
+}
+app.use(session({
 	keys: keys
-***REMOVED***));
+}));
 app.use(cookieParser('q2392sTfDzTc2CQ6'));
 app.use(bodyParser())
 app.use(bodyParser.urlencoded());
 app.use(favicon(__dirname + '/assets/img/favicon.ico'));
-app.use('/assets', express.static(__dirname + '/assets', ***REMOVED*** maxAge: 1 ***REMOVED***));
-app.use('/views', express.static(__dirname + '/views', ***REMOVED*** maxAge: 1 ***REMOVED***));
-app.use('/offline', express.static(__dirname + '/offline', ***REMOVED*** maxAge: 1 ***REMOVED***));
+app.use('/assets', express.static(__dirname + '/assets', { maxAge: 1 }));
+app.use('/views', express.static(__dirname + '/views', { maxAge: 1 }));
+app.use('/offline', express.static(__dirname + '/offline', { maxAge: 1 }));
 
 // set .ejs as the default extension
 app.set('view engine', 'ejs');
@@ -120,175 +120,175 @@ var socketIOAdapter = new SocketIOAdapter(server, coordinator, infosUsersModule,
 infosUsersModule.setNetwork(socketIOAdapter);
 coordinator.setNetwork(socketIOAdapter);
 
-var docs = ***REMOVED******REMOVED***;
+var docs = {};
 initListDocs();
 
-function initListDocs() ***REMOVED***
+function initListDocs() {
 	var i;
 
 	// Fetch all the documents stored in the DB
-	Docs.find(function (err, storedDocs) ***REMOVED***
+	Docs.find(function (err, storedDocs) {
 		var doc;
-		if(err) ***REMOVED***
+		if(err) {
 			return console.error(err);
-		***REMOVED***
+		}
 		console.log('storedDocs: ', storedDocs);
-		if(storedDocs.length > 0) ***REMOVED***
-			for(i=0; i<storedDocs.length; i++) ***REMOVED***
+		if(storedDocs.length > 0) {
+			for(i=0; i<storedDocs.length; i++) {
 				docs[storedDocs[i].docID] = storedDocs[i].pwd;
-			***REMOVED***
-		***REMOVED***
-		else ***REMOVED***
+			}
+		}
+		else {
 			console.log('On add le doc par défaut');
 			addDefaultDoc();
-		***REMOVED***
+		}
 		console.log('Docs existants : ', docs);
-	***REMOVED***);
-***REMOVED***
+	});
+}
 
-function addDefaultDoc() ***REMOVED***
-	var doc = new Docs(***REMOVED*** docID: 'demo', pwd: false ***REMOVED***);
+function addDefaultDoc() {
+	var doc = new Docs({ docID: 'demo', pwd: false });
 	doc.markModified('pwd');
 	doc.save();
 	coordinator.addDoc('demo');
 	doc.demo = false;
-***REMOVED***
+}
 
-function createID() ***REMOVED***
+function createID() {
     var text = '';
     var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var i;
-    for(i=0; i<16; i++) ***REMOVED***
+    for(i=0; i<16; i++) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
-***REMOVED***
+    }
     return text;
-***REMOVED***
+}
 
-function validPassword(docID, pwd) ***REMOVED***
+function validPassword(docID, pwd) {
 	var success = true;
 
-	if(docID.length === 0) ***REMOVED***
+	if(docID.length === 0) {
 		success = false;
-	***REMOVED***
-	else if(docs[docID] === null || docs[docID] === undefined) ***REMOVED***
+	}
+	else if(docs[docID] === null || docs[docID] === undefined) {
 		// Access to an unknow document
 		success = false;
-	***REMOVED***
-	else if(docs[docID] === false || docs[docID] !== bcrypt.compareSync(pwd, SALT)) ***REMOVED***
+	}
+	else if(docs[docID] === false || docs[docID] !== bcrypt.compareSync(pwd, SALT)) {
 		// Public document or wrong password
 		success = false;
-	***REMOVED***
+	}
 
 	return success;
-***REMOVED***
+}
 
-app.post('/paroles/:docID/', function (req, res) ***REMOVED***
+app.post('/paroles/:docID/', function (req, res) {
 	var parole = req.body.parole;
 	var docID = req.params.docID;
-	socketIOAdapter.io.sockets.in(docID).emit('broadcastParole', ***REMOVED*** parole: parole ***REMOVED***);
+	socketIOAdapter.io.sockets.in(docID).emit('broadcastParole', { parole: parole });
 	res.setHeader('Content-Type', 'text/html');
 	res.send(200);
-***REMOVED***);
+});
 
-app.post('/ajax/verifyPwd', function (req, res) ***REMOVED***
+app.post('/ajax/verifyPwd', function (req, res) {
 	var docID = req.body.docID;
 	var pwd = req.body.pwd;
 	var success = validPassword(docID, pwd);
 
-	if(success) ***REMOVED***
-		res.cookie(docID, docs[docID], ***REMOVED*** signed: true ***REMOVED***);
-	***REMOVED***
-	res.send(***REMOVED*** success: success ***REMOVED***);
-***REMOVED***);
+	if(success) {
+		res.cookie(docID, docs[docID], { signed: true });
+	}
+	res.send({ success: success });
+});
 
-app.post('/ajax/testConnection', function (req, res) ***REMOVED***
-	res.send(***REMOVED*** OK: true ***REMOVED***);
-***REMOVED***);
+app.post('/ajax/testConnection', function (req, res) {
+	res.send({ OK: true });
+});
 
-app.get('/delay', function (req, res) ***REMOVED***
+app.get('/delay', function (req, res) {
 	delay += 5000;
 	socketIOAdapter.setDelay(delay);
 	res.setHeader('Content-Type', 'text/html');
 	res.redirect('/');	
-***REMOVED***);
+});
 
-app.get('/listDocs', function (req, res) ***REMOVED***
-	coordinator.listDocs(function (list) ***REMOVED***
+app.get('/listDocs', function (req, res) {
+	coordinator.listDocs(function (list) {
 		res.setHeader('Content-Type', 'text/html');
 		res.send(list);	
-	***REMOVED***);	
-***REMOVED***);
+	});	
+});
 
-app.get('/getInfos', function (req, res) ***REMOVED***
+app.get('/getInfos', function (req, res) {
 	var infos = coordinator.getInfos();
 	res.setHeader('Content-Type', 'text/html');
 	res.send(infos);
-***REMOVED***);
+});
 
-app.get('/getInfosDemo', function (req, res) ***REMOVED***
+app.get('/getInfosDemo', function (req, res) {
 	var infosDemo = coordinator.getInfos(['demo']);
 	res.setHeader('Content-Type', 'text/html');
 	res.send(infosDemo);
-***REMOVED***);
+});
 
-app.post('/sendMail', function (req, res) ***REMOVED***
+app.post('/sendMail', function (req, res) {
 	// setup e-mail data with unicode symbols
-	var mailOptions = ***REMOVED***
+	var mailOptions = {
 	    from: USERNAME_MAIL, // sender address
 	    to: USERNAME_MAIL, // list of receivers
 	    subject: "MUTE - " + req.body.subject, // Subject line
 	    text: 'Send by ' + req.body.email + '\n\n' + req.body.text, // plaintext body
 	    html: 'Send by ' + req.body.email + '<br><br>' + req.body.text // html body
-	***REMOVED***
+	}
 
 	// send mail with defined transport object
-	smtpTransport.sendMail(mailOptions, function(error, response)***REMOVED***
-	    if(error)***REMOVED***
+	smtpTransport.sendMail(mailOptions, function(error, response){
+	    if(error){
 	        console.log(error);
-	***REMOVED***
-	    else***REMOVED***
+	    }
+	    else{
 	        console.log("Message sent: " + response.message);
-	***REMOVED***
-	***REMOVED***);
+	    }
+	});
 
 	req.session.info = true;
 	req.session.notificationTitle = 'Message sent';
 	req.session.msg = 'Your message has correctly been sent to the ***REMOVED***istrators.';
 	
 	res.redirect('/');
-***REMOVED***);
+});
 
-app.post('/createDoc', function (req, res) ***REMOVED***
+app.post('/createDoc', function (req, res) {
 	var docID = req.body.docID;
 	var pwd = req.body.pwd;
 
-	if(docID.length === 0) ***REMOVED***
+	if(docID.length === 0) {
 		// Empty docID: generate a random one
 		docID = 'demo';
-		while(docs[docID] !== undefined) ***REMOVED***
+		while(docs[docID] !== undefined) {
 			docID = createID();
-		***REMOVED***
-	***REMOVED***
+		}
+	}
 
-	if(docs[docID] === undefined) ***REMOVED***
+	if(docs[docID] === undefined) {
 		// New doc
-		if(pwd.length > 0) ***REMOVED***
+		if(pwd.length > 0) {
 			// Private
 			docs[docID] = bcrypt.hashSync(pwd, SALT);
-			res.cookie(docID, docs[docID], ***REMOVED*** signed: true ***REMOVED***);
-		***REMOVED***
-		else ***REMOVED***
+			res.cookie(docID, docs[docID], { signed: true });
+		}
+		else {
 			docs[docID] = false;
-		***REMOVED***
+		}
 
-		var doc = new Docs(***REMOVED*** docID: docID, pwd: docs[docID] ***REMOVED***);
+		var doc = new Docs({ docID: docID, pwd: docs[docID] });
 		doc.markModified('pwd');
-		doc.save(function (err, doc) ***REMOVED***
-			if (err)  ***REMOVED***
+		doc.save(function (err, doc) {
+			if (err)  {
 				return console.error(err);
-			***REMOVED***
+			}
 			console.log('Save successful!');			
-		***REMOVED***);
+		});
 
 		coordinator.addDoc(docID);
 
@@ -297,134 +297,134 @@ app.post('/createDoc', function (req, res) ***REMOVED***
 		req.session.msg = 'The document "' + docID + '" has correctly been created.';
 		
 		res.redirect('/doc/' + docID);
-	***REMOVED***
-	else ***REMOVED***
+	}
+	else {
 		// Already existing
 		req.session.error = true;
 		req.session.notificationTitle = 'Document already existing';
 		req.session.msg = 'A document with this name already exists. Please use the form at the top of the screen to access it if it\'s yours.';
 		res.redirect('/');
-	***REMOVED***
-***REMOVED***);
+	}
+});
 
-app.use(cacheManifest(***REMOVED***
+app.use(cacheManifest({
 	manifestPath: '/mute.manifest',
 	/*
-	files: [***REMOVED***
+	files: [{
 	file: __dirname + '/assets/js/foo.js',
 	path: '/js/foo.js'
-	***REMOVED***, 
+	}, 
 	*/
 
 	version: VERSION_MANIFEST,
 	files: [
 		/*
-		***REMOVED***
+		{
 			dir: __dirname + '/assets/js',
 			prefix: '/assets/js/',
-			ignore: function(x) ***REMOVED*** return /\//.test(x); ***REMOVED***
-		***REMOVED***,
+			ignore: function(x) { return /\//.test(x); }
+		},
 		*/
-		***REMOVED***
+		{
 			file: __dirname + '/assets/js/awareness-adapter.js',
 			path: '/assets/js/awareness-adapter.js'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			file: __dirname + '/assets/js/bootstrap.min.js',
 			path: '/assets/js/bootstrap.min.js'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			file: __dirname + '/assets/js/highlightjs.min.js',
 			path: '/assets/js/highlightjs.min.js'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			file: __dirname + '/assets/js/jquery-2.1.0.js',
 			path: '/assets/js/jquery-2.1.0.js'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			file: __dirname + '/assets/js/kinetic-v5.0.2.min.js',
 			path: '/assets/js/kinetic-v5.0.2.min.js'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			file: __dirname + '/assets/js/mute.js',
 			path: '/assets/js/mute.js'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			file: __dirname + '/assets/js/dbjs/src/db.js',
 			path: '/assets/js/dbjs/src/db.js'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			file: __dirname + '/assets/js/db-helper.js',
 			path: '/assets/js/db-helper.js'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			dir: __dirname + '/assets/js/ace/src',
 			prefix: '/assets/js/ace/src/'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			dir: __dirname + '/assets/js/mute-client/build',
 			prefix: '/assets/js/mute-client/build/'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			dir: __dirname + '/assets/js/dbjs/src',
 			prefix: '/assets/js/dbjs/src/'
-		***REMOVED***,
-		***REMOVED***
+		},
+		{
 			dir: __dirname + '/assets/css',
 			prefix: '/assets/css/',
-			ignore: function(x) ***REMOVED*** return /\/\./.test(x); ***REMOVED***
-		***REMOVED***,
-		***REMOVED***
+			ignore: function(x) { return /\/\./.test(x); }
+		},
+		{
 			dir: __dirname + '/assets/fonts',
 			prefix: '/assets/fonts/',
-			ignore: function(x) ***REMOVED*** return /\/\./.test(x); ***REMOVED***
-		***REMOVED***,
-		***REMOVED***
+			ignore: function(x) { return /\/\./.test(x); }
+		},
+		{
 			dir: __dirname + '/assets/img',
 			prefix: '/assets/img/',
-			ignore: function(x) ***REMOVED*** return /\/\./.test(x); ***REMOVED***
-		***REMOVED***,
+			ignore: function(x) { return /\/\./.test(x); }
+		},
 		/*
 		,
 
-		***REMOVED***
+		{
 			dir: __dirname + '/views',
 			prefix: '/views/',
-			ignore: function(x) ***REMOVED*** return /\.bak$/.test(x); ***REMOVED***,
-			//replace: function(x) ***REMOVED*** return x.replace(/\.ejs$/, '.html'); ***REMOVED***
-		***REMOVED***
+			ignore: function(x) { return /\.bak$/.test(x); },
+			//replace: function(x) { return x.replace(/\.ejs$/, '.html'); }
+		}
 		*/
 	],
 	networks: ['*'],
 	fallbacks: ['/ /offline/list.html', '/doc /offline/doc.html']
-***REMOVED***));
+}));
 
-app.get('/list', function (req, res) ***REMOVED***
+app.get('/list', function (req, res) {
 	res.setHeader('Content-Type', 'text/html');
-	res.render('list', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: 'list' ***REMOVED***);
-***REMOVED***);
+	res.render('list', { title: 'MUTE - Multi-User Text Editor', page: 'list' });
+});
 
-app.get('/guide', function (req, res) ***REMOVED***
+app.get('/guide', function (req, res) {
 	res.setHeader('Content-Type', 'text/html');
-	res.render('guide', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: 'guide' ***REMOVED***);
-***REMOVED***);
+	res.render('guide', { title: 'MUTE - Multi-User Text Editor', page: 'guide' });
+});
 
-app.get('/contact', function (req, res) ***REMOVED***
+app.get('/contact', function (req, res) {
 	res.setHeader('Content-Type', 'text/html');
-	res.render('contact', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: 'contact' ***REMOVED***);
-***REMOVED***);
+	res.render('contact', { title: 'MUTE - Multi-User Text Editor', page: 'contact' });
+});
 
-app.get('/about', function (req, res) ***REMOVED***
+app.get('/about', function (req, res) {
 	res.setHeader('Content-Type', 'text/html');
-	res.render('about', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: 'about' ***REMOVED***);
-***REMOVED***);
+	res.render('about', { title: 'MUTE - Multi-User Text Editor', page: 'about' });
+});
 
-app.get('/accessDoc', function (req, res) ***REMOVED***
+app.get('/accessDoc', function (req, res) {
 	var docID = req.query.docID;
 	res.redirect('/doc/' + docID);
-***REMOVED***);
+});
 
-app.get('/doc/:docID/history', function (req, res) ***REMOVED***
+app.get('/doc/:docID/history', function (req, res) {
 	var docID = req.params.docID;
 	var privateDoc = false;
 	var newDoc = false;
@@ -435,25 +435,25 @@ app.get('/doc/:docID/history', function (req, res) ***REMOVED***
 	var msg = '';
 
 	// Doc doesn't exist
-	if(docs[docID] === undefined) ***REMOVED***
+	if(docs[docID] === undefined) {
 		req.session.error = true;
 		req.session.notificationTitle = 'Document doesn\'t exist';
 		req.session.msg = 'The document you tried to access doesn\'t exist. Please check the name of the doc you want to access.';
 
 		res.redirect('/');
-	***REMOVED***
-	if(newDoc === false && docs[docID] !== false) ***REMOVED***
-		if(req.signedCookies[docID] !== docs[docID]) ***REMOVED***
+	}
+	if(newDoc === false && docs[docID] !== false) {
+		if(req.signedCookies[docID] !== docs[docID]) {
 			// Private doc and not already authentified
 			privateDoc = true;
-		***REMOVED*** 
-	***REMOVED***
+		} 
+	}
 	
 	res.setHeader('Content-Type', 'text/html');
-	res.render('history-viewer', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg ***REMOVED***);
-***REMOVED***);
+	res.render('history-viewer', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
+});
 
-app.get('/doc/:docID', function (req, res) ***REMOVED***
+app.get('/doc/:docID', function (req, res) {
 	var docID = req.params.docID;
 	var privateDoc = false;
 	var newDoc = false;
@@ -463,71 +463,71 @@ app.get('/doc/:docID', function (req, res) ***REMOVED***
 	var notificationTitle = '';
 	var msg = '';
 
-	if(req.session.info === true) ***REMOVED***
+	if(req.session.info === true) {
 		info = req.session.info;
 		notificationTitle = req.session.notificationTitle;
 		msg = req.session.msg;
 
 		delete req.session.info;
 		delete req.session.msg;
-	***REMOVED***
+	}
 
 	// New doc
-	if(docs[docID] === undefined) ***REMOVED***
+	if(docs[docID] === undefined) {
 		newDoc = true;
 		docs[docID] = false;
 
-		var doc = new Docs(***REMOVED*** docID: docID, pwd: false ***REMOVED***);
+		var doc = new Docs({ docID: docID, pwd: false });
 		doc.markModified('pwd');
-		doc.save(function (err, doc) ***REMOVED***
-			if (err)  ***REMOVED***
+		doc.save(function (err, doc) {
+			if (err)  {
 				return console.error(err);
-			***REMOVED***
+			}
 			console.log('Save successful!');			
-		***REMOVED***);
+		});
 
 		coordinator.addDoc(req.params.docID);
 		info = true;
 		notificationTitle = 'Document created';
 		msg = 'The document "' + docID + '" has correctly been created.';
-	***REMOVED***
-	if(newDoc === false && docs[docID] !== false) ***REMOVED***
-		if(req.signedCookies[docID] !== docs[docID]) ***REMOVED***
+	}
+	if(newDoc === false && docs[docID] !== false) {
+		if(req.signedCookies[docID] !== docs[docID]) {
 			// Private doc and not already authentified
 			privateDoc = true;
-		***REMOVED*** 
-	***REMOVED***
+		} 
+	}
 	res.setHeader('Content-Type', 'text/html');
-	res.render('private-editor', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', nbOperationsItemID: 'cnt', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, link: fullUrl, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg ***REMOVED***);
-***REMOVED***);
+	res.render('private-editor', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', nbOperationsItemID: 'cnt', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, link: fullUrl, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
+});
 
-app.get('/', function (req, res) ***REMOVED***
+app.get('/', function (req, res) {
 	var error = false;
 	var info = false;
 	var notificationTitle = '';
 	var msg = '';
 	var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 
-	if(req.session.error === true) ***REMOVED***
+	if(req.session.error === true) {
 		error = req.session.error;
 		notificationTitle = req.session.notificationTitle;
 		msg = req.session.msg;
 
 		delete req.session.error;
 		delete req.session.msg;
-	***REMOVED***
+	}
 
 	res.setHeader('Content-Type', 'text/html');
-	res.render('home', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: 'home', editorID: 'editor', nbOperationsItemID: 'cnt', lastModificationDateItemID: 'lastModificationDate', docID: 'demo', error: error, info: info, notificationTitle: notificationTitle, msg: msg, link: fullUrl ***REMOVED***);
-***REMOVED***);
+	res.render('home', { title: 'MUTE - Multi-User Text Editor', page: 'home', editorID: 'editor', nbOperationsItemID: 'cnt', lastModificationDateItemID: 'lastModificationDate', docID: 'demo', error: error, info: info, notificationTitle: notificationTitle, msg: msg, link: fullUrl });
+});
 
-app.use(function(req, res, next)***REMOVED***
+app.use(function(req, res, next){
     res.setHeader('Content-Type', 'text/html');
-    res.render('404', ***REMOVED*** title: 'MUTE - Multi-User Text Editor', page: '404'***REMOVED***);
-***REMOVED***);
+    res.render('404', { title: 'MUTE - Multi-User Text Editor', page: '404'});
+});
 
-server.listen( port, ipaddress, function() ***REMOVED***
+server.listen( port, ipaddress, function() {
     console.log(new Date() + ': Server is listening on port ' + port);
-***REMOVED***);
+});
 
 console.log('-------- Le serveur a correctement démarré --------');

@@ -1,9 +1,9 @@
-***REMOVED***
+{
   "name": "mute",
   "version": "0.1.1",
   "description": "",
   "main": "app.js",
-  "dependencies": ***REMOVED***
+  "dependencies": {
     "bcryptjs": "^1.0.1",
     "body-parser": "1.2.2",
     "connect-cache-manifest": "0.2.0",
@@ -16,15 +16,15 @@
     "nodemailer": "0.6.5",
     "serve-favicon": "2.0.1",
     "socket.io": "0.9.16"
-  ***REMOVED***,
-  "repository": ***REMOVED***
+  },
+  "repository": {
     "type": "git",
     "url": "https://github.com/MatthieuNICOLAS/mute-demo"
-  ***REMOVED***,
-  "devDependencies": ***REMOVED******REMOVED***,
-  "scripts": ***REMOVED***
+  },
+  "devDependencies": {},
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  ***REMOVED***,
+  },
   "keywords": [
     "crdt",
     "collaborative-edition",
@@ -32,9 +32,9 @@
   ],
   "author": "Matthieu Nicolas",
   "licenses": [
-    ***REMOVED***
+    {
       "type": "GPLv3",
       "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
-***REMOVED***
+    }
   ]
-***REMOVED***
+}

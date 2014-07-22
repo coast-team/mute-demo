@@ -134,52 +134,52 @@
 
             var online = false;
             var posting = $.post('/ajax/testConnection');
-            posting.done(function (data) ***REMOVED***
+            posting.done(function (data) {
                 online = true;
-        ***REMOVED***);
-            posting.fail(function () ***REMOVED***
+            });
+            posting.fail(function () {
                 console.log('Yo');
                 location.href = '/list';
-        ***REMOVED***);
-            posting.always(function () ***REMOVED***
+            });
+            posting.always(function () {
                 openDB()
-                .done(function (s) ***REMOVED***
+                .done(function (s) {
                     console.log('On passe ici ?');
                     serverDB = s
                     serverDB.docs.query()
                     .filter('docID', '<%= docID %>')
                     .execute()
-                    .done(function (results) ***REMOVED***
+                    .done(function (results) {
                         var doc;
-                        if(results.length === 0) ***REMOVED***
+                        if(results.length === 0) {
                             version = 1;
-                            doc = ***REMOVED***
+                            doc = {
                                 docID: '<%= docID %>',
                                 version: 1
-                        ***REMOVED***;
+                            };
                             serverDB.docs.add(doc)
-                            .done(function (item) ***REMOVED***
+                            .done(function (item) {
                                 initPage();
-                        ***REMOVED***);
-                    ***REMOVED***
-                        else ***REMOVED***
+                            });
+                        }
+                        else {
                             version = results[0].version + 1;
                             serverDB.docs.query()
                             .filter('docID', '<%= docID %>')
-                            .modify(***REMOVED*** version: version ***REMOVED***)
+                            .modify({ version: version })
                             .execute()
-                            .done(function (results) ***REMOVED***
+                            .done(function (results) {
                                 initPage();
-                        ***REMOVED***);
-                    ***REMOVED***
+                            });
+                        }
 
-                        var interval = setInterval(function () ***REMOVED***
+                        var interval = setInterval(function () {
                             serverDB.docs.query()
                             .filter('docID', '<%= docID %>')
                             .execute()
-                            .done(function (results) ***REMOVED***
-                                if(results.length === 1) ***REMOVED***
-                                    if(results[0].version !== version) ***REMOVED***
+                            .done(function (results) {
+                                if(results.length === 1) {
+                                    if(results[0].version !== version) {
                                         console.log(results[0].version + ' !== ' + version);
                                         $('#modalCloseTab').modal('show');
                                         coordinator.dispose();
@@ -190,15 +190,15 @@
                                         editor = null;
                                         network = null;
                                         clearInterval(interval);
-                                ***REMOVED***
-                            ***REMOVED***
-                        ***REMOVED***);
-                    ***REMOVED*** 3000);
-                ***REMOVED***);
-            ***REMOVED***);
-        ***REMOVED***);
+                                    }
+                                }
+                            });
+                        }, 3000);
+                    });
+                });
+            });
 
-            function initPage () ***REMOVED***
+            function initPage () {
                 var currentState = 0;
                 var str = '';
                 var client;
@@ -212,97 +212,97 @@
                 coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
                 coordinator.setEditor(editor);
-                if(online === true) ***REMOVED***
+                if(online === true) {
                     network = new Mute.SocketIOAdapter(coordinator);
                     infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
                     editor.setInfosUsersModule(infosUsersModule);
                     network.setInfosUsersModule(infosUsersModule);
-                    $('#inputUsername').UsernameModule(***REMOVED***
+                    $('#inputUsername').UsernameModule({
                         infosUsersModule: infosUsersModule
-                ***REMOVED***);
-                    $('#list-collaborators').collaboratorsListModule(***REMOVED***
+                    });
+                    $('#list-collaborators').collaboratorsListModule({
                         infosUsersModule: infosUsersModule,
                         listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
-                ***REMOVED***);
-                    $().remoteIndicatorsModule(***REMOVED*** 
+                    });
+                    $().remoteIndicatorsModule({ 
                         infosUsersModule: infosUsersModule,
                         textEditorAdapter: editor,
                         networkAdapter: network,
                         cursorsCSSClasses: ['mute-remote-cursor-0', 'mute-remote-cursor-1', 'mute-remote-cursor-2'],
                         selectionsCSSClasses: ['mute-remote-selection-0', 'mute-remote-selection-1', 'mute-remote-selection-2']
-                ***REMOVED***);
+                    });
                     coordinator.setNetwork(network);
-                    network.on('receiveParole', function (data) ***REMOVED***
+                    network.on('receiveParole', function (data) {
                         console.log('Essai: ', data);
-                ***REMOVED***);
-            ***REMOVED***
+                    });
+                }
                 coordinator.init();
                 console.log('<%= docID %>');
-        ***REMOVED***
+            }
 
-            function handleNoUpdate () ***REMOVED***
+            function handleNoUpdate () {
                 $('#btnAppCache').attr('onclick', '');
                 $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;No update needed!');
                 setBtnAppCacheToDefault();
-        ***REMOVED***;
+            };
 
-            function handleDownloading () ***REMOVED***
+            function handleDownloading () {
                 $('#btnAppCache').attr('onclick', '');
                 $('#btnAppCache').html('<img src="/assets/img/ajax-loader.gif">&nbsp;Downloading...');
-        ***REMOVED***
+            }
 
-            function handleCached () ***REMOVED***
+            function handleCached () {
                 $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Cached!');
                 setBtnAppCacheToDefault();
-        ***REMOVED***
+            }
 
-            function handleUpdateReady () ***REMOVED***
+            function handleUpdateReady () {
                 $('#iframeAppCache')[0].contentWindow.applicationCache.swapCache();
                 $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Updated!');
                 setBtnAppCacheToDefault();
-        ***REMOVED***
+            }
 
-            function setBtnAppCacheToDefault () ***REMOVED***
-                setTimeout(function () ***REMOVED***
+            function setBtnAppCacheToDefault () {
+                setTimeout(function () {
                     $('#btnAppCache').attr('onclick', 'updateAppCache()');
                     $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Store locally!')
-            ***REMOVED*** 3000);
-        ***REMOVED***
+                }, 3000);
+            }
 
-            function updateAppCache () ***REMOVED***
-                if(iframeAdded === false) ***REMOVED***
+            function updateAppCache () {
+                if(iframeAdded === false) {
                     iframeAdded = true;
                     $('body').prepend('<iframe id="iframeAppCache" src="/offline/list.html#iframed" style="position:absolute;top:-999em;visibility:hidden"></iframe>');
-            ***REMOVED***
-                else ***REMOVED***
+                }
+                else {
                     $('#iframeAppCache')[0].contentWindow.applicationCache.update();
-            ***REMOVED***
-        ***REMOVED***
+                }
+            }
 
             console.log('docID: <%= docID %>');
 
-            function showCollaboratorsList() ***REMOVED***
-                $('#divMain').animate(***REMOVED*** width: '83,33%' ***REMOVED***);
-                $('#divInfosSup').animate(***REMOVED*** width: '16,67%' ***REMOVED***).show();
-                setTimeout(function () ***REMOVED*** 
+            function showCollaboratorsList() {
+                $('#divMain').animate({ width: '83,33%' });
+                $('#divInfosSup').animate({ width: '16,67%' }).show();
+                setTimeout(function () { 
                     editor.editor.resize();
                     $('#panelControllerLabel').html('Hide list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-left').addClass('glyphicon-arrow-right');
                     $('#btnPanelController').attr('onclick', 'hideCollaboratorsList()');
-            ***REMOVED*** 0);
+                }, 0);
 
-        ***REMOVED***
+            }
 
-            function hideCollaboratorsList() ***REMOVED***
-                $('#divInfosSup').animate(***REMOVED*** width: '0%'***REMOVED***).hide();
-                $('#divMain').animate(***REMOVED*** width: '100%'***REMOVED***);
-                setTimeout(function () ***REMOVED*** 
+            function hideCollaboratorsList() {
+                $('#divInfosSup').animate({ width: '0%'}).hide();
+                $('#divMain').animate({ width: '100%'});
+                setTimeout(function () { 
                     editor.editor.resize();
                     $('#panelControllerLabel').html('Show list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-right').addClass('glyphicon-arrow-left');
                     $('#btnPanelController').attr('onclick', 'showCollaboratorsList()');
-            ***REMOVED*** 400);
-        ***REMOVED***
+                }, 400);
+            }
         </script>
 	</body>
 </html>

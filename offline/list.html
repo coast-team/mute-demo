@@ -91,40 +91,40 @@
 		<script src="/assets/js/dbjs/src/db.js"></script>
 		<script src="/assets/js/db-helper.js"></script>
        	<script>
-       		function accessDoc() ***REMOVED***
+       		function accessDoc() {
        			location.href = '/doc/' + $('#access-document').val();
-       		***REMOVED***
+       		}
 
-       		$(function() ***REMOVED***
-			    $('#access-document').keypress(function(e) ***REMOVED***
+       		$(function() {
+			    $('#access-document').keypress(function(e) {
 			            // Enter pressed?
-			            if(e.which === 10 || e.which === 13) ***REMOVED***
+			            if(e.which === 10 || e.which === 13) {
 			                accessDoc();
-			        ***REMOVED***
-			 ***REMOVED***);
-			***REMOVED***);
+			            }
+			     });
+			});
 
-			if ( location.hash !== '#iframed' ) ***REMOVED***
+			if ( location.hash !== '#iframed' ) {
 				// We only want to render and use the page if we're not in the hidden iframe
 				var serverDB;
 	       		openDB()
-	            .done(function (s) ***REMOVED***
+	            .done(function (s) {
 	                serverDB = s
 	               	serverDB.models.query()
 	               	.all()
 	               	.execute()
-	               	.done(function (results) ***REMOVED***
+	               	.done(function (results) {
 	               		var i;
 	               		var doc;
-	               		for(i=0; i<results.length; i++) ***REMOVED***
+	               		for(i=0; i<results.length; i++) {
 	               			doc = results[i];
 	               			$('#list-docs').append(generateListItem(doc));
-	               		***REMOVED***
+	               		}
 	               		$('#nbDocs').html(results.length);
-	               	***REMOVED***);
-	        ***REMOVED***);
-			***REMOVED***
-			else ***REMOVED***
+	               	});
+	            });
+			}
+			else {
 				console.log('On est là');
 				console.log('window.parent: ', window.parent);
 
@@ -132,21 +132,21 @@
 				// We want to cache our application
 				// So we have to give a feedback 
 				// To the parent page for the main events of the application cache update process
-				applicationCache.ondownloading = function () ***REMOVED***
+				applicationCache.ondownloading = function () {
 					window.parent.handleDownloading();
-				***REMOVED***;
-				applicationCache.onupdateready = function () ***REMOVED***
+				};
+				applicationCache.onupdateready = function () {
 					window.parent.handleUpdateReady();
-				***REMOVED***;
-				applicationCache.oncached = function () ***REMOVED***
+				};
+				applicationCache.oncached = function () {
 					window.parent.handleCached();
-				***REMOVED***;
-				applicationCache.onnoupdate = function () ***REMOVED***
+				};
+				applicationCache.onnoupdate = function () {
 					window.parent.handleNoUpdate();
-				***REMOVED***;
-			***REMOVED***
+				};
+			}
 
-            function generateListItem(doc) ***REMOVED***
+            function generateListItem(doc) {
             	var html = [
             		'<li class="list-group-item" id="'+doc.docID+'"">',
             			'<div class="checkbox">',
@@ -166,7 +166,7 @@
             		'</li>'
             	]; 
             	return html.join('\n');
-        ***REMOVED***
+            }
 
             //TODO: Suppression d'un ou plusieurs documents
    		</script>

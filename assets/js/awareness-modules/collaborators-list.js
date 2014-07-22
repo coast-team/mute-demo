@@ -1,21 +1,21 @@
-(function($) ***REMOVED***
-    $.fn.collaboratorsListModule = function (options) ***REMOVED***
+(function($) {
+    $.fn.collaboratorsListModule = function (options) {
     	/*
-    	*	options : ***REMOVED***
+    	*	options : {
 		*		infosUsersModule,
 		*		cssClasses
-    	*	***REMOVED***
+    	*	}
     	*/
 
         var item = this;
 
-    	var generateCollaboratorsListHTML = function (infosUsers) ***REMOVED***
+    	var generateCollaboratorsListHTML = function (infosUsers) {
             var listHTML = '';
             var infosUser;
             var userID;
             var cssClass;
 
-            for(userID in infosUsers) ***REMOVED***
+            for(userID in infosUsers) {
                 infosUser = infosUsers[userID];
                 cssClass = options.listCSSClasses[userID%options.listCSSClasses.length];
 
@@ -25,19 +25,19 @@
                     '<strong>'+infosUser.username+'</strong>',
                     '</li>'
                 ].join('\n');
-        ***REMOVED***
+            }
             return listHTML;
-    ***REMOVED***;
+        };
 
-    	var updateCollaboratorsList = function (data) ***REMOVED***
+    	var updateCollaboratorsList = function (data) {
 	    	var infosUsers = data.infosUsers;
 		    item.html(generateCollaboratorsListHTML(infosUsers));
-    	***REMOVED***;
+    	};
 
-        options.infosUsersModule.on('updateCollaboratorsList', function (data) ***REMOVED***
+        options.infosUsersModule.on('updateCollaboratorsList', function (data) {
 		    updateCollaboratorsList(data);
-    	***REMOVED***);
+    	});
 
     	return this;
-***REMOVED***
-***REMOVED***( jQuery ));
+    }
+}( jQuery ));

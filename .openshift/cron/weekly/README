@@ -4,7 +4,7 @@ Any scripts or jobs added to this directory will be run on a scheduled basis
 (weekly) using run-parts.
 
 run-parts ignores any files that are hidden or dotfiles (.*) or backup
-files (*~ or *,)  or named *.***REMOVED***rpmsave,rpmorig,rpmnew,swp,cfsaved***REMOVED*** and handles
+files (*~ or *,)  or named *.{rpmsave,rpmorig,rpmnew,swp,cfsaved} and handles
 the files named jobs.deny and jobs.allow specially.
 
 In this specific example, the chronograph script is the only script or job file

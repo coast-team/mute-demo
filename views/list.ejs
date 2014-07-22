@@ -55,23 +55,23 @@
        	<script>
        		var serverDB;
        		openDB()
-            .done(function (s) ***REMOVED***
+            .done(function (s) {
                 serverDB = s
                	serverDB.models.query()
                	.all()
                	.execute()
-               	.done(function (results) ***REMOVED***
+               	.done(function (results) {
                		var i;
                		var doc;
-               		for(i=0; i<results.length; i++) ***REMOVED***
+               		for(i=0; i<results.length; i++) {
                			doc = results[i];
                			$('#list-docs').append(generateListItem(doc));
-               		***REMOVED***
+               		}
                		$('#nbDocs').html(results.length);
-               	***REMOVED***);
-        ***REMOVED***);
+               	});
+            });
 
-            function generateListItem(doc) ***REMOVED***
+            function generateListItem(doc) {
             	var html = [
             		'<li class="list-group-item" id="'+doc.docID+'"">',
             			'<div class="checkbox">',
@@ -91,7 +91,7 @@
             		'</li>'
             	]; 
             	return html.join('\n');
-        ***REMOVED***
+            }
 
             //TODO: Suppression d'un ou plusieurs documents
    		</script>
