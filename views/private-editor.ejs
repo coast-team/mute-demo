@@ -63,31 +63,6 @@
             </div>
             <div class="col-md-2" id="divInfosSup" style="padding-top: 15px; padding-left:0px; padding-right: 30px;">
                 <div class="panel-group">
-                    <div class="panel panel-default">
-                        <div class="panel-heading" style="border: 1px solid #ddd">
-                            <h4 class="panel-title">
-                                <span class="glyphicon glyphicon-user" style="margin-right: 10px;"></span>
-                                <strong>Your username</strong>
-                            </h4>
-                        </div>
-                        <div class="panel-body">
-                            <form class="form" role="form">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="text" maxlength="20" class="form-control" id="inputUsername" placeholder="Enter username">
-                                        <span class="help-block">Only alphanumerics characters, max length: 20.</span>
-                                    </div>
-                                </div>
-                                <br>
-                                <center>
-                                    <button type="button" id="btnUsername" class="btn btn-primary" onclick="updateUsername()" data-toggle="tooltip" data-placement="bottom" title="Username updated!">Change</button>
-                                </center>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="panel-group">
                     <div class="panel panel-default" style="border: 0px; box-shadow: 0 0px 0px;">
                         <div class="panel-heading" style="border: 1px solid #ddd">
                             <h4 class="panel-title">
@@ -96,6 +71,12 @@
                             </h4>
                         </div>
                         <div id="collapseOne" class="panel-collapse collapse in">
+                            <ul class="list-group" style="margin-bottom: 0px;">
+                                <li class="list-group-item">
+                                    <span class="glyphicon glyphicon-user"></span>
+                                    <input type="text" maxlength="20" class="form-control" style="width: 80%; display: inline; margin-left: 10px;" id="inputUsername" placeholder="Enter username">
+                                </li>
+                            </ul>
                             <ul id="list-collaborators" class="list-group">
                             </ul>
                         </div>
@@ -370,39 +351,6 @@
             function switchToOfflineMode() ***REMOVED***
                 console.log('switchToOfflineMode');
                 coordinator.toOfflineMode();
-        ***REMOVED***
-
-            function updateUsername() ***REMOVED***
-                // Encode the username to avoid some Javascript injections
-                var username = $('<div/>').text($('#inputUsername').val()).html().trim();
-                var regexp = /^[a-zA-Z0-9,]+(\s***REMOVED***0,1***REMOVED***[a-zA-Z0-9,])*$/
-                console.log('test regexp: ', username.match(regexp));
-                $('#btnUsername').tooltip('destroy');
-                if(username.length <= 20 && username.match(regexp) !== null) ***REMOVED***
-                    $('#btnUsername').attr('title', 'Username updated!');
-                    if(timeoutUpdateUsername === null) ***REMOVED***
-                        timeoutUpdateUsername = setTimeout(function () ***REMOVED***        
-                            infosUsersModule.updateLocalUsername(username);
-                            clearTimeout(timeoutUpdateUsername);
-                            timeoutUpdateUsername = null;
-                    ***REMOVED*** 1000);  
-                ***REMOVED***
-            ***REMOVED***
-                else if(username.match(regexp) === null) ***REMOVED***
-                    $('#btnUsername').attr('title', 'Please use only alphanumerics characters!');
-                    console.log('title: ', $('#btnUsername').attr('title'));
-            ***REMOVED***
-                else if(username.length > 20) ***REMOVED***
-                    $('#btnUsername').attr('title', 'Too long... Choose a shorter username!');
-            ***REMOVED***
-                console.log('On affiche!');
-                $('#btnUsername').tooltip(***REMOVED***
-                    trigger: 'manual'
-            ***REMOVED***);
-                $('#btnUsername').tooltip('show');
-                setTimeout(function () ***REMOVED***
-                    $('#btnUsername').tooltip('hide');
-            ***REMOVED*** 1000);
         ***REMOVED***
 
             console.log('docID: <%= docID %>');
