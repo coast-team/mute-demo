@@ -182,10 +182,12 @@ function validPassword(docID, pwd) {
 	return success;
 }
 
-app.post('/paroles/:docID/', function (req, res) {
+app.post('/rest/paroles/:docID/', function (req, res) {
 	var parole = req.body.parole;
 	var docID = req.params.docID;
-	socketIOAdapter.io.sockets.in(docID).emit('broadcastParole', { parole: parole });
+	if(parole !== null && parole !== undefined) {
+		socketIOAdapter.io.sockets.in(docID).emit('broadcastParole', { parole: parole });
+	}
 	res.setHeader('Content-Type', 'text/html');
 	res.send(200);
 });
@@ -309,22 +311,9 @@ app.post('/createDoc', function (req, res) {
 
 app.use(cacheManifest({
 	manifestPath: '/mute.manifest',
-	/*
-	files: [{
-	file: __dirname + '/assets/js/foo.js',
-	path: '/js/foo.js'
-	}, 
-	*/
 
 	version: VERSION_MANIFEST,
 	files: [
-		/*
-		{
-			dir: __dirname + '/assets/js',
-			prefix: '/assets/js/',
-			ignore: function(x) { return /\//.test(x); }
-		},
-		*/
 		{
 			file: __dirname + '/assets/js/awareness-adapter.js',
 			path: '/assets/js/awareness-adapter.js'
@@ -384,16 +373,6 @@ app.use(cacheManifest({
 			prefix: '/assets/img/',
 			ignore: function(x) { return /\/\./.test(x); }
 		},
-		/*
-		,
-
-		{
-			dir: __dirname + '/views',
-			prefix: '/views/',
-			ignore: function(x) { return /\.bak$/.test(x); },
-			//replace: function(x) { return x.replace(/\.ejs$/, '.html'); }
-		}
-		*/
 	],
 	networks: ['*'],
 	fallbacks: ['/ /offline/list.html', '/doc /offline/doc.html']
@@ -428,7 +407,6 @@ app.get('/doc/:docID/history', function (req, res) {
 	var docID = req.params.docID;
 	var privateDoc = false;
 	var newDoc = false;
-	//var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 	var error = false;
 	var info = false;
 	var notificationTitle = '';
@@ -451,6 +429,54 @@ app.get('/doc/:docID/history', function (req, res) {
 	
 	res.setHeader('Content-Type', 'text/html');
 	res.render('history-viewer', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
+});
+
+app.get('/paroles/:docID', function (req, res) {
+	var docID = req.params.docID;
+	var privateDoc = false;
+	var newDoc = false;
+	var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+	var error = false;
+	var info = false;
+	var notificationTitle = '';
+	var msg = '';
+
+	if(req.session.info === true) {
+		info = req.session.info;
+		notificationTitle = req.session.notificationTitle;
+		msg = req.session.msg;
+
+		delete req.session.info;
+		delete req.session.msg;
+	}
+
+	// New doc
+	if(docs[docID] === undefined) {
+		newDoc = true;
+		docs[docID] = false;
+
+		var doc = new Docs({ docID: docID, pwd: false });
+		doc.markModified('pwd');
+		doc.save(function (err, doc) {
+			if (err)  {
+				return console.error(err);
+			}
+			console.log('Save successful!');			
+		});
+
+		coordinator.addDoc(req.params.docID);
+		info = true;
+		notificationTitle = 'Document created';
+		msg = 'The document "' + docID + '" has correctly been created.';
+	}
+	if(newDoc === false && docs[docID] !== false) {
+		if(req.signedCookies[docID] !== docs[docID]) {
+			// Private doc and not already authentified
+			privateDoc = true;
+		} 
+	}
+	res.setHeader('Content-Type', 'text/html');
+	res.render('paroles-editor', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', nbOperationsItemID: 'cnt', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, link: fullUrl, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
 });
 
 app.get('/doc/:docID', function (req, res) {

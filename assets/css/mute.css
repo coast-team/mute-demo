@@ -95,3 +95,7 @@ ul.menu ul a.active {
   color: #259dff;
   border-left: 2px solid #259dff;
 }
+
+.glyphicon-microphone {
+  content: url('../img/microphone.png');
+}
