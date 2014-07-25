@@ -255,7 +255,7 @@ app.post('/sendMail', function (req, res) {
 
 	req.session.info = true;
 	req.session.notificationTitle = 'Message sent';
-	req.session.msg = 'Your message has correctly been sent to the ***REMOVED***istrators.';
+	req.session.msg = 'Your message has correctly been sent to the administrators.';
 	
 	res.redirect('/');
 });

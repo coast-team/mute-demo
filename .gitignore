@@ -1,2 +1,4 @@
 node_modules/
 assets/js/mute-client/node_modules/
+.openshift
+mute.conf
