@@ -2,25 +2,35 @@
     $.fn.voiceRecognitionModule = function (options) {
     	/*
     	*	options : {
+        *       textEditorAdapter,
+        *       lang,
+        *       langSelect,
+        *       mode,
+        *       modeSwitch
     	*	}
     	*/
 
         $.fn.voiceRecognitionModule.defaultSettings = {
+            textEditorAdapter: null,
             lang: 'fr-FR',
-            langSelect: null
+            langSelect: null,
+            mode: 'validation',
+            modeSwitch: null
         };
 
         return this.each(function()
         {
             var elem = $(this);
-            var _options = $.extend({}, $.fn.parolesModule.defaultSettings, options || {});
+            var _options = $.extend({}, $.fn.voiceRecognitionModule.defaultSettings, options || {});
             var module = new VoiceRecognitionModule(_options, elem);
         });
     }
 
     var VoiceRecognitionModule = function (options, elem)
     {
+        console.log('Hello');
         var _self = this;
+        var checked = true;
         var args;
         var langs;
         var lang;
@@ -46,6 +56,20 @@
 
         this.options = options;
         this.elem = elem;
+
+        if(options.mode === 'direct') {
+            checked = false;
+        }
+
+        $('#'+options.modeSwitch).prop('data-toggle', 'tooltip')
+        .prop('data-placement', 'bottom')
+        .prop('title', 'Ask confirmation before insert the recognized text into the document.')
+        .prop('checked', checked)
+        .tooltip()
+        .click(function () {
+            var checked = $('#'+options.modeSwitch).prop('checked');
+            _self.switchMode(checked);
+        });
 
         if ('webkitSpeechRecognition' in window) {
             this.recognition = new webkitSpeechRecognition();
@@ -113,11 +137,17 @@
                 var results = '';
                 for (var i = event.resultIndex; i < event.results.length; ++i) {
                     console.log('Result: ', event.results[i][0].transcript);
-                    results += event.results[i][0].transcript;;
+                    results += event.results[i][0].transcript;
                 }
-                $.post('/rest/paroles/demo/', {
-                    parole: results
-                });
+                console.log('_self.options.mode: ', _self.options.mode);
+                console.log('_self.options: ', _self.options);
+                if(_self.options.mode === 'validation') {
+                    console.log('On passe ici');
+                    _self.send(results);  
+                }
+                else if(_self.options.mode === 'direct') {
+                    _self.insertIntoEditor(results);
+                }
             }
 
             this.recognition.onerror = function(event) {
@@ -222,5 +252,33 @@
 
     VoiceRecognitionModule.prototype.changeLang = function (lang) {
         this.recognition.lang = lang;
-    }
+    };
+
+    VoiceRecognitionModule.prototype.send = function (results) {
+        console.log('On envoie les résultats');
+        $.post('/rest/paroles/demo/', {
+            parole: results
+        });
+    };
+
+    VoiceRecognitionModule.prototype.insertIntoEditor = function (results) {
+        this.options.textEditorAdapter.editor.insert(results);
+    };
+
+    VoiceRecognitionModule.prototype.switchMode = function (checked) {
+        if(checked === true) {
+            this.toValidationMode();
+        }
+        else if(checked === false) {
+            this.toDirectMode();
+        }
+    };
+
+    VoiceRecognitionModule.prototype.toValidationMode = function () {
+        this.options.mode = 'validation';
+    };
+
+    VoiceRecognitionModule.prototype.toDirectMode = function () {
+        this.options.mode = 'direct';
+    };
 }( jQuery ));

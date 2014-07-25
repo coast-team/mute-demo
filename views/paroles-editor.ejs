@@ -70,6 +70,7 @@
                             <h4 class="panel-title">
                                 <span class="fa fa-microphone fa-lg" style="margin-right: 10px;"></span>
                                 <strong>Voice recognition</strong>
+                                <input id="voice-recognition-change-mode" type="checkbox" class="pull-right">
                             </h4>
                         </div>
                         <div id="collapseOne" class="panel-collapse collapse in">
@@ -112,7 +113,6 @@
                             <h4 class="panel-title">
                                 <span class="glyphicon glyphicon-comment" style="margin-right: 10px;"></span>
                                 <strong>Paroles</strong>
-                                <input id="paroles-change-mode-1" type="checkbox" class="pull-right">
                             </h4>
                         </div>
                         <div id="collapseTwo" class="panel-collapse collapse in">
@@ -290,12 +290,12 @@
                         listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
                     });
                     $('#list-paroles').parolesModule({
-                        network: network,
-                        textEditorAdapter: editor,
-                        modeSwitch: 'paroles-change-mode-1'
+                        network: network
                     });
                     $('#btn-voice-recognition').voiceRecognitionModule({
-                        langSelect: 'select-lang-voice-recognition'
+                        langSelect: 'select-lang-voice-recognition',
+                        textEditorAdapter: editor,
+                        modeSwitch: 'voice-recognition-change-mode'
                     });
                     $().remoteIndicatorsModule({ 
                         infosUsersModule: infosUsersModule,
