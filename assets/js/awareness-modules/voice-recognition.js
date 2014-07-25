@@ -115,7 +115,7 @@
                     console.log('Result: ', event.results[i][0].transcript);
                     results += event.results[i][0].transcript;;
                 }
-                $.post('http://localhost:8080/rest/paroles/demo/', {
+                $.post('/rest/paroles/demo/', {
                     parole: results
                 });
             }
