@@ -12,7 +12,7 @@
 
         $.fn.voiceRecognitionModule.defaultSettings = {
             textEditorAdapter: null,
-            lang: 'fr-FR',
+            lang: 'en-US',
             langSelect: null,
             mode: 'validation',
             modeSwitch: null
