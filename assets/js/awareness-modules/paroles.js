@@ -4,17 +4,12 @@
     	*	options : {
 		*		network,
         *       display,
-        *       mode
-        *       modeSwitch
     	*	}
     	*/
 
         $.fn.parolesModule.defaultSettings = {
             network : null,
-            textEditorAdapter  : null,
-            display : 'list',
-            mode : 'validation',
-            modeSwitch: null
+            display : 'list'
         };
 
         return this.each(function()
@@ -36,13 +31,7 @@
         this.cnt = 0;
 
         options.network.on('receiveParole', function (data) {
-            console.log('_self: ', _self);
-            if(_self.options.mode === 'validation') {
-                _self.updateParolesList(data);  
-            }
-            else if(_self.options.mode === 'direct') {
-                _self.insertParoleIntoEditor(data.parole);
-            }
+            _self.updateParolesList(data);  
         });
 
         if(options.display === 'block') {
@@ -69,20 +58,6 @@
                 
             });
         }
-        
-        if(options.mode === 'direct') {
-            checked = false;
-        }
-
-        $('#'+options.modeSwitch).prop('data-toggle', 'tooltip')
-        .prop('data-placement', 'bottom')
-        .prop('title', 'Enable/disable the paroles\' validation')
-        .prop('checked', checked)
-        .tooltip()
-        .click(function () {
-            var checked = $('#'+options.modeSwitch).prop('checked');
-            _self.switchMode(checked);
-        });
 
         // make sure to return the object so we can reference it later
         return this;
@@ -143,32 +118,10 @@
         }
         return html;
     };
-
-    ParolesModule.prototype.insertParoleIntoEditor = function (parole) {
-        this.options.textEditorAdapter.editor.insert(parole);
-    };
     
     ParolesModule.prototype.removeParole = function (cnt) {
         $('#parole-list-item-'+cnt).fadeOut(function () {
             $('#parole-list-item-'+cnt).remove();
         });
     };
-
-    ParolesModule.prototype.switchMode = function (checked) {
-        if(checked === true) {
-            this.toValidationMode();
-        }
-        else if(checked === false) {
-            this.toDirectMode();
-        }
-    };
-
-    ParolesModule.prototype.toValidationMode = function () {
-        this.options.mode = 'validation';
-    };
-
-    ParolesModule.prototype.toDirectMode = function () {
-        this.options.mode = 'direct';
-    };
-
 }( jQuery ));

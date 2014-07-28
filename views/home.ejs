@@ -119,9 +119,11 @@
         <script src="/assets/js/awareness-modules/remote-indicators.js"></script>
         <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
         <script src="/assets/js/awareness-modules/username.js"></script>
+        <script src="/assets/js/awareness-modules/hoverlink.js"></script>
 		<script>
 			"use strict";
 
+            var HoverLink;
             var timeoutUpdateUsername = null;
             var serverDB;
             var coordinator;
@@ -211,6 +213,9 @@
 
                 coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+                HoverLink = require("hoverlink").HoverLink;
+                editor.hoverLink = new HoverLink(editor.editor);
+                
                 coordinator.setEditor(editor);
                 if(online === true) {
                     network = new Mute.SocketIOAdapter(coordinator);

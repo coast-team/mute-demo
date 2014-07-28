@@ -96,6 +96,7 @@ ul.menu ul a.active {
   border-left: 2px solid #259dff;
 }
 
-.glyphicon-microphone {
-  content: url('../img/microphone.png');
+.ace_link_marker {
+  position: absolute;
+  border-bottom: 1px solid #428bca;
 }

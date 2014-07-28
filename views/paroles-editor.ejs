@@ -70,6 +70,7 @@
                             <h4 class="panel-title">
                                 <span class="fa fa-microphone fa-lg" style="margin-right: 10px;"></span>
                                 <strong>Voice recognition</strong>
+                                <input id="voice-recognition-change-mode" type="checkbox" class="pull-right">
                             </h4>
                         </div>
                         <div id="collapseOne" class="panel-collapse collapse in">
@@ -112,7 +113,6 @@
                             <h4 class="panel-title">
                                 <span class="glyphicon glyphicon-comment" style="margin-right: 10px;"></span>
                                 <strong>Paroles</strong>
-                                <input id="paroles-change-mode-1" type="checkbox" class="pull-right">
                             </h4>
                         </div>
                         <div id="collapseTwo" class="panel-collapse collapse in">
@@ -190,6 +190,7 @@
         <script src="/assets/js/awareness-modules/username.js"></script>
         <script src="/assets/js/awareness-modules/paroles.js"></script>
         <script src="/assets/js/awareness-modules/voice-recognition.js"></script>
+        <script src="/assets/js/awareness-modules/hoverlink.js"></script>
         <% include script-dbjs %>
 		<% include notifications %>
 		<% 
@@ -201,6 +202,7 @@
 			"use strict";
             var version = 0;
 
+            var HoverLink;
             var timeoutUpdateUsername = null;
             var serverDB;
             var client;
@@ -290,12 +292,12 @@
                         listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
                     });
                     $('#list-paroles').parolesModule({
-                        network: network,
-                        textEditorAdapter: editor,
-                        modeSwitch: 'paroles-change-mode-1'
+                        network: network
                     });
                     $('#btn-voice-recognition').voiceRecognitionModule({
-                        langSelect: 'select-lang-voice-recognition'
+                        langSelect: 'select-lang-voice-recognition',
+                        textEditorAdapter: editor,
+                        modeSwitch: 'voice-recognition-change-mode'
                     });
                     $().remoteIndicatorsModule({ 
                         infosUsersModule: infosUsersModule,
@@ -341,6 +343,8 @@
 
                 coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+                HoverLink = require("hoverlink").HoverLink;
+                editor.hoverLink = new HoverLink(editor.editor);
 
                 $('#<%= lastModificationDateItemID %>').lastModificationDateModule({ coordinator: coordinator });
                 if(<%= privateDoc %> === false) {
