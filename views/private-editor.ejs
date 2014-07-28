@@ -149,6 +149,7 @@
         <script src="/assets/js/awareness-modules/remote-indicators.js"></script>
         <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
         <script src="/assets/js/awareness-modules/username.js"></script>
+        <script src="/assets/js/awareness-modules/hoverlink.js"></script>
         <!-- <script src="/assets/js/awareness-modules/build/infos-users.js"></script> -->
         <% include script-dbjs %>
 		<% include notifications %>
@@ -161,6 +162,7 @@
 			"use strict";
             var version = 0;
 
+            var HoverLink;
             var timeoutUpdateUsername = null;
             var serverDB;
             var client;
@@ -293,6 +295,8 @@
 
                 coordinator = new Mute.Coordinator('<%= docID %>', serverDB);
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
+                HoverLink = require("hoverlink").HoverLink;
+                editor.hoverLink = new HoverLink(editor.editor);
 
                 $('#<%= lastModificationDateItemID %>').lastModificationDateModule({ coordinator: coordinator });
                 if(<%= privateDoc %> === false) {
