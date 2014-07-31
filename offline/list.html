@@ -125,24 +125,25 @@
 	            });
 			}
 			else {
-				console.log('On est là');
-				console.log('window.parent: ', window.parent);
-
 				// If this page is used as an iframe
 				// We want to cache our application
 				// So we have to give a feedback 
 				// To the parent page for the main events of the application cache update process
 				applicationCache.ondownloading = function () {
-					window.parent.handleDownloading();
+					var windowjQuery = window.parent.$;
+					windowjQuery('#storeApp').data('_storeAppModule').handleDownloading();
 				};
 				applicationCache.onupdateready = function () {
-					window.parent.handleUpdateReady();
+					var windowjQuery = window.parent.$;
+					windowjQuery('#storeApp').data('_storeAppModule').handleUpdateReady();
 				};
 				applicationCache.oncached = function () {
-					window.parent.handleCached();
+					var windowjQuery = window.parent.$;
+					windowjQuery('#storeApp').data('_storeAppModule').handleCached();
 				};
 				applicationCache.onnoupdate = function () {
-					window.parent.handleNoUpdate();
+					var windowjQuery = window.parent.$;
+					windowjQuery('#storeApp').data('_storeAppModule').handleNoUpdate();
 				};
 			}
 

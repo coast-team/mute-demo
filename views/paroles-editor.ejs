@@ -429,53 +429,7 @@
                     $('#btnPanelController').attr('onclick', 'showCollaboratorsList()');
                 }, 400);
             }
-
-
-            /*
-            if ('webkitSpeechRecognition' in window) {
-                var recognition = new webkitSpeechRecognition();
-                console.log('recognition: ', recognition);
-                recognition.continuous = true;
-                recognition.interimResults = true;
-
-                //var final_transcript = '';
-
-                recognition.onstart = function() {
-                    console.log('On démarre');
-                }
-                recognition.onresult = function(event) {
-                    //var interim_transcript = '';
-                    console.log('Ici');
-                    for (var i = event.resultIndex; i < event.results.length; ++i) {
-                        if (event.results[i].isFinal) {
-                            //final_transcript += event.results[i][0].transcript;
-                            $.post('http://localhost:8080/rest/paroles/demo/', {
-                                parole: event.results[i][0].transcript
-                            });
-                            //final_transcript = '';
-                        } 
-                        /*
-                        else {
-                            interim_transcript += event.results[i][0].transcript;
-                        }*/
-                    //}
-                    //console.log('interim_transcript :', interim_transcript);
-                    //console.log('final_transcript: ', final_transcript);
-                //}
-                /*
-                recognition.onerror = function(event) {
-                    console.log('Ca plante');
-                }
-                recognition.onend = function() {
-                    console.log('Ca finit');
-                }
-                
-                recognition.lang = 'fr-FR';
-                console.log('start: ', recognition.start);
-                recognition.start();
-                console.log('recognition 2: ', recognition);
-            }
-            */
         </script>
+        <% include script-download-app %>
 	</body>
 </html>

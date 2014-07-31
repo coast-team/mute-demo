@@ -18,10 +18,6 @@
                                     <span class="glyphicon glyphicon-edit"></span>
                                     Full interface
                                 </a>
-                                <button id="btnAppCache" class="btn btn-default" onclick="updateAppCache()">
-                                    <span class="glyphicon glyphicon-download"></span>
-                                    Store locally
-                                </button>
                             </span>
                         </h1>
                     </div>
@@ -130,7 +126,6 @@
             var editor;
             var network;
             var awareness;
-            var iframeAdded = false;
             var version = 0;
             var infosUsersModule;
 
@@ -182,6 +177,11 @@
                             .done(function (results) {
                                 if(results.length === 1) {
                                     if(results[0].version !== version) {
+                                        network.toOfflineMode();
+                                        editor.toEditionMode();
+                                        hideCollaboratorsList();
+                                        $('.row button').prop('disabled', true);
+                                        $('.row input').prop('readOnly', true);
                                         console.log(results[0].version + ' !== ' + version);
                                         $('#modalCloseTab').modal('show');
                                         coordinator.dispose();
@@ -245,52 +245,13 @@
                 console.log('<%= docID %>');
             }
 
-            function handleNoUpdate () {
-                $('#btnAppCache').attr('onclick', '');
-                $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;No update needed!');
-                setBtnAppCacheToDefault();
-            };
-
-            function handleDownloading () {
-                $('#btnAppCache').attr('onclick', '');
-                $('#btnAppCache').html('<img src="/assets/img/ajax-loader.gif">&nbsp;Downloading...');
-            }
-
-            function handleCached () {
-                $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Cached!');
-                setBtnAppCacheToDefault();
-            }
-
-            function handleUpdateReady () {
-                $('#iframeAppCache')[0].contentWindow.applicationCache.swapCache();
-                $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Updated!');
-                setBtnAppCacheToDefault();
-            }
-
-            function setBtnAppCacheToDefault () {
-                setTimeout(function () {
-                    $('#btnAppCache').attr('onclick', 'updateAppCache()');
-                    $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Store locally!')
-                }, 3000);
-            }
-
-            function updateAppCache () {
-                if(iframeAdded === false) {
-                    iframeAdded = true;
-                    $('body').prepend('<iframe id="iframeAppCache" src="/offline/list.html#iframed" style="position:absolute;top:-999em;visibility:hidden"></iframe>');
-                }
-                else {
-                    $('#iframeAppCache')[0].contentWindow.applicationCache.update();
-                }
-            }
-
-            console.log('docID: <%= docID %>');
-
             function showCollaboratorsList() {
                 $('#divMain').animate({ width: '83,33%' });
                 $('#divInfosSup').animate({ width: '16,67%' }).show();
                 setTimeout(function () { 
-                    editor.editor.resize();
+                    if(editor !== null && editor !== undefined) {
+                        editor.editor.resize();   
+                    }
                     $('#panelControllerLabel').html('Hide list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-left').addClass('glyphicon-arrow-right');
                     $('#btnPanelController').attr('onclick', 'hideCollaboratorsList()');
@@ -301,13 +262,16 @@
             function hideCollaboratorsList() {
                 $('#divInfosSup').animate({ width: '0%'}).hide();
                 $('#divMain').animate({ width: '100%'});
-                setTimeout(function () { 
-                    editor.editor.resize();
+                setTimeout(function () {
+                    if(editor !== null && editor !== undefined) {
+                        editor.editor.resize();   
+                    }
                     $('#panelControllerLabel').html('Show list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-right').addClass('glyphicon-arrow-left');
                     $('#btnPanelController').attr('onclick', 'showCollaboratorsList()');
                 }, 400);
             }
         </script>
+        <% include script-download-app %>
 	</body>
 </html>
