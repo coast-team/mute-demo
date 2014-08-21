@@ -1,5 +1,5 @@
 (function($) { 
-    $.fn.UsernameModule = function (options) {
+    $.fn.usernameModule = function (options) {
         /*
         *   options : {
         *       infosUsersModule
@@ -8,6 +8,7 @@
 
         var item = this;
         var timeoutUpdateUsername = null;
+        var disposed = false;
 
         var updateUsername = function (username) {
             item.val($('<div/>').html(username).text());
@@ -49,8 +50,21 @@
         };
 
 
+        var onInfosUsersModuleDisposedHandler = function () {
+            disposed = true;
+            item.prop('disabled', true);
+        };
+
         options.infosUsersModule.on('changeLocalUsername', function (data) {
-            updateUsername(data.username);
+            if(disposed === false) {
+                updateUsername(data.username);
+            }
+        });
+
+        options.infosUsersModule.on('infosUsersModuleDisposed', function () {
+            if(disposed === false) {
+                onInfosUsersModuleDisposedHandler();
+            }
         });
 
         updateUsername('Initializing...');

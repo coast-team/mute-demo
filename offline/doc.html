@@ -10,8 +10,8 @@
 		<link rel="stylesheet" href="/assets/css/awareness.css">
 		<link rel="stylesheet" href="/assets/css/mute.css">
 		<link rel="stylesheet" href="/assets/css/highlightjs.min.css">
-		<link rel="stylesheet" href="/assets/css/range-selectors.css">
 		<link rel="stylesheet" href="/assets/css/offline.css">
+        <link rel="stylesheet" href="/assets/css/slider.css">
 	</head>
 	<body>
 		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -40,54 +40,50 @@
 		</nav>
 		<div class="container">
             <div class="row">
-            	<div class="col-md-12"> <!-- Main content -->
-            		<div class="row">
-		        		<h1>
-		        			<strong id="docTitle">Demo</strong>
-		        			<button id="btnHistoryMode" class="btn btn-default pull-right" onclick="switchToHistoryMode()">
-		        				<span class="glyphicon glyphicon-time" ></span>
-		        				Switch to history mode
-		        			</button>
-		        			<button id="btnEditionMode" class="btn btn-default pull-right hide" onclick="switchToEditionMode()">
-		        				<span class="glyphicon glyphicon-pencil"></span>
-		        				Switch to edition mode
-		        			</button>
-		        		</h1>
-            			<div class="col-md-10 col-md-offset-1">
-                            <div class="row">
-		            			<center>
-		                            <div class="alert alert-info">
-		                            	You're currently offline, the application will allow you to only edit the documents you've previously accessed. Please check your internet connection.
-		                            </div>
-		                        </center>
-		                        <div id="historySlider" class="range range-primary hide">
-                                    <button class="btn btn-default btn-sm" type="button" onclick="prevState()">
-                                        <span class="glyphicon glyphicon-chevron-left"></span>
-                                    </button>
-                                    <input id="range" type="range" name="range" min="0" max="1" value="1" oninput="displayState();">
-                                    <output onchange="displayState();" id="rangePrimary">0</output>
-                                    <button class="btn btn-default btn-sm" type="button" onclick="nextState()">
-                                        <span class="glyphicon glyphicon-chevron-right"></span>
-                                    </button>
-                                </div>
-		                        <div id="editor" style="width: 95%;"></div>
-                        	</div>
-                        	<div class="row">
-                        		<!-- TODO: Afficher ici les informations liées au travail en mode déconnecté : 
-                        			- Délai depuis dernière synchronisation
-                        			- Nombre d'opérations effectuées en locale depuis dernière synchronisation
-                        		-->
-                        	</div>
+                <div class="col-md-12"> <!-- Main content -->
+                    <div class="row"> <!-- Demo -->
+                        <h1>
+                            <strong><span id="docTitle"></span></strong>
+                            <span class="pull-right">
+                                <button id="btnEditorMode" class="btn btn-default"></button>
+                            </span>
+                        </h1>
+                        <div class="col-md-10 col-md-offset-1">
+                            <div id="historySlider" class="range range-primary hide">
+                                <button class="btn btn-default btn-sm" type="button" onclick="prevState()">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </button>
+                                <input id="range" type="range" name="range" min="0" max="1" value="1" oninput="displayState();" onclick="displayState();">
+                                <output id="rangePrimary">0</output>
+                                <button class="btn btn-default btn-sm" type="button" onclick="nextState()">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </button>
+                            </div>
                         </div>
-            		</div>
-            	</div>
+                    </div>
+                </div>
             </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div id="divWarningMessage" class="col-md-10 col-md-offset-1"></div>
+        </div>
+        <div id="editor" style="width: 95%;"></div>
+    	</div>
+    	<div class="row">
+    		<!-- TODO: Afficher ici les informations liées au travail en mode déconnecté : 
+    			- Délai depuis dernière synchronisation
+    			- Nombre d'opérations effectuées en locale depuis dernière synchronisation
+    		-->
+    	</div>
+        <div class="container">
             <hr>
             <footer class="footer">
-			    <p><h3><small>© LORIA 2014</small></h3></p>
-			</footer>
+    		    <p><h3><small>© LORIA 2014</small></h3></p>
+    		</footer>
         </div>
         <script src="/assets/js/jquery-2.1.0.js"></script>
+        <script src="/assets/js/jquery-ui.min.js"></script>
 		<script src="/assets/js/bootstrap.min.js"></script>
 		<script src="/assets/js/highlightjs.min.js"></script>
 		<script src ="/assets/js/mute.js"></script>
@@ -95,11 +91,19 @@
 		<script src="/assets/js/ace/src/ace.js"></script>
 		<script src="/assets/js/mute-client/build/mute-client.js"></script>
 		<script src="/assets/js/db-helper.js"></script>
+        <script src="/assets/js/awareness-modules/hoverlink.js"></script>
+        <script src="/assets/js/check-version.js"></script>
+        <script src="/assets/js/editor-mode-manager.js"></script>
        	<script>
        		var serverDB;
        		var coordinator;
             var editor;
             var docID = getDocID();
+
+            function getDocID() {
+                return location.href.substr(location.href.lastIndexOf('/') + 1);
+            }
+
             $('#docTitle').html(docID);
             
             $(function() {
@@ -121,17 +125,43 @@
                		console.log('Yo');
                		if(results.length>0) {
                			coordinator = new Mute.Coordinator(docID, serverDB);
+
+                        $('#divWarningMessage').checkVersionModule({
+                            /*
+                            *   options : {
+                            *       docID
+                            *       coordinator
+                            *       serverDB
+                            *       timeInterval
+                            *       toDisabled: list of item which will be switched to disabled
+                            *       toReadOnly: list of item which will be switched to read only
+                            *   }
+                            */
+                            docID: '<%= docID %>',
+                            coordinator: coordinator,
+                            serverDB: serverDB,
+                            timeInterval: 3000,
+                            toDisabled: []
+                        });
+
                 		editor = new Mute.AceEditorAdapter('editor', coordinator);
                         infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, null, null, serverDB);
                         editor.setInfosUsersModule(infosUsersModule);
-                		coordinator.setEditor(editor);
+                        coordinator.setEditor(editor);
                 		
-                		coordinator.on('updateHistoryScroller', function (data) {
-		                    $('#range').attr('max', data.length).attr('value', data.length);
-		                    displayState();
-		                });
+                        $('#btnEditorMode').editorModeManagerModule({
+                            /*
+                            *   options : {
+                            *       coordinator
+                            *       textEditorAdapter
+                            *       token
+                            *   }
+                            */
+                            coordinator: coordinator,
+                            textEditorAdapter: editor,
+                            token: $('#divWarningMessage')
+                        });
 
-                		console.log('avant init ?');
                 		coordinator.init();
                 		coordinator.toOfflineMode();
                		}
@@ -140,49 +170,6 @@
                		}
                	});
             });
-
-            var currentState = 0;
-            var str = '';
-
-            function prevState() {
-                $('#range').val(currentState-1);
-                displayState();
-            }
-
-            function nextState() {
-                $('#range').val(currentState+1);
-                displayState();
-            }
-
-            function displayState() {
-                var newState = parseInt($('#range').val());
-                $('#rangePrimary').val(newState);
-                str = coordinator.updateState(str, currentState, newState);
-                currentState = newState;
-                editor.editor.session.doc.setValue(str);
-            }
-
-            function getDocID() {
-            	return location.href.substr(location.href.lastIndexOf('/') + 1);
-            }
-
-            function switchToHistoryMode() {
-            	var length = coordinator.getHistoryLength();
-            	$('#btnHistoryMode').addClass('hide');
-            	$('#btnEditionMode').removeClass('hide');
-            	$('#historySlider').removeClass('hide');
-            	coordinator.editor.toHistoryMode();
-            	$('#range').attr('max', length);
-            	displayState();
-            }
-
-            function switchToEditionMode() {
-            	$('#btnEditionMode').addClass('hide');
-            	$('#historySlider').addClass('hide');
-            	$('#btnHistoryMode').removeClass('hide');
-            	editor.editor.session.doc.setValue(coordinator.ropes.str);
-            	coordinator.editor.toEditionMode();
-            }
    		</script>
     </body>
 </html>
