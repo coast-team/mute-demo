@@ -13,25 +13,9 @@
                         <h1>
                             <strong><%= docID %></strong>
                             <span class="pull-right">
-                                <button id="btnHistoryMode" class="btn btn-default" onclick="switchToHistoryMode()">
-                                    <span class="glyphicon glyphicon-time" ></span>
-                                    Switch to history mode
-                                </button>
-                                <button id="btnEditionMode" class="btn btn-default hide" onclick="switchToEditionMode()">
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                    Switch to edition mode
-                                </button>
-                                <button id="btnOnlineMode" class="btn btn-default" onclick="switchToOnlineMode()">
-                                    <span class="glyphicon glyphicon-log-in" ></span>
-                                    Switch to online mode
-                                </button>
-                                <button id="btnOfflineMode" class="btn btn-default hide" onclick="switchToOfflineMode()">
-                                    <span class="glyphicon glyphicon-log-out"></span>
-                                    Switch to offline mode
-                                </button>
-                                <div id="connectionIndicator" class="offline-ui offline-ui-down">
-                                    Offline!
-                                </div>
+                                <button id="btnEditorMode" class="btn btn-default"></button>
+                                <button id="btnConnexionManager" class="btn btn-default"></button>
+                                <div id="divConnexionManagerToken"></div>
                             </span>
                         </h1>
             			<div class="col-md-10 col-md-offset-1">
@@ -52,10 +36,14 @@
         </div>
         <hr>
         <div class="row">
-            <button id="btnPanelController" class="btn btn-default pull-right" style="margin-right: 30px;" onclick="hideCollaboratorsList();">
-                <span id="panelControllerIcon" class="glyphicon glyphicon-arrow-right"></span>
-                <span id="panelControllerLabel">Hide list</span>
-            </button>
+            <div class="col-md-2"></div>
+            <div id="divWarningMessage" class="col-md-6 col-md-offset-1"></div>
+            <div class="col-md-2 pull-right">
+                <button id="btnPanelController" class="btn btn-default" style="margin-right: 30px;" onclick="hideCollaboratorsList();">
+                    <span id="panelControllerIcon" class="glyphicon glyphicon-arrow-right"></span>
+                    <span id="panelControllerLabel">Hide list</span>
+                </button>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-10" id="divMain" style="padding-right: 0px;">
@@ -142,17 +130,20 @@
             </div>
         </div>
 
-		<% include scripts %>
-		<% include scripts-editor %>
+        <% include scripts %>
+        <% include scripts-editor %>
+        <% include script-dbjs %>
+        <% include notifications %>
         <script src="/assets/js/awareness-modules/copy-link.js"></script>
         <script src="/assets/js/awareness-modules/modification-date.js"></script>
         <script src="/assets/js/awareness-modules/remote-indicators.js"></script>
         <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
         <script src="/assets/js/awareness-modules/username.js"></script>
+        <script src="/assets/js/awareness-modules/paroles.js"></script>
         <script src="/assets/js/awareness-modules/hoverlink.js"></script>
-        <!-- <script src="/assets/js/awareness-modules/build/infos-users.js"></script> -->
-        <% include script-dbjs %>
-		<% include notifications %>
+        <script src="/assets/js/check-version.js"></script>
+        <script src="/assets/js/connexion-manager.js"></script>
+        <script src="/assets/js/editor-mode-manager.js"></script>
 		<% 
         	if(privateDoc === true) { 
         		%> <% include modal-pwd-doc %> <%
@@ -173,67 +164,20 @@
             var infosUsersModule;
 
             var online = false;
-            var posting = $.post('/ajax/testConnection');
-            posting.done(function (data) {
-                online = true;
-            });
-            posting.always(function () {
-                openDB()
-                .done(function (s) {
-                    console.log('On passe ici ?');
-                    serverDB = s
-                    serverDB.docs.query()
-                    .filter('docID', '<%= docID %>')
-                    .execute()
-                    .done(function (results) {
-                        var doc;
-                        if(results.length === 0) {
-                            version = 1;
-                            doc = {
-                                docID: '<%= docID %>',
-                                version: 1
-                            };
-                            serverDB.docs.add(doc)
-                            .done(function (item) {
-                                initPage();
-                            });
-                        }
-                        else {
-                            version = results[0].version + 1;
-                            serverDB.docs.query()
-                            .filter('docID', '<%= docID %>')
-                            .modify({ version: version })
-                            .execute()
-                            .done(function (results) {
-                                initPage();
-                            });
-                        }
-
-                        var interval = setInterval(function () {
-                            serverDB.docs.query()
-                            .filter('docID', '<%= docID %>')
-                            .execute()
-                            .done(function (results) {
-                                if(results.length === 1) {
-                                    if(results[0].version !== version) {
-                                        console.log(results[0].version + ' !== ' + version);
-                                        $('#modalCloseTab').modal('show');
-                                        coordinator.dispose();
-                                        network.dispose();
-                                        editor.disable();
-
-                                        serverDB.close();
-
-                                        coordinator = null;
-                                        editor = null;
-                                        network = null;
-                                        clearInterval(interval);
-                                    }
-                                }
-                            });
-                        }, 3000);
+            var posting;
+            
+            $(function () {
+                posting = $.post('/ajax/testConnection');
+                posting.done(function (data) {
+                    online = true;
+                });
+                posting.always(function () {
+                    openDB()
+                    .done(function (s) {
+                        console.log('On passe ici ?');
+                        serverDB = s
+                        initPage();
                     });
-
                 });
             });
 
@@ -244,7 +188,24 @@
                     infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
                     editor.setInfosUsersModule(infosUsersModule);
                     network.setInfosUsersModule(infosUsersModule);
-                    $('#inputUsername').UsernameModule({
+                    $('#divWarningMessage').checkVersionModule({
+                        /*
+                        *   options : {
+                        *       docID
+                        *       coordinator
+                        *       serverDB
+                        *       timeInterval
+                        *       toDisabled: list of item which will be switched to disabled
+                        *       toReadOnly: list of item which will be switched to read only
+                        *   }
+                        */
+                        docID: '<%= docID %>',
+                        coordinator: coordinator,
+                        serverDB: serverDB,
+                        timeInterval: 3000,
+                        toDisabled: []
+                    });
+                    $('#inputUsername').usernameModule({
                         infosUsersModule: infosUsersModule
                     });
                     $('#list-collaborators').collaboratorsListModule({
@@ -258,31 +219,32 @@
                         cursorsCSSClasses: ['mute-remote-cursor-0', 'mute-remote-cursor-1', 'mute-remote-cursor-2'],
                         selectionsCSSClasses: ['mute-remote-selection-0', 'mute-remote-selection-1', 'mute-remote-selection-2']
                     });
+                    $('#btnConnexionManager').connexionManagerModule({
+                        /*
+                        *   options : {
+                        *       coordinator
+                        *       network
+                        *       token
+                        *   }
+                        */
+                        coordinator: coordinator,
+                        network: network,
+                        token: $('#divConnexionManagerToken')
+                    });
                     coordinator.setNetwork(network);
-                    network.on('disconnect', function () {
-                        $('#btnOfflineMode').addClass('hide');
-                        $('#btnOnlineMode').removeClass('hide');
-                        $('#connectionIndicator').removeClass('offline-ui-up').addClass('offline-ui-down').html('Offline!');
-                    });
-                    network.on('connect', function () {
-                        $('#btnOnlineMode').addClass('hide');
-                        $('#btnOfflineMode').removeClass('hide');
-                        $('#connectionIndicator').removeClass('offline-ui-down').addClass('offline-ui-up').html('Online!');
-                    });
                 }
-                coordinator.on('initEditor', function (data) {
-                    str = '';
-                    currentState = 0;
+                $('#btnEditorMode').editorModeManagerModule({
+                    /*
+                    *   options : {
+                    *       coordinator
+                    *       textEditorAdapter
+                    *       token
+                    *   }
+                    */
+                    coordinator: coordinator,
+                    textEditorAdapter: editor,
+                    token: $('#divWarningMessage')
                 });
-                coordinator.on('updateHistoryScrollerRange', function (data) {
-                    $('#range').attr('max', data.length);
-                    //displayState();
-                });
-                coordinator.on('updateHistoryScrollerValue', function (data) {
-                    $('#range').attr('value', data.length);
-                    displayState();
-                });
-
                 coordinator.init();
             }
 
@@ -304,59 +266,6 @@
                 }
             }
 
-            var currentState = 0;
-            var str = '';
-
-            function prevState() {
-                $('#range').val(currentState-1);
-                displayState();
-            }
-
-            function nextState() {
-                $('#range').val(currentState+1);
-                displayState();
-            }
-
-            function displayState() {
-                var newState = parseInt($('#range').val());
-                $('#rangePrimary').val(newState);
-                if(currentState <= coordinator.getHistoryLength()) {
-                    str = coordinator.updateState(str, currentState, newState);    
-                }
-                currentState = newState;
-                if(editor.isInHistoryMode()) {
-                    editor.editor.session.doc.setValue(str);
-                }
-            }
-
-            function switchToHistoryMode() {
-                var length = coordinator.getHistoryLength();
-                $('#btnHistoryMode').addClass('hide');
-                $('#btnEditionMode').removeClass('hide');
-                $('#historySlider').removeClass('hide');
-                coordinator.editor.toHistoryMode();
-                $('#range').attr('max', length);
-                displayState();
-            }
-
-            function switchToEditionMode() {
-                $('#btnEditionMode').addClass('hide');
-                $('#historySlider').addClass('hide');
-                $('#btnHistoryMode').removeClass('hide');
-                editor.editor.session.doc.setValue(coordinator.ropes.str);
-                coordinator.editor.toEditionMode();
-            }
-
-            function switchToOnlineMode() {
-                console.log('switchToOnlineMode');
-                coordinator.toOnlineMode();
-            }
-
-            function switchToOfflineMode() {
-                console.log('switchToOfflineMode');
-                coordinator.toOfflineMode();
-            }
-
             console.log('docID: <%= docID %>');
 
             function showCollaboratorsList() {
@@ -368,7 +277,6 @@
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-left').addClass('glyphicon-arrow-right');
                     $('#btnPanelController').attr('onclick', 'hideCollaboratorsList()');
                 }, 0);
-
             }
 
             function hideCollaboratorsList() {
@@ -381,7 +289,7 @@
                     $('#btnPanelController').attr('onclick', 'showCollaboratorsList()');
                 }, 400);
             }
-
         </script>
+        <% include script-download-app %>
 	</body>
 </html>

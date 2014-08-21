@@ -17,21 +17,32 @@
             var elem = $(this);
             var _options = $.extend({}, $.fn.parolesModule.defaultSettings, options || {});
             var module = new ParolesModule(_options, elem);
+
+            return this;
         });
     }
 
     var ParolesModule = function (options, elem)
     {
-        console.log('this: ', this);
         var _self = this;
         var checked = true;
 
         this.options = options;
         this.elem = elem;
         this.cnt = 0;
+        this.disposed = false;
 
         options.network.on('receiveParole', function (data) {
-            _self.updateParolesList(data);  
+            console.log('RECEIVE PAROLE !!!');
+            if(_self.disposed === false) {
+                _self.updateParolesList(data);
+            }
+        });
+
+        options.network.on('networkDisposed', function () {
+            if(_self.disposed === false) {
+                _self.onNetworkDisposedHandler();
+            }
         });
 
         if(options.display === 'block') {
@@ -82,7 +93,6 @@
                 placement: 'top',
                 title: 'Delete the entry.',
             }).click(function () {
-                console.log('On tente de supprimer: ', cnt);
                 _self.removeParole(cnt);
             });
         }
@@ -124,4 +134,23 @@
             $('#parole-list-item-'+cnt).remove();
         });
     };
+
+    ParolesModule.prototype.onNetworkDisposedHandler = function () {
+        var key;
+        var event;
+
+        $('[id^="parole-btn"]').prop('disabled', true);
+        
+        for(key in this) {
+            if(this.hasOwnProperty(key) === true) {
+                if(key === 'disposed') {
+                    this.disposed = true;
+                }
+                else {
+                    this[key] = null;
+                }
+            }
+        }
+    };
+
 }( jQuery ));

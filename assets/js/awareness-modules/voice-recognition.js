@@ -28,7 +28,6 @@
 
     var VoiceRecognitionModule = function (options, elem)
     {
-        console.log('Hello');
         var _self = this;
         var checked = true;
         var args;
@@ -56,6 +55,7 @@
 
         this.options = options;
         this.elem = elem;
+        this.disposed = false;
 
         if(options.mode === 'direct') {
             checked = false;
@@ -75,10 +75,11 @@
             this.recognition = new webkitSpeechRecognition();
             this.recognition.continuous = true;
 
+            this.elem.tooltip();
+
             this.onEndHandler();
 
             if(this.options.langSelect !== null && this.options.langSelect !== undefined) {
-                // TODO: peupler le select avec toutes les langues
                 var langs = {
                     'Afrikaans': 'af-ZA',
                     'Bahasa Indonesia': 'id-ID',
@@ -126,38 +127,44 @@
                     var lang = $('#'+_self.options.langSelect).val();
                     _self.changeLang(lang);
                 });
-            }
+            };
 
             this.recognition.onstart = function () {
-                _self.onStartHandler();
-            }
+                if(_self.disposed === false) {
+                    _self.onStartHandler();
+                }
+            };
 
             this.recognition.onresult = function(event) {
-                console.log('Results are coming');
-                var results = '';
-                for (var i = event.resultIndex; i < event.results.length; ++i) {
-                    console.log('Result: ', event.results[i][0].transcript);
-                    results += event.results[i][0].transcript;
+                if(_self.disposed === false) {
+                    console.log('Results are coming');
+                    var results = '';
+                    for (var i = event.resultIndex; i < event.results.length; ++i) {
+                        console.log('Result: ', event.results[i][0].transcript);
+                        results += event.results[i][0].transcript;
+                    }
+                    if(_self.options.mode === 'validation') {
+                        _self.send(results);  
+                    }
+                    else if(_self.options.mode === 'direct') {
+                        _self.insertIntoEditor(results);
+                    }
                 }
-                console.log('_self.options.mode: ', _self.options.mode);
-                console.log('_self.options: ', _self.options);
-                if(_self.options.mode === 'validation') {
-                    console.log('On passe ici');
-                    _self.send(results);  
-                }
-                else if(_self.options.mode === 'direct') {
-                    _self.insertIntoEditor(results);
-                }
-            }
+            };
 
             this.recognition.onerror = function(event) {
-                console.log('Dans onError');
-                _self.onErrorHandler(event);
-            }
+                if(_self.disposed === false) {
+                    console.log('Dans onError');
+                    _self.onErrorHandler(event);
+                }
+            };
+
             this.recognition.onend = function() {
-                console.log('Dans onEnd');
-                _self.onEndHandler();
-            }
+                if(_self.disposed === false) {
+                    console.log('Dans onEnd');
+                    _self.onEndHandler();
+                }
+            };
             
             this.recognition.lang = this.options.lang;
         }
@@ -172,6 +179,12 @@
             this.showModal(title, content);
 
         }
+
+        this.options.textEditorAdapter.on('textEditorAdapterDisposed', function () {
+            if(_self.disposed === false) {
+                _self.onTextEditorAdapterDisposedHandler();
+            }
+        });
 
         // make sure to return the object so we can reference it later
         return this;
@@ -280,5 +293,31 @@
 
     VoiceRecognitionModule.prototype.toDirectMode = function () {
         this.options.mode = 'direct';
+    };
+
+    VoiceRecognitionModule.prototype.onTextEditorAdapterDisposedHandler = function () {
+        var key;
+        var events;
+
+        this.stopRecognition();
+        this.elem.html([
+            '<i class="fa fa-microphone-slash fa-lg" style="color:rgb(209, 91, 71);"></i>'
+        ].join('\n'))
+        .prop('disabled', true)
+        .off('click');
+        
+        $('#'+this.options.modeSwitch).prop('disabled', true);
+        $('#'+this.options.langSelect).prop('disabled', true);
+
+        for(key in this) {
+            if(this.hasOwnProperty(key) === true) {
+                if(key === 'disposed') {
+                    this.disposed = true;
+                }
+                else {
+                    this[key] = null;
+                }
+            }
+        }
     };
 }( jQuery ));

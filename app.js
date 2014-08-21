@@ -315,10 +315,6 @@ app.use(cacheManifest({
 	version: VERSION_MANIFEST,
 	files: [
 		{
-			file: __dirname + '/assets/js/awareness-adapter.js',
-			path: '/assets/js/awareness-adapter.js'
-		},
-		{
 			file: __dirname + '/assets/js/bootstrap.min.js',
 			path: '/assets/js/bootstrap.min.js'
 		},
@@ -327,16 +323,28 @@ app.use(cacheManifest({
 			path: '/assets/js/highlightjs.min.js'
 		},
 		{
+			file: __dirname + '/assets/js/jquery-ui.min.js',
+			path: '/assets/js/jquery-ui.min.js'
+		},
+		{
 			file: __dirname + '/assets/js/jquery-2.1.0.js',
 			path: '/assets/js/jquery-2.1.0.js'
 		},
 		{
-			file: __dirname + '/assets/js/kinetic-v5.0.2.min.js',
-			path: '/assets/js/kinetic-v5.0.2.min.js'
-		},
-		{
 			file: __dirname + '/assets/js/mute.js',
 			path: '/assets/js/mute.js'
+		},
+		{
+			file: __dirname + '/assets/js/check-version.js',
+			path: '/assets/js/check-version.js'
+		},
+		{
+			file: __dirname + '/assets/js/editor-mode-manager.js',
+			path: '/assets/js/editor-mode-manager.js'
+		},
+		{
+			file: __dirname + '/assets/js/awareness-modules/hoverlink.js',
+			path: '/assets/js/awareness-modules/hoverlink.js'
 		},
 		{
 			file: __dirname + '/assets/js/dbjs/src/db.js',

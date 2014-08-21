@@ -14,14 +14,9 @@
             			<h1>
                             <strong>Try MUTE, the Multi-User Text Editor</strong>
                             <span class="pull-right">
-                                <a href="/doc/demo" class="btn btn-default">
-                                    <span class="glyphicon glyphicon-edit"></span>
-                                    Full interface
-                                </a>
-                                <button id="btnAppCache" class="btn btn-default" onclick="updateAppCache()">
-                                    <span class="glyphicon glyphicon-download"></span>
-                                    Store locally
-                                </button>
+                                <button id="btnEditorMode" class="btn btn-default"></button>
+                                <button id="btnConnexionManager" class="btn btn-default"></button>
+                                <div id="divConnexionManagerToken"></div>
                             </span>
                         </h1>
                     </div>
@@ -30,10 +25,14 @@
         </div>
         <hr>
         <div class="row">
-            <button id="btnPanelController" class="btn btn-default pull-right" style="margin-right: 30px;" onclick="hideCollaboratorsList();">
-                <span id="panelControllerIcon" class="glyphicon glyphicon-arrow-right"></span>
-                <span id="panelControllerLabel">Hide list</span>
-            </button>
+            <div class="col-md-2"></div>
+            <div id="divWarningMessage" class="col-md-6 col-md-offset-1"></div>
+            <div class="col-md-2 pull-right">
+                <button id="btnPanelController" class="btn btn-default" style="margin-right: 30px;" onclick="hideCollaboratorsList();">
+                    <span id="panelControllerIcon" class="glyphicon glyphicon-arrow-right"></span>
+                    <span id="panelControllerLabel">Hide list</span>
+                </button>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-10" id="divMain" style="padding-right: 0px;">
@@ -120,7 +119,10 @@
         <script src="/assets/js/awareness-modules/collaborators-list.js"></script>
         <script src="/assets/js/awareness-modules/username.js"></script>
         <script src="/assets/js/awareness-modules/hoverlink.js"></script>
-		<script>
+        <script src="/assets/js/check-version.js"></script>
+		<script src="/assets/js/connexion-manager.js"></script>
+        <script src="/assets/js/editor-mode-manager.js"></script>
+        <script>
 			"use strict";
 
             var HoverLink;
@@ -130,72 +132,23 @@
             var editor;
             var network;
             var awareness;
-            var iframeAdded = false;
             var version = 0;
             var infosUsersModule;
 
             var online = false;
-            var posting = $.post('/ajax/testConnection');
-            posting.done(function (data) {
-                online = true;
-            });
-            posting.fail(function () {
-                console.log('Yo');
-                location.href = '/list';
-            });
-            posting.always(function () {
-                openDB()
-                .done(function (s) {
-                    console.log('On passe ici ?');
-                    serverDB = s
-                    serverDB.docs.query()
-                    .filter('docID', '<%= docID %>')
-                    .execute()
-                    .done(function (results) {
-                        var doc;
-                        if(results.length === 0) {
-                            version = 1;
-                            doc = {
-                                docID: '<%= docID %>',
-                                version: 1
-                            };
-                            serverDB.docs.add(doc)
-                            .done(function (item) {
-                                initPage();
-                            });
-                        }
-                        else {
-                            version = results[0].version + 1;
-                            serverDB.docs.query()
-                            .filter('docID', '<%= docID %>')
-                            .modify({ version: version })
-                            .execute()
-                            .done(function (results) {
-                                initPage();
-                            });
-                        }
-
-                        var interval = setInterval(function () {
-                            serverDB.docs.query()
-                            .filter('docID', '<%= docID %>')
-                            .execute()
-                            .done(function (results) {
-                                if(results.length === 1) {
-                                    if(results[0].version !== version) {
-                                        console.log(results[0].version + ' !== ' + version);
-                                        $('#modalCloseTab').modal('show');
-                                        coordinator.dispose();
-                                        network.dispose();
-                                        editor.disable();
-
-                                        coordinator = null;
-                                        editor = null;
-                                        network = null;
-                                        clearInterval(interval);
-                                    }
-                                }
-                            });
-                        }, 3000);
+            var posting;
+            
+            $(function () {
+                posting = $.post('/ajax/testConnection');
+                posting.done(function (data) {
+                    online = true;
+                });
+                posting.always(function () {
+                    openDB()
+                    .done(function (s) {
+                        console.log('On passe ici ?');
+                        serverDB = s
+                        initPage();
                     });
                 });
             });
@@ -222,7 +175,7 @@
                     infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
                     editor.setInfosUsersModule(infosUsersModule);
                     network.setInfosUsersModule(infosUsersModule);
-                    $('#inputUsername').UsernameModule({
+                    $('#inputUsername').usernameModule({
                         infosUsersModule: infosUsersModule
                     });
                     $('#list-collaborators').collaboratorsListModule({
@@ -236,61 +189,63 @@
                         cursorsCSSClasses: ['mute-remote-cursor-0', 'mute-remote-cursor-1', 'mute-remote-cursor-2'],
                         selectionsCSSClasses: ['mute-remote-selection-0', 'mute-remote-selection-1', 'mute-remote-selection-2']
                     });
+                    $('#divWarningMessage').checkVersionModule({
+                        /*
+                        *   options : {
+                        *       docID
+                        *       coordinator
+                        *       serverDB
+                        *       timeInterval
+                        *       toDisabled: list of item which will be switched to disabled
+                        *       toReadOnly: list of item which will be switched to read only
+                        *   }
+                        */
+                        docID: '<%= docID %>',
+                        coordinator: coordinator,
+                        serverDB: serverDB,
+                        timeInterval: 3000,
+                        toDisabled: []
+                    });
+                    $('#btnConnexionManager').connexionManagerModule({
+                        /*
+                        *   options : {
+                        *       coordinator
+                        *       network
+                        *       token
+                        *   }
+                        */
+                        coordinator: coordinator,
+                        network: network,
+                        token: $('#divConnexionManagerToken')
+                    });
                     coordinator.setNetwork(network);
                     network.on('receiveParole', function (data) {
                         console.log('Essai: ', data);
                     });
                 }
+                $('#btnEditorMode').editorModeManagerModule({
+                    /*
+                    *   options : {
+                    *       coordinator
+                    *       textEditorAdapter
+                    *       token
+                    *   }
+                    */
+                    coordinator: coordinator,
+                    textEditorAdapter: editor,
+                    token: $('#divWarningMessage')
+                });
                 coordinator.init();
                 console.log('<%= docID %>');
             }
-
-            function handleNoUpdate () {
-                $('#btnAppCache').attr('onclick', '');
-                $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;No update needed!');
-                setBtnAppCacheToDefault();
-            };
-
-            function handleDownloading () {
-                $('#btnAppCache').attr('onclick', '');
-                $('#btnAppCache').html('<img src="/assets/img/ajax-loader.gif">&nbsp;Downloading...');
-            }
-
-            function handleCached () {
-                $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Cached!');
-                setBtnAppCacheToDefault();
-            }
-
-            function handleUpdateReady () {
-                $('#iframeAppCache')[0].contentWindow.applicationCache.swapCache();
-                $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Updated!');
-                setBtnAppCacheToDefault();
-            }
-
-            function setBtnAppCacheToDefault () {
-                setTimeout(function () {
-                    $('#btnAppCache').attr('onclick', 'updateAppCache()');
-                    $('#btnAppCache').html('<span class="glyphicon glyphicon-download"></span>&nbsp;Store locally!')
-                }, 3000);
-            }
-
-            function updateAppCache () {
-                if(iframeAdded === false) {
-                    iframeAdded = true;
-                    $('body').prepend('<iframe id="iframeAppCache" src="/offline/list.html#iframed" style="position:absolute;top:-999em;visibility:hidden"></iframe>');
-                }
-                else {
-                    $('#iframeAppCache')[0].contentWindow.applicationCache.update();
-                }
-            }
-
-            console.log('docID: <%= docID %>');
 
             function showCollaboratorsList() {
                 $('#divMain').animate({ width: '83,33%' });
                 $('#divInfosSup').animate({ width: '16,67%' }).show();
                 setTimeout(function () { 
-                    editor.editor.resize();
+                    if(editor !== null && editor !== undefined) {
+                        editor.editor.resize();   
+                    }
                     $('#panelControllerLabel').html('Hide list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-left').addClass('glyphicon-arrow-right');
                     $('#btnPanelController').attr('onclick', 'hideCollaboratorsList()');
@@ -301,8 +256,10 @@
             function hideCollaboratorsList() {
                 $('#divInfosSup').animate({ width: '0%'}).hide();
                 $('#divMain').animate({ width: '100%'});
-                setTimeout(function () { 
-                    editor.editor.resize();
+                setTimeout(function () {
+                    if(editor !== null && editor !== undefined) {
+                        editor.editor.resize();   
+                    }
                     $('#panelControllerLabel').html('Show list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-right').addClass('glyphicon-arrow-left');
                     $('#btnPanelController').attr('onclick', 'showCollaboratorsList()');
