@@ -10,6 +10,7 @@
     	*	}
     	*/
         var infosUsers;
+        var disposed = false;
 
     	var generateCursorHTML = function (userID, username, posCursor, cssClass) {
     		// Since the top and left attributes are only set at the marker creation in AceEditor
@@ -47,9 +48,22 @@
             $('.ace_layer.ace_marker-layer:last').css('overflow', 'visible'); 
     	};
         
+        var onInfosUsersModuleDisposedHandler = function () {
+            disposed = true;
+            infosUsers = {};
+        };
+
         infosUsersModule.on('updateRemoteIndicators', function (data) {
-            infosUsers = data.infosUsers;
-            updateRemoteIndicators();
+            if(disposed === false) {
+                infosUsers = data.infosUsers;
+                updateRemoteIndicators();
+            }
+        });
+
+        options.infosUsersModule.on('infosUsersModuleDisposed', function () {
+            if(disposed === false) {
+                onInfosUsersModuleDisposedHandler();
+            }
         });
 
     	return this;

@@ -41,3 +41,11 @@ $(function(){
 function accessDocument() {
     location.href = '/' + encodeURIComponent($('#access-document').val());
 }
+
+function addDisposableEventListener (emitter, event, flag, callback) {
+    emitter.on(event, function (data) {
+        if(flag === true) {
+            callback(data);
+        }
+    });
+};
