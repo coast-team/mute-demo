@@ -219,9 +219,6 @@
                         token: $('#divConnexionManagerToken')
                     });
                     coordinator.setNetwork(network);
-                    network.on('receiveParole', function (data) {
-                        console.log('Essai: ', data);
-                    });
                 }
                 $('#btnEditorMode').editorModeManagerModule({
                     /*

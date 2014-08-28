@@ -268,8 +268,9 @@
     };
 
     VoiceRecognitionModule.prototype.send = function (results) {
+        var docID = location.href.substr(location.href.lastIndexOf('/') + 1);
         console.log('On envoie les résultats');
-        $.post('/rest/paroles/demo/', {
+        $.post('/rest/paroles/'+docID+'/', {
             parole: results
         });
     };

@@ -8,6 +8,7 @@
     	*/
 
         $.fn.parolesModule.defaultSettings = {
+            textEditor : null,
             network : null,
             display : 'list'
         };
@@ -73,6 +74,10 @@
         // make sure to return the object so we can reference it later
         return this;
     }
+
+    ParolesModule.prototype.insertParoleIntoEditor = function (parole) {
+        this.options.textEditorAdapter.editor.insert(parole);
+    };
 
     ParolesModule.prototype.updateParolesList = function (data) {
         var _self = this;
