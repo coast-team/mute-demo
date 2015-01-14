@@ -6,15 +6,22 @@
         *   }
         */
         var item = this;
+        var disposed = false;
+
         if(options !== null && options !== undefined
-            && options.coordinator !== null && options.coordinator !== undefined) {            
+            && options.coordinator !== null && options.coordinator !== undefined) {
             options.coordinator.on('updateLastModificationDate', function (data) {
-                if(isDateValid(data.lastModificationDate)) {
-                    item.updateDisplay(data.lastModificationDate);    
+                if(disposed === false) {
+                    if(isDateValid(data.lastModificationDate)) {
+                        item.updateDisplay(data.lastModificationDate);    
+                    }
+                    else {
+                        console.error('The date passed as a parameter is NOT valid...');
+                    }
                 }
-                else {
-                    console.error('The date passed as a parameter is NOT valid...');
-                }
+            });
+            options.coordinator.on('coordinatorDisposed', function () {
+                disposed = true;
             });
             return this.html('Initializing...');
         }
