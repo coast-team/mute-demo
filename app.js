@@ -109,7 +109,7 @@ app.set('views', __dirname + '/views');
 
 var server_session_id = createID();
 
-var ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+var ipaddress = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 
@@ -255,7 +255,7 @@ app.post('/sendMail', function (req, res) {
 
 	req.session.info = true;
 	req.session.notificationTitle = 'Message sent';
-	req.session.msg = 'Your message has correctly been sent to the ***REMOVED***istrators.';
+	req.session.msg = 'Your message has correctly been sent to the administrators.';
 	
 	res.redirect('/');
 });
