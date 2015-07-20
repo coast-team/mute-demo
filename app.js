@@ -36,14 +36,14 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     mongoose = require('mongoose'),
     bcrypt = require('bcryptjs'),
-    server = require('http').createServer(app),
+    server = require('http').Server(app),
     Coordinator = require('mute-server').Coordinator,
     SocketIOAdapter = require('mute-server').SocketIOAdapter,
     PeerIOAdapter = require('mute-server').PeerIOAdapter,
     InfosUsersModule = require('mute-server').InfosUsersModule,
     nodemailer = require('nodemailer'),
     cacheManifest = require('connect-cache-manifest'),
-    io = require('socket.io').listen(server);
+    io = require('socket.io')(server);
 
 SALT = bcrypt.genSaltSync(10);
 
