@@ -1,16 +1,46 @@
 ### TODO: Présentation du module
 
 #Installation
+Require :
+* node
+* npm
 
-```
+##Sources clonning and node modules installation
+```bash
 git clone https://github.com/MatthieuNICOLAS/mute-demo.git
 cd mute-demo/
+git submodule init
+git submodule update
 npm install
+cd assets/js/mute-client
+npm install
+cd ../../../node_modules/mute-server/
+npm install
+cd ../.. #go back into mute-demo folder
 ```
+##DB installation
 
-You will then need to install **mute-client** in your *assets/js* directory. See its documentation.
-You will also need to download [**Ace**](http://ace.c9.io/#nav=about) and to extract it in your *assets/js* directory.
+Require :
+* MongoDB 3.0.4
 
+###DB configuration
+```
+mongo
+> use mute
+> db.createUser(
+  {
+    user: "mute",
+    pwd: "mute",
+    roles: [ { role: "userAdmin", db: "mute" } ]
+  }
+)
+```
+##Launch app
+>In mute-demo folder
+
+```
+node app.js
+```
 #Architecture
 
 #See also
