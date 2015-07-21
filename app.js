@@ -43,7 +43,8 @@ var express = require('express'),
     InfosUsersModule = require('mute-server').InfosUsersModule,
     nodemailer = require('nodemailer'),
     cacheManifest = require('connect-cache-manifest'),
-    io = require('socket.io')(server);
+    io = require('socket.io')(server),
+    ExpressPeerServer = require('peer').ExpressPeerServer;
 
 SALT = bcrypt.genSaltSync(10);
 
@@ -609,6 +610,18 @@ app.get('/peer/doc/:docID', function(req,res){
 app.use(function(req, res, next){
     res.setHeader('Content-Type', 'text/html');
     res.render('404', { title: 'MUTE - Multi-User Text Editor', page: '404'});
+});
+
+var options = {
+    debug: true
+};
+
+var expresspeerserver = ExpressPeerServer(server, options);
+app.use('/peerjs', expresspeerserver);
+
+expresspeerserver.on('connection', function(id) {
+    console.log("PEER JS SERVER CONNECTION");
+    console.log(id);
 });
 
 server.listen( port, ipaddress, function() {

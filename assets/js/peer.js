@@ -1411,7 +1411,7 @@ Socket.prototype.close = function() {
 module.exports = Socket;
 
 },{"./util":8,"eventemitter3":9}],8:[function(require,module,exports){
-var defaultConfig = {'iceServers': [{ 'url': 'stun:stun.l.google.com:19302' }]};
+var defaultConfig = {'iceServers': [{ 'url': 'stun:stun.l.google.com:19302', 'urls': ['stun:stun.l.google.com:19302' ]}]};
 var dataCount = 1;
 
 var BinaryPack = require('js-binarypack');
@@ -1510,7 +1510,7 @@ var util = {
 
     var pc, dc;
     try {
-      pc = new RTCPeerConnection(defaultConfig, {optional: [{RtpDataChannels: true}]});
+      pc = new RTCPeerConnection(defaultConfig, {optional: [{RtpDataChannels: true}, {DtlsSrtpKeyAgreement: true}]});
     } catch (e) {
       data = false;
       audioVideo = false;
