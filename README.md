@@ -1,11 +1,11 @@
 ### TODO: Présentation du module
 
 #Installation
-Require :
+>Require :
 * node
 * npm
 
-##Sources clonning and node modules installation
+##Cloning sources and installation of Node modules
 ```bash
 git clone https://github.com/MatthieuNICOLAS/mute-demo.git
 cd mute-demo/
@@ -20,7 +20,7 @@ cd ../.. #go back into mute-demo folder
 ```
 ##DB installation
 
-Require :
+>Require :
 * MongoDB 3.0.4
 
 ###DB configuration
