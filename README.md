@@ -7,7 +7,7 @@
 
 ##Cloning sources and installation of Node modules
 ```bash
-git clone https://github.com/MatthieuNICOLAS/mute-demo.git
+git clone https://github.com/coast-team/mute-demot
 cd mute-demo/
 git submodule init
 git submodule update
