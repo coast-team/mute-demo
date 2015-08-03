@@ -221,8 +221,8 @@ app.get('/delay', function (req, res) {
 app.get('/listDocs', function (req, res) {
     coordinator.listDocs(function (list) {
         res.setHeader('Content-Type', 'text/html');
-        res.send(list); 
-    }); 
+        res.send(list);
+    });
 });
 
 // app.get('/getInfos', function (req, res) {
@@ -253,14 +253,14 @@ app.post('/sendMail', function (req, res) {
             console.log(error);
         }
         else{
-            console.log("Message sent: " + response.message);
+            console.log('Message sent: ' + response.message);
         }
     });
 
     req.session.info = true;
     req.session.notificationTitle = 'Message sent';
     req.session.msg = 'Your message has correctly been sent to the administrators.';
-    
+
     res.redirect('/');
 });
 
@@ -301,7 +301,7 @@ app.post('/createDoc', function (req, res) {
         req.session.info = true;
         req.session.notificationTitle = 'Document created';
         req.session.msg = 'The document "' + docID + '" has correctly been created.';
-        
+
         res.redirect('/doc/' + docID);
     }
     else {
@@ -436,9 +436,9 @@ app.get('/doc/:docID/history', function (req, res) {
         if(req.signedCookies[docID] !== docs[docID]) {
             // Private doc and not already authentified
             privateDoc = true;
-        } 
+        }
     }
-    
+
     res.setHeader('Content-Type', 'text/html');
     res.render('history-viewer', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
 });
@@ -473,7 +473,7 @@ app.get('/paroles/:docID', function (req, res) {
             if (err)  {
                 return console.error(err);
             }
-            console.log('Save successful!');            
+            console.log('Save successful!');
         });
 
         coordinator.addDoc(req.params.docID);
@@ -485,7 +485,7 @@ app.get('/paroles/:docID', function (req, res) {
         if(req.signedCookies[docID] !== docs[docID]) {
             // Private doc and not already authentified
             privateDoc = true;
-        } 
+        }
     }
     res.setHeader('Content-Type', 'text/html');
     res.render('paroles-editor', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', nbOperationsItemID: 'cnt', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, link: fullUrl, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
@@ -521,7 +521,7 @@ app.get('/doc/:docID', function (req, res) {
             if (err)  {
                 return console.error(err);
             }
-            console.log('Save successful!');            
+            console.log('Save successful!');
         });
 
         coordinator.addDoc(req.params.docID);
@@ -533,7 +533,7 @@ app.get('/doc/:docID', function (req, res) {
         if(req.signedCookies[docID] !== docs[docID]) {
             // Private doc and not already authentified
             privateDoc = true;
-        } 
+        }
     }
     res.setHeader('Content-Type', 'text/html');
     res.render('private-editor', { title: 'MUTE - Multi-User Text Editor', page: '', editorID: 'editor', nbOperationsItemID: 'cnt', lastModificationDateItemID: 'lastModificationDate', docID: req.params.docID, link: fullUrl, privateDoc: privateDoc, newDoc: newDoc, error: error, info: info, notificationTitle: notificationTitle, msg: msg });
@@ -620,7 +620,7 @@ var expresspeerserver = ExpressPeerServer(server, options);
 app.use('/peerjs', expresspeerserver);
 
 expresspeerserver.on('connection', function(id) {
-    console.log("PEER JS SERVER CONNECTION");
+    console.log('PEER JS SERVER CONNECTION');
     console.log(id);
 });
 
