@@ -215,7 +215,7 @@ app.get('/delay', function (req, res) {
     delay += 5000;
     socketIOAdapter.setDelay(delay);
     res.setHeader('Content-Type', 'text/html');
-    res.redirect('/');  
+    res.redirect('/');
 });
 
 app.get('/listDocs', function (req, res) {
