@@ -293,7 +293,7 @@ app.post('/createDoc', function (req, res) {
             if (err)  {
                 return console.error(err);
             }
-            console.log('Save successful!');            
+            console.log('Save successful!');
         });
 
         coordinator.addDoc(docID);
