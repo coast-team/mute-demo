@@ -1,6 +1,6 @@
 [submodule "assets/js/mute-client"]
 	path = assets/js/mute-client
-	url = https://github.com/quentinl-c/mute-client.git
+	url = https://github.com/coast-team/mute-client.git
 [submodule "assets/js/zeroclipboard"]
 	path = assets/js/zeroclipboard
 	url = https://github.com/zeroclipboard/zeroclipboard.git
@@ -12,4 +12,4 @@
 	url = https://github.com/ajaxorg/ace-builds.git
 [submodule "node_modules/mute-server"]
 	path = node_modules/mute-server
-	url = https://github.com/quentinl-c/mute-server.git
+	url = https://github.com/coast-team/mute-server.git
