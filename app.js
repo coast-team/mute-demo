@@ -117,7 +117,7 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 
 var delay = 0;
-var coordinator = new Coordinator(db);
+var coordinator = new Coordinator(mongoose);
 var infosUsersModule = new InfosUsersModule();
 var socketIOAdapter = new SocketIOAdapter(io, coordinator, infosUsersModule, delay);
 var peerIOAdapter = new PeerIOAdapter(io);
