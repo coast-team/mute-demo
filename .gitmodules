@@ -1,7 +1,3 @@
-[submodule "assets/js/mute-client"]
-	path = assets/js/mute-client
-	url = https://github.com/coast-team/mute-client.git
-	branch = netflux
 [submodule "assets/js/zeroclipboard"]
 	path = assets/js/zeroclipboard
 	url = https://github.com/zeroclipboard/zeroclipboard.git
@@ -14,4 +10,8 @@
 [submodule "mute-server"]
 	path = node_modules/mute-server
 	url = https://github.com/coast-team/mute-server.git
+	branch = netflux
+[submodule "assets/js/mute-client"]
+	path = assets/js/mute-client
+	url = https://github.com/coast-team/mute-client.git
 	branch = netflux
