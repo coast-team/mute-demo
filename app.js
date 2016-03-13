@@ -319,6 +319,10 @@ app.use(cacheManifest({
     version: VERSION_MANIFEST,
     files: [
         {
+            file: __dirname + '/assets/js/netflux.js',
+            path: '/assets/js/netflux.js'
+        },
+        {
             file: __dirname + '/assets/js/bootstrap.min.js',
             path: '/assets/js/bootstrap.min.js'
         },

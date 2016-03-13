@@ -71,7 +71,7 @@
         <div id="editor" style="width: 95%;"></div>
     	</div>
     	<div class="row">
-    		<!-- TODO: Afficher ici les informations liées au travail en mode déconnecté : 
+    		<!-- TODO: Afficher ici les informations liées au travail en mode déconnecté :
     			- Délai depuis dernière synchronisation
     			- Nombre d'opérations effectuées en locale depuis dernière synchronisation
     		-->
@@ -82,6 +82,7 @@
     		    <p><h3><small>© LORIA 2014</small></h3></p>
     		</footer>
         </div>
+				<script src="/assets/js/netflux.js"></script>
         <script src="/assets/js/jquery-2.1.0.js"></script>
         <script src="/assets/js/jquery-ui.min.js"></script>
 		<script src="/assets/js/bootstrap.min.js"></script>
@@ -105,7 +106,7 @@
             }
 
             $('#docTitle').html(docID);
-            
+
             $(function() {
 			    $('#access-document').keypress(function(e) {
 			            // Enter pressed?
@@ -148,7 +149,7 @@
                         infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, null, null, serverDB);
                         editor.setInfosUsersModule(infosUsersModule);
                         coordinator.setEditor(editor);
-                		
+
                         $('#btnEditorMode').editorModeManagerModule({
                             /*
                             *   options : {

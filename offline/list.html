@@ -83,6 +83,7 @@
 			    <p><h3><small>© LORIA 2014</small></h3></p>
 			</footer>
         </div>
+				<script src="/assets/js/netflux.js"></script>
         <script src="/assets/js/jquery-2.1.0.js"></script>
 		<script src="/assets/js/bootstrap.min.js"></script>
 		<script src="/assets/js/highlightjs.min.js"></script>
@@ -126,7 +127,7 @@
 			else {
 				// If this page is used as an iframe
 				// We want to cache our application
-				// So we have to give a feedback 
+				// So we have to give a feedback
 				// To the parent page for the main events of the application cache update process
 				applicationCache.ondownloading = function () {
 					var windowjQuery = window.parent.$;
@@ -164,7 +165,7 @@
             				'<a href="http://www.jquery2dotnet.com" class="trash"><span class="glyphicon glyphicon-trash"></span></a>',
             			'</div>',
             		'</li>'
-            	]; 
+            	];
             	return html.join('\n');
             }
 
