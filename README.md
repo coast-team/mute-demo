@@ -7,7 +7,7 @@
 
 ##Cloning sources and installation of Node modules
 ```bash
-git clone https://github.com/coast-team/mute-demot
+git clone -b netflux https://github.com/coast-team/mute-demo
 cd mute-demo/
 git submodule init
 git submodule update
