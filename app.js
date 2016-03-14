@@ -26,6 +26,7 @@ var VERSION_MANIFEST = createID();
 
 var smtpTransport;
 
+require('sigver');
 var express = require('express'),
     ejs = require('ejs'),
     fs = require('fs'),
