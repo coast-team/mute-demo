@@ -145,13 +145,14 @@
         <script src="/assets/js/connexion-manager.js"></script>
         <script src="/assets/js/editor-mode-manager.js"></script>
         <script src="/assets/js/peer.js"></script>
-		<% 
-        	if(privateDoc === true) { 
+		<%
+        	if(privateDoc === true) {
         		%> <% include modal-pwd-doc %> <%
         	}
         %>
 		<script>
 			"use strict";
+						var SIGNALING_SERVER = 'ws://sigver-coastteam.rhcloud.com:8000';
             var version = 0;
 
             var HoverLink;
@@ -166,7 +167,7 @@
 
             var online = false;
             var posting;
-            
+
             $(function () {
                 posting = $.post('/ajax/testConnection');
                 posting.done(function (data) {
@@ -185,7 +186,7 @@
             function initMute() {
                 coordinator.setEditor(editor);
                 if(online === true) {
-                    network = new Mute.PeerIOAdapter(coordinator);
+                    network = new Mute.PeerIOAdapter(coordinator, SIGNALING_SERVER);
                     console.log(network);
                     console.log(network.coordinator.docID);
                     infosUsersModule = new Mute.InfosUsersModule('<%= docID %>', coordinator, editor, network, null, serverDB);
@@ -215,7 +216,7 @@
                         infosUsersModule: infosUsersModule,
                         listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
                     });
-                    $().remoteIndicatorsModule({ 
+                    $().remoteIndicatorsModule({
                         infosUsersModule: infosUsersModule,
                         textEditorAdapter: editor,
                         networkAdapter: network,
@@ -274,7 +275,7 @@
             function showCollaboratorsList() {
                 $('#divMain').animate({ width: '83,33%' });
                 $('#divInfosSup').animate({ width: '16,67%' }).show();
-                setTimeout(function () { 
+                setTimeout(function () {
                     editor.editor.resize();
                     $('#panelControllerLabel').html('Hide list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-left').addClass('glyphicon-arrow-right');
@@ -285,7 +286,7 @@
             function hideCollaboratorsList() {
                 $('#divInfosSup').animate({ width: '0%'}).hide();
                 $('#divMain').animate({ width: '100%'});
-                setTimeout(function () { 
+                setTimeout(function () {
                     editor.editor.resize();
                     $('#panelControllerLabel').html('Show list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-right').addClass('glyphicon-arrow-left');

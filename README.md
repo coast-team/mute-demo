@@ -18,6 +18,12 @@ cd ../../../node_modules/mute-server/
 npm install
 cd ../.. #go back into mute-demo folder
 ```
+
+## Setup signaling server
+Edit the `SIGNALING_SERVER` variable in `views/private-peer-editor.ejs`.
+
+By default: `ws://sigver-coastteam.rhcloud.com:8000`
+
 ##DB installation
 
 >Require :
