@@ -84,7 +84,7 @@ fs.readFile('mute.conf', 'utf8', function (err,data) {
 	
     HOST_SIGNALING = process.env.SIGNALING_SERVER_HOST || 'localhost';
     PORT_SIGNALING = process.env.SIGNALING_SERVER_PORT || 8000;
-	URI_SIGNALING = 'ws://'  + HOST_SIGNALING + ':' PORT_SIGNALING;
+	URI_SIGNALING = 'ws://'  + HOST_SIGNALING + ':' + PORT_SIGNALING;
 
     console.log('Signaling server URI to be used: ' + URI_SIGNALING);	
 });
