@@ -20,9 +20,9 @@ cd ../.. #go back into mute-demo folder
 ```
 
 ## Setup signaling server
-Edit the `SIGNALING_SERVER` variable in `views/private-peer-editor.ejs`.
+This mute editor provides its own signaling server but you can use an external one by providing the server hostname and port as environment variable (`SIGNALING_SERVER_HOST`, `SIGNALING_SERVER_PORT`)
 
-By default: `ws://sigver-coastteam.rhcloud.com:8000`
+By default: `ws://localhost:8000` (you may use `ws://sigver-coastteam.rhcloud.com:8000`)
 
 ##DB installation
 
