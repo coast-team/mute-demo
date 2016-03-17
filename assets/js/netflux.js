@@ -1141,8 +1141,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'onClose',
 	    value: function onClose() {
 	      console.log('DATA_CHANNEL CLOSE: ');
-	      this.webChannel.onLeaving(this.peerId);
-	      // this.webChannel.channels.delete(this)
 	    }
 	  }, {
 	    key: 'onError',
@@ -1521,13 +1519,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        // If this function caller is a peer who is joining
 	        if (this.isJoining()) {
-	          this.getJoiningPeer(this.myId).intermediaryChannel.send(stringifiedMsg);
+	          var ch = this.getJoiningPeer(this.myId).intermediaryChannel;
+	          if (ch.readyState !== 'closed') {
+	            ch.send(stringifiedMsg);
+	          }
 	        } else {
 	          // If the recepient is a joining peer
 	          if (this.hasJoiningPeer(recepient)) {
 	            var jp = this.getJoiningPeer(recepient);
 	            // If I am an intermediary peer for recepient
-	            if (jp.intermediaryId === this.myId) {
+	            if (jp.intermediaryId === this.myId && jp.intermediaryChannel.readyState !== 'closed') {
 	              jp.intermediaryChannel.send(stringifiedMsg);
 	              // If not, then send this message to the recepient's intermediary peer
 	            } else {
@@ -1575,13 +1576,54 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        channel.peerId = this.generateId();
 	      }
-	      channel.connection.oniceconnectionstatechange = function () {
-	        console.log('STATE FOR ' + channel.peerId + ' CHANGED TO: ', channel.connection.iceConnectionState);
-	        if (channel.connection.iceConnectionState === 'disconnected') {
-	          _this3.channels.delete(channel);
-	          _this3.onLeaving(channel.peerId);
-	        }
-	      };
+	      if (window.navigator.userAgent.includes('Firefox')) {
+	        (function () {
+	          var pc = channel.connection;
+	          var hasConnected = new Promise(function (resolve) {
+	            return pc.oniceconnectionstatechange = function (e) {
+	              return pc.iceConnectionState === 'connected' && resolve();
+	            };
+	          });
+
+	          var hasDropped = hasConnected.then(function () {
+	            return new Promise(function (resolve) {
+	              var is = function is(stat, type) {
+	                return stat.type === type && !stat.isRemote;
+	              }; // skip RTCP
+	              var findStat = function findStat(o, type) {
+	                return o[Object.keys(o).find(function (key) {
+	                  return is(o[key], type);
+	                })];
+	              };
+
+	              var lastPackets = 0;
+	              var countdown = 0;
+	              var timeout = 3; // seconds
+
+	              var iv = setInterval(function () {
+	                return pc.getStats().then(function (stats) {
+	                  var packets = findStat(stats, 'inboundrtp').packetsReceived;
+	                  countdown = packets - lastPackets ? timeout : countdown - 1;
+	                  if (!countdown) resolve(clearInterval(iv));
+	                  lastPackets = packets;
+	                });
+	              }, 1000);
+	            });
+	          });
+	          hasDropped.then(function () {
+	            _this3.channels.delete(channel);
+	            _this3.onLeaving(channel.peerId);
+	          });
+	        })();
+	      } else {
+	        channel.connection.oniceconnectionstatechange = function () {
+	          console.log('STATE FOR ' + channel.peerId + ' CHANGED TO: ', channel.connection.iceConnectionState);
+	          if (channel.connection.iceConnectionState === 'disconnected') {
+	            _this3.channels.delete(channel);
+	            _this3.onLeaving(channel.peerId);
+	          }
+	        };
+	      }
 	    }
 
 	    /**
