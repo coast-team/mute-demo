@@ -235,9 +235,6 @@
                 coordinator.init();
                 console.log('<%= docID %>');
 
-
-								var loggingServiceSocket = io.connect(location.host+':'+(parseInt(location.port)-1));
-						    window.LoggingService = new LoggingService(coordinator.docID, coordinator.replicaNumber, loggingServiceSocket, 1000);
             }
 
             function showCollaboratorsList() {

@@ -251,6 +251,11 @@
                     token: $('#divWarningMessage')
                 });
                 coordinator.init();
+
+
+								var loggingServiceSocket = io.connect(location.host+':'+(parseInt(location.port)-1));
+						    window.loggingService = new LoggingService(coordinator.docID, coordinator.replicaNumber, loggingServiceSocket, 1000);
+
             }
 
             function initPage () {

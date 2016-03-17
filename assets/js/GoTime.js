@@ -193,5 +193,3 @@
   })();
 
 }).call(this);
-
-//# sourceMappingURL=GoTime.map
