@@ -193,7 +193,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var c = _step.value;
 
 	          console.log(c.peerId + ': ready state: ' + c.readyState);
-	          c.send(data);
+	          if (c.readyState !== 'closed') {
+	            c.send(data);
+	          }
 	        }
 	      } catch (err) {
 	        _didIteratorError = true;
@@ -222,7 +224,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var c = _step2.value;
 
 	          if (c.peerId === id) {
-	            c.send(data);
+	            if (c.readyState !== 'closed') {
+	              c.send(data);
+	            }
 	            return;
 	          }
 	        }
@@ -327,19 +331,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	      switch (msg.code) {
 	        case CONNECT_WITH:
 	          msg.peers = this.reUseIntermediaryChannelIfPossible(webChannel, msg.jpId, msg.peers);
-	          cBuilder.connectMeToMany(webChannel, msg.peers).then(function (channels) {
-	            channels.forEach(function (c) {
+	          cBuilder.connectMeToMany(webChannel, msg.peers).then(function (result) {
+	            result.channels.forEach(function (c) {
 	              webChannel.initChannel(c, c.peerId);
 	              webChannel.getJoiningPeer(msg.jpId).toAddList(c);
 	              c.send(webChannel.proxy.msg(cs.THIS_CHANNEL_TO_JOINING_PEER, { id: msg.jpId, toBeAdded: true }));
 	            });
-	            webChannel.sendSrvMsg(_this2.name, msg.sender, { code: CONNECT_WITH_FEEDBACK, id: webChannel.myId, isDone: true });
+	            console.log('connectMeToMany result: ', result);
+	            webChannel.sendSrvMsg(_this2.name, msg.sender, { code: CONNECT_WITH_FEEDBACK, id: webChannel.myId, failed: result.failed });
 	          }).catch(function (err) {
-	            webChannel.sendSrvMsg(_this2.name, msg.sender, { code: CONNECT_WITH_FEEDBACK, id: webChannel.myId, isDone: false });
+	            console.log('connectMeToMany FAILED, ', err);
 	          });
 	          break;
 	        case CONNECT_WITH_FEEDBACK:
-	          webChannel.connectWithRequests.get(msg.id)(msg.isDone);
+	          webChannel.connectWithRequests.get(msg.id)(true);
 	          break;
 	        case ADD_INTERMEDIARY_CHANNEL:
 	          var jp = webChannel.getJoiningPeer(msg.jpId);
@@ -355,8 +360,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return new Promise(function (resolve, reject) {
 	        webChannel.connectWithRequests.set(id, function (isDone) {
 	          if (isDone) {
+	            console.log('CONNECT WITH RESOLVED');
 	            resolve();
 	          } else {
+	            console.log('CONNECT WITH REJECTED');
 	            reject();
 	          }
 	        });
@@ -518,7 +525,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var CONNECTION_CREATION_TIMEOUT = 2000;
+	var CONNECTION_CREATION_TIMEOUT = 4000;
 
 	/**
 	 * Service class responsible to establish connections between peers via `RTCDataChannel`.
@@ -617,7 +624,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }, function (offer) {
 	            return socket.send(_this3.toStr({ join: key, data: { offer: offer } }));
 	          }, function (channel) {
-	            channel.myCon = connection;
+	            channel.connection = connection;
 	            resolve(channel);
 	          }, key);
 	        };
@@ -646,48 +653,71 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'connectMeToMany',
 	    value: function connectMeToMany(webChannel, ids) {
-	      var promises = [];
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
+	      var _this4 = this;
 
-	      try {
-	        for (var _iterator = ids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var id = _step.value;
+	      return new Promise(function (resolve, reject) {
+	        var counter = 0;
+	        var result = { channels: [], failed: [] };
+	        if (ids.length === 0) {
+	          resolve(result);
+	        } else {
+	          var _iteratorNormalCompletion = true;
+	          var _didIteratorError = false;
+	          var _iteratorError = undefined;
 
-	          promises.push(this.connectMeToOne(webChannel, id));
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
+	          try {
+	            var _loop = function _loop() {
+	              var id = _step.value;
+
+	              _this4.connectMeToOne(webChannel, id).then(function (channel) {
+	                counter++;
+	                result.channels.push(channel);
+	                if (counter === ids.length) {
+	                  resolve(result);
+	                }
+	              }).catch(function (err) {
+	                counter++;
+	                result.failed.push({ id: id, err: err });
+	                if (counter === ids.length) {
+	                  resolve(result);
+	                }
+	              });
+	            };
+
+	            for (var _iterator = ids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	              _loop();
+	            }
+	          } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	          } finally {
+	            try {
+	              if (!_iteratorNormalCompletion && _iterator.return) {
+	                _iterator.return();
+	              }
+	            } finally {
+	              if (_didIteratorError) {
+	                throw _iteratorError;
+	              }
+	            }
 	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
 	        }
-	      }
-
-	      return Promise.all(promises);
+	      });
 	    }
 	  }, {
 	    key: 'connectMeToOne',
 	    value: function connectMeToOne(webChannel, id) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      return new Promise(function (resolve, reject) {
 	        var sender = webChannel.myId;
-	        var connection = _this4.createConnectionAndOffer(function (candidate) {
-	          return webChannel.sendSrvMsg(_this4.name, id, { sender: sender, candidate: candidate });
+	        var connection = _this5.createConnectionAndOffer(function (candidate) {
+	          return webChannel.sendSrvMsg(_this5.name, id, { sender: sender, candidate: candidate });
 	        }, function (offer) {
 	          webChannel.connections.set(id, connection);
-	          webChannel.sendSrvMsg(_this4.name, id, { sender: sender, offer: offer });
+	          webChannel.sendSrvMsg(_this5.name, id, { sender: sender, offer: offer });
 	        }, function (channel) {
-	          channel.myCon = connection;
+	          channel.connection = connection;
 	          channel.peerId = id;
 	          resolve(channel);
 	        }, id);
@@ -697,15 +727,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onMessage',
 	    value: function onMessage(webChannel, msg) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      var connections = webChannel.connections;
 	      if (Reflect.has(msg, 'offer')) {
 	        // TODO: add try/catch. On exception remove connection from webChannel.connections
 	        connections.set(msg.sender, this.createConnectionAndAnswer(function (candidate) {
-	          return webChannel.sendSrvMsg(_this5.name, msg.sender, { sender: webChannel.myId, candidate: candidate });
+	          return webChannel.sendSrvMsg(_this6.name, msg.sender, { sender: webChannel.myId, candidate: candidate });
 	        }, function (answer) {
-	          return webChannel.sendSrvMsg(_this5.name, msg.sender, { sender: webChannel.myId, answer: answer });
+	          return webChannel.sendSrvMsg(_this6.name, msg.sender, { sender: webChannel.myId, answer: answer });
 	        }, function (channel) {
 	          webChannel.initChannel(channel, msg.sender);
 	          webChannel.connections.delete(channel.peerId);
@@ -745,7 +775,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function createConnectionAndAnswer(candidateCB, sdpCB, channelCB, offer) {
 	      var connection = this.initConnection(candidateCB);
 	      connection.ondatachannel = function (e) {
-	        e.channel.myCon = connection;
+	        e.channel.connection = connection;
 	        e.channel.onopen = function () {
 	          return channelCB(e.channel);
 	        };
@@ -1355,6 +1385,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var cBuilder = services.get(settings.connector, settings);
 	      var data = cBuilder.open(this, function (channel) {
+	        console.log('NEW PEER');
 	        _this.initChannel(channel);
 	        var jp = new _JoiningPeer2.default(channel.peerId, _this.myId);
 	        jp.intermediaryChannel = channel;
@@ -1362,10 +1393,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        channel.send(_this.proxy.msg(cs.JOIN_INIT, { manager: _this.settings.topology,
 	          id: channel.peerId,
 	          intermediaryId: _this.myId }));
+	        console.log('BEFORE BROADCAST');
 	        _this.manager.broadcast(_this, _this.proxy.msg(cs.JOIN_NEW_MEMBER, { id: channel.peerId, intermediaryId: _this.myId }));
+	        console.log('AFTER BROADCAST');
 	        _this.manager.add(channel).then(function () {
 	          channel.send(_this.proxy.msg(cs.JOIN_FINILIZE));
 	        }).catch(function () {
+	          console.log('FAILED ADD TO webChannel');
 	          // TODO: implement JOIN_FAIL
 	        });
 	      });
@@ -1405,6 +1439,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return new Promise(function (resolve, reject) {
 	        cBuilder.join(key).then(function (channel) {
 	          _this2.initChannel(channel);
+	          console.log('JOIN channel established');
 	          _this2.onJoin = function () {
 	            resolve(_this2);
 	          };
@@ -1540,11 +1575,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        channel.peerId = this.generateId();
 	      }
-	      console.log('INIT CHANNEL: ', channel.myCon);
-	      var connection = channel.myCon;
-	      connection.oniceconnectionstatechange = function () {
-	        console.log('STATE CHANGED TO: ', connection.iceConnectionState);
-	        if (connection.iceConnectionState === 'disconnected') {
+	      channel.connection.oniceconnectionstatechange = function () {
+	        console.log('STATE FOR ' + channel.peerId + ' CHANGED TO: ', channel.connection.iceConnectionState);
+	        if (channel.connection.iceConnectionState === 'disconnected') {
 	          _this3.channels.delete(channel);
 	          _this3.onLeaving(channel.peerId);
 	        }
