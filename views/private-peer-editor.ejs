@@ -253,7 +253,10 @@
                 coordinator.init();
 
 
-								var loggingServiceSocket = io.connect(location.host+':'+(parseInt(location.port)-1));
+								var loggingServiceSocket = io.connect(location.hostname+':'+(parseInt(location.port)-1));
+								loggingServiceSocket.on('error', function(err) {
+									console.log('failed to connect to websocket: ', err);
+								});
 						    window.loggingService = new LoggingService(coordinator.docID, coordinator.replicaNumber, loggingServiceSocket, 1000);
 
             }
