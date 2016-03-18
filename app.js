@@ -73,8 +73,17 @@ fs.readFile('mute.conf', 'utf8', function (err,data) {
     PORT_DB = process.env.OPENSHIFT_MONGODB_PORT || 27017;
 
     console.log('HOST_DB:')
+    
+    var dbOptions = null;
+    if (USERNAME_DB) {
+      dbOptions = {
+        user: USERNAME_DB,
+        pass: PASS_DB
+      };
+    }
+
     // Connection to the mongoDB running instance
-    mongoose.connect('mongodb://'+HOST_DB+':'+PORT_DB+'/'+NAME_DB, { user: USERNAME_DB, pass: PASS_DB });
+    mongoose.connect('mongodb://'+HOST_DB+':'+PORT_DB+'/'+NAME_DB, dbOptions);
     // Check if connection succeed
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
