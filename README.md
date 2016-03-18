@@ -7,16 +7,8 @@
 
 ##Cloning sources and installation of Node modules
 ```bash
-git clone https://github.com/coast-team/mute-demot
-cd mute-demo/
-git submodule init
-git submodule update
+git clone https://github.com/coast-team/mute-demo
 npm install
-cd assets/js/mute-client
-npm install
-cd ../../../node_modules/mute-server/
-npm install
-cd ../.. #go back into mute-demo folder
 ```
 ##DB installation
 
