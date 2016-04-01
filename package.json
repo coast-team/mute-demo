@@ -15,7 +15,7 @@
     "nodemailer": "0.6.5",
     "peer": "*",
     "serve-favicon": "2.0.1",
-    "sigver": "coast-team/sigver.git#es5",
+    "sigver": "^7.1.0",
     "socket.io": "1.3.6"
   },
   "repository": {

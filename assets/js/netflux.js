@@ -56,6 +56,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.WebChannel = exports.FULLY_CONNECTED = exports.WEBRTC = undefined;
+
 	var _services = __webpack_require__(1);
 
 	var services = _interopRequireWildcard(_services);
@@ -68,9 +73,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	module.exports.WEBRTC = services.WEBRTC;
-	module.exports.FULLY_CONNECTED = services.FULLY_CONNECTED;
-	module.exports.WebChannel = _WebChannel2.default;
+	var WEBRTC = services.WEBRTC;
+	var FULLY_CONNECTED = services.FULLY_CONNECTED;
+
+	exports.WEBRTC = WEBRTC;
+	exports.FULLY_CONNECTED = FULLY_CONNECTED;
+	exports.WebChannel = _WebChannel2.default;
 
 /***/ },
 /* 1 */
@@ -168,18 +176,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  _createClass(FullyConnectedService, [{
 	    key: 'add',
-	    value: function add(channel) {
-	      var webChannel = channel.webChannel;
-	      var peers = [webChannel.myId];
-	      webChannel.channels.forEach(function (c) {
-	        peers[peers.length] = c.peerId;
+	    value: function add(ch) {
+	      var wCh = ch.webChannel;
+	      var peers = [wCh.myId];
+	      wCh.channels.forEach(function (ch) {
+	        peers[peers.length] = ch.peerId;
 	      });
-	      webChannel.joiningPeers.forEach(function (jp) {
-	        if (channel.peerId !== jp.id) {
+	      wCh.joiningPeers.forEach(function (jp) {
+	        if (ch.peerId !== jp.id) {
 	          peers[peers.length] = jp.id;
 	        }
 	      });
-	      return this.connectWith(webChannel, channel.peerId, channel.peerId, peers);
+	      return this.connectWith(wCh, ch.peerId, ch.peerId, peers);
 	    }
 	  }, {
 	    key: 'broadcast',
@@ -192,7 +200,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _iterator = webChannel.channels[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	          var c = _step.value;
 
-	          console.log(c.peerId + ': ready state: ' + c.readyState);
 	          if (c.readyState !== 'closed') {
 	            c.send(data);
 	          }
@@ -264,7 +271,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Interface = exports.ADD_INTERMEDIARY_CHANNEL = exports.CONNECT_WITH_FEEDBACK = exports.CONNECT_WITH = undefined;
+	exports.Interface = exports.ADD_INTERMEDIARY_CHANNEL = exports.CONNECT_WITH_TIMEOUT = exports.CONNECT_WITH_FEEDBACK = exports.CONNECT_WITH = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -304,6 +311,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var CONNECT_WITH = exports.CONNECT_WITH = 1;
 	var CONNECT_WITH_FEEDBACK = exports.CONNECT_WITH_FEEDBACK = 2;
+	var CONNECT_WITH_TIMEOUT = exports.CONNECT_WITH_TIMEOUT = 4000;
 	var ADD_INTERMEDIARY_CHANNEL = exports.ADD_INTERMEDIARY_CHANNEL = 4;
 
 	/**
@@ -355,6 +363,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'connectWith',
 	    value: function connectWith(webChannel, id, jpId, peers) {
+	      var _this3 = this;
+
 	      webChannel.sendSrvMsg(this.name, id, { code: CONNECT_WITH, jpId: jpId,
 	        sender: webChannel.myId, peers: peers });
 	      return new Promise(function (resolve, reject) {
@@ -367,7 +377,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            reject();
 	          }
 	        });
+	        setTimeout(function () {
+	          reject('CONNECT_WITH_TIMEOUT');
+	        }, _this3.calculateConnectWithTimeout(peers.length));
 	      });
+	    }
+	  }, {
+	    key: 'calculateConnectWithTimeout',
+	    value: function calculateConnectWithTimeout(nbPeers) {
+	      if (nbPeers > 0) {
+	        return CONNECT_WITH_TIMEOUT + Math.log10(nbPeers);
+	      } else {
+	        return CONNECT_WITH_TIMEOUT;
+	      }
 	    }
 	  }, {
 	    key: 'reUseIntermediaryChannelIfPossible',
@@ -455,6 +477,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var LEAVE = exports.LEAVE = 8;
 	var JOIN_INIT = exports.JOIN_INIT = 3;
 	var JOIN_NEW_MEMBER = exports.JOIN_NEW_MEMBER = 6;
+	var REMOVE_NEW_MEMBER = exports.REMOVE_NEW_MEMBER = 9;
 	var JOIN_FINILIZE = exports.JOIN_FINILIZE = 5;
 	var JOIN_SUCCESS = exports.JOIN_SUCCESS = 4;
 	var JOIN_STEP3_FAIL = exports.JOIN_STEP3_FAIL = 2;
@@ -525,7 +548,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var CONNECTION_CREATION_TIMEOUT = 4000;
+	var CONNECTION_CREATION_TIMEOUT = 2000;
 
 	/**
 	 * Service class responsible to establish connections between peers via `RTCDataChannel`.
@@ -564,7 +587,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-	      var key = webChannel.id;
+	      var key = webChannel.id + webChannel.myId;
 	      var settings = Object.assign({}, this.settings, options);
 	      // Connection array, because several connections may be establishing
 	      // at the same time
@@ -599,7 +622,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      socket.onerror = function (e) {
 	        throw new Error('Connection to the signaling server ' + settings.signaling + ' failed: ' + e.message + '.');
 	      };
-	      socket.onclose = function () {
+	      socket.onclose = function (e) {
+	        console.log('On open socket with signaling server is closed: ', e);
 	        delete webChannel.webRTCOpen;
 	      };
 	      return { key: key, signaling: settings.signaling };
@@ -647,7 +671,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	              reject();
 	            }
 	        };
-	        socket.onerror = reject;
+	        socket.onerror = function (e) {
+	          reject('Signaling server socket error: ' + e.message);
+	        };
+	        socket.onclose = function (e) {
+	          if (e.code !== 1000) {
+	            reject(e.reason);
+	          }
+	        };
 	      });
 	    }
 	  }, {
@@ -1112,6 +1143,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        case cs.JOIN_NEW_MEMBER:
 	          webChannel.addJoiningPeer(new _JoiningPeer2.default(msg.id, msg.intermediaryId));
 	          break;
+	        case cs.REMOVE_NEW_MEMBER:
+	          webChannel.removeJoiningPeer(msg.id);
+	          break;
 	        case cs.JOIN_FINILIZE:
 	          webChannel.joinSuccess(webChannel.myId);
 	          var nextMsg = webChannel.proxy.msg(cs.JOIN_SUCCESS, { id: webChannel.myId });
@@ -1382,26 +1416,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var settings = Object.assign({}, this.settings, options);
 
 	      var cBuilder = services.get(settings.connector, settings);
-	      var data = cBuilder.open(this, function (channel) {
-	        console.log('NEW PEER');
-	        _this.initChannel(channel);
-	        var jp = new _JoiningPeer2.default(channel.peerId, _this.myId);
-	        jp.intermediaryChannel = channel;
-	        _this.joiningPeers.add(jp);
-	        channel.send(_this.proxy.msg(cs.JOIN_INIT, { manager: _this.settings.topology,
-	          id: channel.peerId,
-	          intermediaryId: _this.myId }));
-	        console.log('BEFORE BROADCAST');
-	        _this.manager.broadcast(_this, _this.proxy.msg(cs.JOIN_NEW_MEMBER, { id: channel.peerId, intermediaryId: _this.myId }));
-	        console.log('AFTER BROADCAST');
-	        _this.manager.add(channel).then(function () {
-	          channel.send(_this.proxy.msg(cs.JOIN_FINILIZE));
-	        }).catch(function () {
-	          console.log('FAILED ADD TO webChannel');
-	          // TODO: implement JOIN_FAIL
+	      try {
+	        var data = cBuilder.open(this, function (channel) {
+	          console.log('NEW PEER');
+	          _this.initChannel(channel);
+	          var jp = new _JoiningPeer2.default(channel.peerId, _this.myId);
+	          jp.intermediaryChannel = channel;
+	          _this.joiningPeers.add(jp);
+	          channel.send(_this.proxy.msg(cs.JOIN_INIT, { manager: _this.settings.topology,
+	            id: channel.peerId,
+	            intermediaryId: _this.myId }));
+	          console.log('BEFORE BROADCAST');
+	          _this.manager.broadcast(_this, _this.proxy.msg(cs.JOIN_NEW_MEMBER, { id: channel.peerId, intermediaryId: _this.myId }));
+	          console.log('AFTER BROADCAST');
+	          _this.manager.add(channel).then(function () {
+	            channel.send(_this.proxy.msg(cs.JOIN_FINILIZE));
+	          }).catch(function (msg) {
+	            console.log('Adding peer ' + channel.peerId + ' failed: ' + msg);
+	            _this.manager.broadcast(_this, _this.proxy.msg(cs.REMOVE_NEW_MEMBER, { id: channel.peerId }));
+	            _this.removeJoiningPeer(jp.id);
+	          });
 	        });
-	      });
-	      return data.key;
+	        return data.key;
+	      } catch (e) {
+	        console.log('WebChannel open error: ', e);
+	      }
 	    }
 
 	    /**
@@ -1441,6 +1480,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          _this2.onJoin = function () {
 	            resolve(_this2);
 	          };
+	        }).catch(function (reason) {
+	          return reject(reason);
 	        });
 	      });
 	    }
@@ -1576,54 +1617,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        channel.peerId = this.generateId();
 	      }
-	      if (window.navigator.userAgent.includes('Firefox')) {
-	        (function () {
-	          var pc = channel.connection;
-	          var hasConnected = new Promise(function (resolve) {
-	            return pc.oniceconnectionstatechange = function (e) {
-	              return pc.iceConnectionState === 'connected' && resolve();
-	            };
-	          });
-
-	          var hasDropped = hasConnected.then(function () {
-	            return new Promise(function (resolve) {
-	              var is = function is(stat, type) {
-	                return stat.type === type && !stat.isRemote;
-	              }; // skip RTCP
-	              var findStat = function findStat(o, type) {
-	                return o[Object.keys(o).find(function (key) {
-	                  return is(o[key], type);
-	                })];
-	              };
-
-	              var lastPackets = 0;
-	              var countdown = 0;
-	              var timeout = 3; // seconds
-
-	              var iv = setInterval(function () {
-	                return pc.getStats().then(function (stats) {
-	                  var packets = findStat(stats, 'inboundrtp').packetsReceived;
-	                  countdown = packets - lastPackets ? timeout : countdown - 1;
-	                  if (!countdown) resolve(clearInterval(iv));
-	                  lastPackets = packets;
-	                });
-	              }, 1000);
-	            });
-	          });
-	          hasDropped.then(function () {
-	            _this3.channels.delete(channel);
-	            _this3.onLeaving(channel.peerId);
-	          });
-	        })();
-	      } else {
-	        channel.connection.oniceconnectionstatechange = function () {
-	          console.log('STATE FOR ' + channel.peerId + ' CHANGED TO: ', channel.connection.iceConnectionState);
-	          if (channel.connection.iceConnectionState === 'disconnected') {
-	            _this3.channels.delete(channel);
-	            _this3.onLeaving(channel.peerId);
-	          }
-	        };
-	      }
+	      channel.connection.oniceconnectionstatechange = function () {
+	        console.log('STATE FOR ' + channel.peerId + ' CHANGED TO: ', channel.connection.iceConnectionState);
+	        if (channel.connection.iceConnectionState === 'disconnected') {
+	          _this3.channels.delete(channel);
+	          _this3.onLeaving(channel.peerId);
+	        }
+	      };
 	    }
 
 	    /**
@@ -1702,6 +1702,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        throw new Error('Joining peer already exists!');
 	      }
 	      this.joiningPeers.add(jp);
+	    }
+	  }, {
+	    key: 'removeJoiningPeer',
+	    value: function removeJoiningPeer(id) {
+	      if (this.hasJoiningPeer(id)) {
+	        this.joiningPeers.delete(this.getJoiningPeer(id));
+	      }
 	    }
 
 	    /**
