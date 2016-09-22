@@ -137,7 +137,7 @@
 
             var online = false;
             var posting;
-            
+
             $(function () {
                 posting = $.post('/ajax/testConnection');
                 posting.done(function (data) {
@@ -146,7 +146,6 @@
                 posting.always(function () {
                     openDB()
                     .done(function (s) {
-                        console.log('On passe ici ?');
                         serverDB = s
                         initPage();
                     });
@@ -168,7 +167,7 @@
                 editor = new Mute.AceEditorAdapter('<%= editorID %>', coordinator);
                 HoverLink = require("hoverlink").HoverLink;
                 editor.hoverLink = new HoverLink(editor.editor);
-                
+
                 coordinator.setEditor(editor);
                 if(online === true) {
                     network = new Mute.SocketIOAdapter(coordinator);
@@ -182,7 +181,7 @@
                         infosUsersModule: infosUsersModule,
                         listCSSClasses: ['mute-collaborator-indicator-0', 'mute-collaborator-indicator-1', 'mute-collaborator-indicator-2']
                     });
-                    $().remoteIndicatorsModule({ 
+                    $().remoteIndicatorsModule({
                         infosUsersModule: infosUsersModule,
                         textEditorAdapter: editor,
                         networkAdapter: network,
@@ -239,9 +238,9 @@
             function showCollaboratorsList() {
                 $('#divMain').animate({ width: '83,33%' });
                 $('#divInfosSup').animate({ width: '16,67%' }).show();
-                setTimeout(function () { 
+                setTimeout(function () {
                     if(editor !== null && editor !== undefined) {
-                        editor.editor.resize();   
+                        editor.editor.resize();
                     }
                     $('#panelControllerLabel').html('Hide list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-left').addClass('glyphicon-arrow-right');
@@ -255,7 +254,7 @@
                 $('#divMain').animate({ width: '100%'});
                 setTimeout(function () {
                     if(editor !== null && editor !== undefined) {
-                        editor.editor.resize();   
+                        editor.editor.resize();
                     }
                     $('#panelControllerLabel').html('Show list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-right').addClass('glyphicon-arrow-left');

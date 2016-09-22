@@ -185,8 +185,8 @@
         <script src="/assets/js/connexion-manager.js"></script>
         <script src="/assets/js/editor-mode-manager.js"></script>
 
-		<% 
-        	if(privateDoc === true) { 
+		<%
+        	if(privateDoc === true) {
         		%> <% include modal-pwd-doc %> <%
         	}
         %>
@@ -206,7 +206,7 @@
 
             var online = false;
             var posting;
-            
+
             $(function () {
                 posting = $.post('/ajax/testConnection');
                 posting.done(function (data) {
@@ -215,7 +215,6 @@
                 posting.always(function () {
                     openDB()
                     .done(function (s) {
-                        console.log('On passe ici ?');
                         serverDB = s
                         initPage();
                     });
@@ -262,7 +261,7 @@
                         textEditorAdapter: editor,
                         modeSwitch: 'voice-recognition-change-mode'
                     });
-                    $().remoteIndicatorsModule({ 
+                    $().remoteIndicatorsModule({
                         infosUsersModule: infosUsersModule,
                         textEditorAdapter: editor,
                         networkAdapter: network,
@@ -321,7 +320,7 @@
             function showCollaboratorsList() {
                 $('#divMain').animate({ width: '75%' });
                 $('#divInfosSup').animate({ width: '25%' }).show();
-                setTimeout(function () { 
+                setTimeout(function () {
                     editor.editor.resize();
                     $('#panelControllerLabel').html('Hide list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-left').addClass('glyphicon-arrow-right');
@@ -333,7 +332,7 @@
             function hideCollaboratorsList() {
                 $('#divInfosSup').animate({ width: '0%'}).hide();
                 $('#divMain').animate({ width: '100%'});
-                setTimeout(function () { 
+                setTimeout(function () {
                     editor.editor.resize();
                     $('#panelControllerLabel').html('Show list');
                     $('#panelControllerIcon').removeClass('glyphicon-arrow-right').addClass('glyphicon-arrow-left');
