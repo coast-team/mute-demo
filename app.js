@@ -31,6 +31,8 @@ var URI_SIGNALING = 'ws://'  + SIGNALING_HOST + ':' + SIGNALING_PORT;
 var MUTE_HOST = process.env.OPENSHIFT_NODEJS_IP || process.env.MUTE_HOST || '0.0.0.0';
 var MUTE_PORT = process.env.OPENSHIFT_NODEJS_PORT || process.env.MUTE_PORT || 8080;
 
+var MUTE_CONF = process.env.MUTE_CONF || 'mute.conf'
+
 var smtpTransport;
 
 var express = require('express'),
@@ -57,7 +59,7 @@ SALT = bcrypt.genSaltSync(10);
 
 var db;
 
-fs.readFile('mute.conf', 'utf8', function (err,data) {
+fs.readFile(MUTE_CONF, 'utf8', function (err,data) {
     if (err) {
         return console.log(err);
     }
