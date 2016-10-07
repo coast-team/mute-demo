@@ -12,7 +12,7 @@
     "ejs": "1.0.0",
     "express": "4.13.1",
     "mongoose": "4.1.x",
-    "netflux": "^1.0.0-rc.2",
+    "netflux": "^1.0.0-rc.3",
     "nodemailer": "0.6.5",
     "peer": "*",
     "serve-favicon": "2.0.1",
