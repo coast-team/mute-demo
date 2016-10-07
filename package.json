@@ -12,6 +12,7 @@
     "ejs": "1.0.0",
     "express": "4.13.1",
     "mongoose": "4.1.x",
+    "netflux": "^1.0.0-rc.2",
     "nodemailer": "0.6.5",
     "peer": "*",
     "serve-favicon": "2.0.1",
@@ -25,8 +26,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "git submodule init && git submodule update",
-    "postinstall": "npm install assets/js/mute-client & npm install node_modules/mute-server"
+    "preinstall": "git submodule init; git submodule update",
+    "postinstall": "npm install assets/js/mute-client; npm install node_modules/mute-server; cp --remove-destination node_modules/netflux/dist/netflux.es2015.umd.js assets/js/netflux.js"
   },
   "keywords": [
     "crdt",

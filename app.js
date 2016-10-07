@@ -24,9 +24,15 @@ var HOST_DB;
 var PORT_DB;
 var VERSION_MANIFEST = createID();
 
+var SIGNALING_HOST = process.env.SIGNALING_HOST || 'localhost';
+var SIGNALING_PORT = process.env.SIGNALING_PORT || 8000;
+var URI_SIGNALING = 'ws://'  + SIGNALING_HOST + ':' + SIGNALING_PORT;
+
+var MUTE_HOST = process.env.OPENSHIFT_NODEJS_IP || process.env.MUTE_HOST || '0.0.0.0';
+var MUTE_PORT = process.env.OPENSHIFT_NODEJS_PORT || process.env.MUTE_PORT || 8080;
+
 var smtpTransport;
 
-require('sigver').start('localhost', 8000)
 var express = require('express'),
     ejs = require('ejs'),
     fs = require('fs'),
@@ -90,11 +96,7 @@ fs.readFile('mute.conf', 'utf8', function (err,data) {
     db.once('open', function callback () {
         console.log('Connection to mongoDB instance succeed!');
     });
-
-    HOST_SIGNALING = process.env.SIGNALING_SERVER_HOST || 'localhost';
-    PORT_SIGNALING = process.env.SIGNALING_SERVER_PORT || 8000;
-	URI_SIGNALING = 'ws://'  + HOST_SIGNALING + ':' + PORT_SIGNALING;
-
+    require('sigver').start(SIGNALING_HOST, SIGNALING_PORT)
     console.log('Signaling server URI to be used: ' + URI_SIGNALING);
 });
 
@@ -126,9 +128,6 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
 var server_session_id = createID();
-
-var ipaddress = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
-var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 
 var delay = 0;
@@ -643,8 +642,8 @@ expresspeerserver.on('connection', function(id) {
     console.log(id);
 });
 
-server.listen( port, ipaddress, function() {
-    console.log(new Date() + ': Server is listening on port ' + port);
+server.listen( MUTE_PORT, MUTE_HOST, function() {
+    console.log(new Date() + ': Server is listening on port ' + MUTE_PORT);
 });
 
 console.log('-------- Le serveur a correctement démarré --------');
